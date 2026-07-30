@@ -1,0 +1,246 @@
+{
+  "schema_version": "0.2.0",
+  "generated_at": "2026-07-29T09:30:00-03:00",
+  "timezone": "America/Argentina/Cordoba",
+  "update_status": {
+    "state": "fresh",
+    "message": "PNA y CTM consultadas correctamente en el corte."
+  },
+  "status": {
+    "official_level_state": "ESTABLE",
+    "observatory_risk": "VIGILANCIA",
+    "observatory_risk_is_official": false,
+    "uncertainty_24h": "MODERADA",
+    "uncertainty_day_2_to_7": "ALTA",
+    "uncertainty_day_8_to_30": "MUY_ALTA"
+  },
+  "observations": [
+    {
+      "source_id": "pna_alturas",
+      "source_name": "Prefectura Naval Argentina",
+      "variable": "river_stage",
+      "station_id": "CONCORDIA_PNA",
+      "station_name": "CONCORDIA",
+      "latitude": -31.4,
+      "longitude": -58.017,
+      "observed_at_utc": "2026-07-29T03:00:00Z",
+      "observed_at_local": "2026-07-29T00:00:00-03:00",
+      "retrieved_at": "2026-07-29T09:30:00-03:00",
+      "value": 10.0,
+      "unit": "m",
+      "vertical_datum": "cero local no documentado en la ficha consultada",
+      "temporal_aggregation": "instantánea",
+      "quality_flag": "official_unvalidated_by_observatory",
+      "is_official": true,
+      "is_forecast": false,
+      "source_reference": "https://contenidosweb.prefecturanaval.gob.ar/alturas/"
+    },
+    {
+      "source_id": "ctm_hourly",
+      "source_name": "Comisión Técnica Mixta de Salto Grande",
+      "variable": "turbined_discharge",
+      "station_id": "SALTO_GRANDE",
+      "station_name": "Salto Grande",
+      "observed_at_utc": "2026-07-29T12:00:00Z",
+      "observed_at_local": "2026-07-29T09:00:00-03:00",
+      "retrieved_at": "2026-07-29T09:30:00-03:00",
+      "value": 8316,
+      "unit": "m3/s",
+      "quality_flag": "official_preliminary",
+      "is_official": true,
+      "is_forecast": false,
+      "source_reference": "https://www.saltogrande.org/datos_horarios.php"
+    },
+    {
+      "source_id": "ctm_hourly",
+      "source_name": "Comisión Técnica Mixta de Salto Grande",
+      "variable": "spilled_discharge",
+      "station_id": "SALTO_GRANDE",
+      "station_name": "Salto Grande",
+      "observed_at_utc": "2026-07-29T12:00:00Z",
+      "observed_at_local": "2026-07-29T09:00:00-03:00",
+      "retrieved_at": "2026-07-29T09:30:00-03:00",
+      "value": 6365,
+      "unit": "m3/s",
+      "quality_flag": "official_preliminary",
+      "is_official": true,
+      "is_forecast": false,
+      "source_reference": "https://www.saltogrande.org/datos_horarios.php"
+    },
+    {
+      "source_id": "ctm_hourly",
+      "source_name": "Comisión Técnica Mixta de Salto Grande",
+      "variable": "reservoir_level",
+      "station_id": "SALTO_GRANDE",
+      "station_name": "Embalse de Salto Grande",
+      "observed_at_utc": "2026-07-29T12:00:00Z",
+      "observed_at_local": "2026-07-29T09:00:00-03:00",
+      "retrieved_at": "2026-07-29T09:30:00-03:00",
+      "value": 33.17,
+      "unit": "m",
+      "vertical_datum": "cota CTM; datum no explicitado en la página horaria",
+      "temporal_aggregation": "promedio horario",
+      "quality_flag": "official_preliminary",
+      "is_official": true,
+      "is_forecast": false,
+      "source_reference": "https://www.saltogrande.org/datos_horarios.php"
+    }
+  ],
+  "thresholds": {
+    "station_id": "CONCORDIA_PNA",
+    "alert_m": 11.0,
+    "evacuation_m": 12.5,
+    "source": "Prefectura Naval Argentina",
+    "source_reference": "https://contenidosweb.prefecturanaval.gob.ar/alturas/",
+    "retrieved_at": "2026-07-29T09:30:00-03:00"
+  },
+  "official_forecast": {
+    "source": "Comisión Técnica Mixta de Salto Grande",
+    "issued_at_local": "2026-07-28T08:00:00-03:00",
+    "valid_until_local": "2026-07-29T15:00:00-03:00",
+    "concordia_min_m": 9.7,
+    "concordia_max_m": 10.2,
+    "trend": "estable",
+    "mean_daily_released_flow_min_m3s": 14000,
+    "mean_daily_released_flow_max_m3s": 15000,
+    "source_reference": "https://www.saltogrande.org/docs/hidrologia/Comunicado.pdf"
+  },
+  "history": [
+    {
+      "date": "2026-07-25",
+      "label": "25 jul",
+      "value": 9.14,
+      "source": "PNA"
+    },
+    {
+      "date": "2026-07-26",
+      "label": "26 jul",
+      "value": 9.64,
+      "source": "PNA"
+    },
+    {
+      "date": "2026-07-27",
+      "label": "27 jul",
+      "value": 9.9,
+      "source": "PNA"
+    },
+    {
+      "date": "2026-07-28",
+      "label": "28 jul",
+      "value": 9.96,
+      "source": "PNA"
+    },
+    {
+      "date": "2026-07-29",
+      "label": "29 jul",
+      "value": 10.0,
+      "source": "PNA"
+    }
+  ],
+  "stations": [
+    {
+      "name": "Paso de los Libres",
+      "group": "upstream",
+      "value_m": 8.62,
+      "variation_m": 0.03,
+      "variation_period_h": 3,
+      "trend": "crece",
+      "status": "Evacuación",
+      "observed_at_local": "2026-07-29T09:00:00-03:00",
+      "source": "PNA"
+    },
+    {
+      "name": "Alvear",
+      "group": "upstream",
+      "value_m": 9.68,
+      "variation_m": -0.02,
+      "variation_period_h": 6,
+      "trend": "baja",
+      "status": "Alerta",
+      "observed_at_local": "2026-07-29T06:00:00-03:00",
+      "source": "PNA"
+    },
+    {
+      "name": "Monte Caseros",
+      "group": "upstream",
+      "value_m": 6.11,
+      "variation_m": 0.11,
+      "variation_period_h": 12,
+      "trend": "crece",
+      "status": "Seguimiento",
+      "observed_at_local": "2026-07-29T00:00:00-03:00",
+      "source": "PNA"
+    },
+    {
+      "name": "Mocoretá",
+      "group": "upstream",
+      "value_m": 7.58,
+      "variation_m": 0,
+      "variation_period_h": 12,
+      "trend": "estable",
+      "status": "Seguimiento",
+      "observed_at_local": "2026-07-29T00:00:00-03:00",
+      "source": "PNA"
+    },
+    {
+      "name": "Concordia",
+      "group": "downstream",
+      "value_m": 10,
+      "variation_m": 0,
+      "variation_period_h": 12,
+      "trend": "estable",
+      "status": "Seguimiento",
+      "observed_at_local": "2026-07-29T00:00:00-03:00",
+      "source": "PNA"
+    },
+    {
+      "name": "Yeruá",
+      "group": "downstream",
+      "value_m": 9.7,
+      "variation_m": 0.02,
+      "variation_period_h": 24,
+      "trend": "crece",
+      "status": "Seguimiento",
+      "observed_at_local": "2026-07-29T00:00:00-03:00",
+      "source": "PNA"
+    },
+    {
+      "name": "Colón",
+      "group": "downstream",
+      "value_m": 6.05,
+      "variation_m": 0.05,
+      "variation_period_h": 12,
+      "trend": "crece",
+      "status": "Seguimiento",
+      "observed_at_local": "2026-07-29T00:00:00-03:00",
+      "source": "PNA"
+    },
+    {
+      "name": "Concepción del Uruguay",
+      "group": "downstream",
+      "value_m": 4.7,
+      "variation_m": 0.06,
+      "variation_period_h": 12,
+      "trend": "crece",
+      "status": "Seguimiento",
+      "observed_at_local": "2026-07-29T00:00:00-03:00",
+      "source": "PNA"
+    }
+  ],
+  "signals": {
+    "upstream": "Paso de los Libres: 8,62 m, en evacuación y creciendo a las 09:00",
+    "rainfall_7d_mm": 43,
+    "released_flow_m3s": 14681
+  },
+  "forecast_method": {
+    "model_id": "envelope-v0.2",
+    "status": "experimental",
+    "description": "Escenario de persistencia ajustado con rango CTM, caudal evacuado, señales aguas arriba y precipitación publicada.",
+    "validation": "Sin calibración histórica suficiente. No usar como pronóstico oficial ni como probabilidad."
+  },
+  "probabilities": {
+    "alert_exceedance": null,
+    "evacuation_exceedance": null,
+    "reason": "El escenario experimental todavía no está calibrado y validado para expresar probabilidades."
+  }
+}
