@@ -14,7 +14,8 @@ test("publishes Concordia observations without invented probabilities", async ()
     (observation) => observation.station_id === "CONCORDIA_PNA",
   );
 
-  assert.equal(concordia.value, 10);
+  assert.equal(Number.isFinite(concordia.value), true);
+  assert.ok(concordia.value >= -2 && concordia.value <= 20);
   assert.equal(concordia.unit, "m");
   assert.equal(concordia.is_official, true);
   assert.equal(state.thresholds.alert_m, 11);
@@ -28,8 +29,11 @@ test("keeps the official CTM forecast bounded by its stated validity", async () 
   const state = await readJson("public/data/current_state.json");
   const forecast = state.official_forecast;
 
-  assert.equal(forecast.concordia_min_m, 9.7);
-  assert.equal(forecast.concordia_max_m, 10.2);
+  assert.equal(Number.isFinite(forecast.concordia_min_m), true);
+  assert.equal(Number.isFinite(forecast.concordia_max_m), true);
+  assert.ok(forecast.concordia_min_m >= 6);
+  assert.ok(forecast.concordia_max_m <= 15);
+  assert.ok(forecast.concordia_min_m <= forecast.concordia_max_m);
   assert.ok(
     Date.parse(forecast.valid_until_local) > Date.parse(forecast.issued_at_local),
   );

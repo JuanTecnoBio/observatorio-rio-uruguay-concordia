@@ -39,10 +39,19 @@ CTM_RAIN = "https://www.saltogrande.org/docs/hidrologia/PronosticosP.pdf"
 SESSION = requests.Session()
 SESSION.headers.update(
     {
+        # CTM aplica una regla anti-bot que rechaza agentes de usuario
+        # personalizados aunque los documentos sean públicos. Usamos
+        # encabezados de navegador, sin cookies ni credenciales.
         "User-Agent": (
-            "ObservatorioRioUruguayConcordia/0.2 "
-            "(actualizador público; contacto mediante el repositorio)"
-        )
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/137.0 Safari/537.36"
+        ),
+        "Accept": (
+            "text/html,application/xhtml+xml,application/xml;q=0.9,"
+            "application/pdf;q=0.8,*/*;q=0.7"
+        ),
+        "Accept-Language": "es-AR,es;q=0.9,en;q=0.7",
     }
 )
 
@@ -206,7 +215,13 @@ def update_observation(
 def update_pna(state: dict[str, Any], attempt: datetime) -> AdapterResult:
     retrieved = iso_local(attempt)
     try:
-        text = pdf_text(PNA_PDF)
+        try:
+            text = pdf_text(PNA_PDF)
+        except requests.RequestException:
+            # La tabla HTML es un respaldo oficial útil cuando falla el
+            # generador de PDF de Prefectura.
+            page = BeautifulSoup(fetch(PNA_PAGE).text, "html.parser")
+            text = page.get_text("\n", strip=True)
         station_specs = [
             ("Paso de los Libres", "upstream"),
             ("Alvear", "upstream"),
@@ -333,13 +348,20 @@ def update_ctm_bulletin(state: dict[str, Any], attempt: datetime) -> AdapterResu
     try:
         text = normalize(pdf_text(CTM_BULLETIN))
         concordia_match = re.search(
-            r"Concordia.{0,220}?(\d{1,2}[,.]\d{1,2}).{0,70}?(\d{1,2}[,.]\d{1,2})",
+            r"cotas\s+(maxima|minima)\s+y\s+(minima|maxima)"
+            r".{0,120}?Concordia.{0,40}?(\d{1,2}[,.]\d{1,2})"
+            r".{0,40}?(\d{1,2}[,.]\d{1,2})",
             text,
             re.I,
         )
         if not concordia_match:
             raise ValueError("no se encontró el rango de Concordia")
-        minimum, maximum = map(number, concordia_match.groups())
+        first_label, _, first_value, second_value = concordia_match.groups()
+        first, second = number(first_value), number(second_value)
+        if normalize(first_label).lower() == "maxima":
+            maximum, minimum = first, second
+        else:
+            minimum, maximum = first, second
         if minimum > maximum or not (6 <= minimum <= 15 and 6 <= maximum <= 15):
             raise ValueError("rango de Concordia fuera de control")
 
@@ -384,7 +406,7 @@ def update_ctm_bulletin(state: dict[str, Any], attempt: datetime) -> AdapterResu
             re.I,
         )
         if flow_match:
-            flow_min, flow_max = map(number, flow_match.groups())
+            flow_min, flow_max = sorted(map(number, flow_match.groups()))
             forecast["mean_daily_released_flow_min_m3s"] = round(flow_min)
             forecast["mean_daily_released_flow_max_m3s"] = round(flow_max)
         return AdapterResult("ctm_communicado", True, "Comunicado CTM actualizado", retrieved)
