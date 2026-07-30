@@ -32,7 +32,9 @@ REPORT_HISTORY_PATH = ROOT / "public" / "data" / "risk_reports.json"
 TZ = ZoneInfo("America/Argentina/Cordoba")
 HTTP_TIMEOUT = 35
 REPORT_HISTORY_LIMIT = 240
-REPORT_THRESHOLD_M = 11.5
+REPORT_ANCHOR_THRESHOLD_M = 11.5
+REPORT_THRESHOLDS_M = (11.0, 11.25, 11.5, 11.75, 12.0, 12.25)
+REPORT_LOGIT_SLOPE_PER_M = 3.0
 REPORT_HORIZONS = (7, 14, 21, 28)
 REPORT_BASELINES = {
     7: {"probability": 25, "max": 10.85, "lower": 13, "upper": 15},
@@ -533,7 +535,92 @@ def report_classification(probability: int) -> str:
     return "ALTO"
 
 
-def make_risk_report(
+def risk_report_method() -> dict[str, Any]:
+    return {
+        "method_id": "expert-anchored-multithreshold-v0.2",
+        "calibrated": False,
+        "label": "Estimación exploratoria estructurada",
+        "note": (
+            "No es una probabilidad estadística calibrada. El corte de 11,50 m "
+            "funciona como referencia y los demás niveles se derivan con una "
+            "transformación monótona explícita, además del ajuste reproducible "
+            "por nivel observado y envolvente del escenario experimental."
+        ),
+    }
+
+
+def threshold_text(threshold_m: float) -> str:
+    return f"{threshold_m:.2f}".replace(".", ",")
+
+
+def shift_probability(
+    probability_pct: int | float,
+    threshold_m: float,
+    *,
+    round_to_five: bool,
+) -> int:
+    """Traslada una estimación entre umbrales sin romper su orden lógico."""
+
+    if math.isclose(threshold_m, REPORT_ANCHOR_THRESHOLD_M):
+        return int(probability_pct)
+
+    probability = max(0.005, min(0.995, float(probability_pct) / 100))
+    logit = math.log(probability / (1 - probability))
+    shifted_logit = (
+        logit
+        + REPORT_LOGIT_SLOPE_PER_M
+        * (REPORT_ANCHOR_THRESHOLD_M - threshold_m)
+    )
+    shifted = 100 / (1 + math.exp(-shifted_logit))
+    if round_to_five:
+        return int(max(1, min(99, math.floor(shifted / 5 + 0.5) * 5)))
+    return int(max(0, min(100, round(shifted))))
+
+
+def make_threshold_report(
+    anchor_rows: list[dict[str, Any]], threshold_m: float
+) -> dict[str, Any]:
+    rows: list[dict[str, Any]] = []
+    for anchor_row in anchor_rows:
+        probability = shift_probability(
+            anchor_row["central_estimate_pct"],
+            threshold_m,
+            round_to_five=True,
+        )
+        lower = shift_probability(
+            anchor_row["plausible_interval_pct"][0],
+            threshold_m,
+            round_to_five=False,
+        )
+        upper = shift_probability(
+            anchor_row["plausible_interval_pct"][1],
+            threshold_m,
+            round_to_five=False,
+        )
+        rows.append(
+            {
+                **anchor_row,
+                "classification": report_classification(probability),
+                "central_estimate_pct": probability,
+                "plausible_interval_pct": [
+                    min(lower, probability),
+                    max(upper, probability),
+                ],
+            }
+        )
+
+    threshold_label = threshold_text(threshold_m)
+    return {
+        "threshold_m": threshold_m,
+        "condition": (
+            f"alcanzar o superar {threshold_label} m al menos una vez "
+            "dentro de cada período"
+        ),
+        "rows": rows,
+    }
+
+
+def make_risk_report_cut(
     state: dict[str, Any], generated: datetime
 ) -> dict[str, Any]:
     """Construye una señal comparativa, no una probabilidad calibrada.
@@ -552,7 +639,7 @@ def make_risk_report(
         point["day"]: point
         for point in state.get("projection", make_projection(state, generated))
     }
-    rows: list[dict[str, Any]] = []
+    anchor_rows: list[dict[str, Any]] = []
 
     for horizon in REPORT_HORIZONS:
         point = projection[horizon]
@@ -565,7 +652,7 @@ def make_risk_report(
         probability = int(max(5, min(90, round(raw_probability / 5) * 5)))
         lower = int(max(0, probability - baseline["lower"]))
         upper = int(min(100, probability + baseline["upper"]))
-        rows.append(
+        anchor_rows.append(
             {
                 "horizon_days": horizon,
                 "classification": report_classification(probability),
@@ -581,30 +668,62 @@ def make_risk_report(
     return {
         "id": generated.isoformat(),
         "generated_at": iso_local(generated),
-        "event": {
-            "station": "Puerto Concordia",
-            "threshold_m": REPORT_THRESHOLD_M,
-            "condition": (
-                "alcanzar o superar 11,50 m al menos una vez dentro de cada período"
-            ),
-        },
-        "method": {
-            "method_id": "expert-anchored-envelope-v0.1",
-            "calibrated": False,
-            "label": "Estimación exploratoria estructurada",
-            "note": (
-                "No es una probabilidad estadística calibrada. El corte inicial aportado "
-                "se ajusta de forma reproducible según el nivel observado y la envolvente "
-                "del escenario experimental."
-            ),
-        },
+        "station": "Puerto Concordia",
+        "method": risk_report_method(),
         "data_status": state.get("update_status", {}).get("state", "stale"),
         "snapshot": {
             "concordia_m": current,
             "released_flow_m3s": state.get("signals", {}).get("released_flow_m3s"),
             "rainfall_7d_mm": state.get("signals", {}).get("rainfall_7d_mm"),
         },
-        "rows": rows,
+        "thresholds": [
+            make_threshold_report(anchor_rows, threshold_m)
+            for threshold_m in REPORT_THRESHOLDS_M
+        ],
+    }
+
+
+def legacy_report_from_cut(report_cut: dict[str, Any]) -> dict[str, Any]:
+    """Mantiene el campo anterior de 11,50 m para consumidores existentes."""
+
+    anchor = next(
+        report
+        for report in report_cut["thresholds"]
+        if math.isclose(report["threshold_m"], REPORT_ANCHOR_THRESHOLD_M)
+    )
+    return {
+        "id": report_cut["id"],
+        "generated_at": report_cut["generated_at"],
+        "event": {
+            "station": report_cut["station"],
+            "threshold_m": anchor["threshold_m"],
+            "condition": anchor["condition"],
+        },
+        "method": report_cut["method"],
+        "data_status": report_cut["data_status"],
+        "snapshot": report_cut["snapshot"],
+        "rows": anchor["rows"],
+    }
+
+
+def upgrade_saved_report(report: dict[str, Any]) -> dict[str, Any]:
+    if report.get("thresholds"):
+        return report
+
+    anchor_rows = report.get("rows")
+    if not anchor_rows:
+        return report
+    return {
+        "id": report["id"],
+        "generated_at": report["generated_at"],
+        "station": report.get("event", {}).get("station", "Puerto Concordia"),
+        "method": risk_report_method(),
+        "data_status": report.get("data_status", "stale"),
+        "snapshot": report.get("snapshot", {}),
+        "thresholds": [
+            make_threshold_report(anchor_rows, threshold_m)
+            for threshold_m in REPORT_THRESHOLDS_M
+        ],
     }
 
 
@@ -651,7 +770,7 @@ def reports_from_git_history() -> list[dict[str, Any]]:
                 historical_state["projection"] = make_projection(
                     historical_state, generated
                 )
-            reports.append(make_risk_report(historical_state, generated))
+            reports.append(make_risk_report_cut(historical_state, generated))
         except (KeyError, ValueError, json.JSONDecodeError, subprocess.CalledProcessError):
             continue
     return reports
@@ -667,18 +786,24 @@ def save_report_history(current_report: dict[str, Any]) -> None:
         except (OSError, json.JSONDecodeError):
             existing = []
 
+    upgraded_existing = [upgrade_saved_report(report) for report in existing]
     by_id = {
         report["id"]: report
-        for report in [*reports_from_git_history(), *existing, current_report]
-        if report.get("id")
+        for report in [
+            *reports_from_git_history(),
+            *upgraded_existing,
+            current_report,
+        ]
+        if report.get("id") and report.get("thresholds")
     }
     reports = sorted(by_id.values(), key=lambda report: report["generated_at"])[
         -REPORT_HISTORY_LIMIT:
     ]
     archive = {
-        "schema_version": 1,
+        "schema_version": 2,
         "updated_at": current_report["generated_at"],
-        "event": current_report["event"],
+        "station": current_report["station"],
+        "thresholds_m": list(REPORT_THRESHOLDS_M),
         "method": current_report["method"],
         "retention": {
             "maximum_reports": REPORT_HISTORY_LIMIT,
@@ -729,8 +854,9 @@ def main() -> None:
         for result in results
     }
     state["projection"] = make_projection(state, attempt)
-    current_report = make_risk_report(state, attempt)
-    state["risk_report"] = current_report
+    current_report = make_risk_report_cut(state, attempt)
+    state["risk_report_bundle"] = current_report
+    state["risk_report"] = legacy_report_from_cut(current_report)
     state["probabilities"] = {
         "alert_exceedance": None,
         "evacuation_exceedance": None,

@@ -25,23 +25,40 @@ test("publishes Concordia observations without invented probabilities", async ()
   assert.match(state.probabilities.reason, /calibrado y validado/i);
 });
 
-test("archives the exploratory 11.50 m report without presenting it as calibrated", async () => {
+test("archives six ordered exploratory thresholds without presenting them as calibrated", async () => {
   const state = await readJson("public/data/current_state.json");
   const archive = await readJson("public/data/risk_reports.json");
-  const report = state.risk_report;
+  const report = state.risk_report_bundle;
+  const thresholds = [11, 11.25, 11.5, 11.75, 12, 12.25];
 
-  assert.equal(report.event.threshold_m, 11.5);
+  assert.equal(archive.schema_version, 2);
+  assert.deepEqual(archive.thresholds_m, thresholds);
+  assert.deepEqual(
+    report.thresholds.map((item) => item.threshold_m),
+    thresholds,
+  );
   assert.equal(report.method.calibrated, false);
   assert.match(report.method.note, /no es una probabilidad estadística calibrada/i);
-  assert.deepEqual(
-    report.rows.map((row) => row.horizon_days),
-    [7, 14, 21, 28],
-  );
 
-  for (const row of report.rows) {
-    assert.ok(row.central_estimate_pct >= 0 && row.central_estimate_pct <= 100);
-    assert.ok(row.plausible_interval_pct[0] <= row.central_estimate_pct);
-    assert.ok(row.plausible_interval_pct[1] >= row.central_estimate_pct);
+  for (const thresholdReport of report.thresholds) {
+    assert.deepEqual(
+      thresholdReport.rows.map((row) => row.horizon_days),
+      [7, 14, 21, 28],
+    );
+    for (const row of thresholdReport.rows) {
+      assert.ok(row.central_estimate_pct >= 0 && row.central_estimate_pct <= 100);
+      assert.ok(row.plausible_interval_pct[0] <= row.central_estimate_pct);
+      assert.ok(row.plausible_interval_pct[1] >= row.central_estimate_pct);
+    }
+  }
+
+  for (const horizon of [7, 14, 21, 28]) {
+    const estimates = report.thresholds.map(
+      (item) =>
+        item.rows.find((row) => row.horizon_days === horizon)
+          .central_estimate_pct,
+    );
+    assert.deepEqual(estimates, [...estimates].sort((a, b) => b - a));
   }
 
   assert.ok(archive.reports.length >= 1);

@@ -59,39 +59,44 @@ type RiskReportRow = {
   scenario_max_m: number;
 };
 
-type RiskReport = {
+type RiskReportMethod = {
+  method_id: string;
+  calibrated: boolean;
+  label: string;
+  note: string;
+};
+
+type ThresholdRiskReport = {
+  threshold_m: number;
+  condition: string;
+  rows: RiskReportRow[];
+};
+
+type RiskReportCut = {
   id: string;
   generated_at: string;
-  event: {
-    station: string;
-    threshold_m: number;
-    condition: string;
-  };
-  method: {
-    method_id: string;
-    calibrated: boolean;
-    label: string;
-    note: string;
-  };
+  station: string;
+  method: RiskReportMethod;
   data_status: "fresh" | "partial" | "stale";
   snapshot: {
     concordia_m: number;
     released_flow_m3s: number | null;
     rainfall_7d_mm: number | null;
   };
-  rows: RiskReportRow[];
+  thresholds: ThresholdRiskReport[];
 };
 
 type RiskReportArchive = {
   schema_version: number;
   updated_at: string;
-  event: RiskReport["event"];
-  method: RiskReport["method"];
+  station: string;
+  thresholds_m: number[];
+  method: RiskReportMethod;
   retention: {
     maximum_reports: number;
     cadence: string;
   };
-  reports: RiskReport[];
+  reports: RiskReportCut[];
 };
 
 type RiverState = {
@@ -150,7 +155,7 @@ type RiverState = {
     description: string;
     validation: string;
   };
-  risk_report?: RiskReport;
+  risk_report_bundle?: RiskReportCut;
 };
 
 const OFFICIAL_LINKS = {
@@ -359,8 +364,8 @@ function ReportTable({
   report,
   previous,
 }: {
-  report: RiskReport;
-  previous?: RiskReport;
+  report: ThresholdRiskReport;
+  previous?: ThresholdRiskReport;
 }) {
   const previousByHorizon = new Map(
     previous?.rows.map((row) => [row.horizon_days, row.central_estimate_pct]) ?? [],
@@ -423,10 +428,34 @@ function ReportTable({
   );
 }
 
-function ReportTrend({ reports }: { reports: RiskReport[] }) {
+function thresholdReport(
+  report: RiskReportCut | undefined,
+  threshold: number,
+) {
+  return report?.thresholds.find(
+    (item) => Math.abs(item.threshold_m - threshold) < 0.001,
+  );
+}
+
+function ReportTrend({
+  reports,
+  threshold,
+}: {
+  reports: RiskReportCut[];
+  threshold: number;
+}) {
   const ordered = [...reports]
     .sort((a, b) => Date.parse(a.generated_at) - Date.parse(b.generated_at))
-    .slice(-24);
+    .slice(-24)
+    .map((cut) => ({ cut, report: thresholdReport(cut, threshold) }))
+    .filter(
+      (
+        item,
+      ): item is {
+        cut: RiskReportCut;
+        report: ThresholdRiskReport;
+      } => Boolean(item.report),
+    );
   const horizons = [7, 14, 21, 28];
   const colors: Record<number, string> = {
     7: "#1d7f65",
@@ -439,7 +468,7 @@ function ReportTrend({ reports }: { reports: RiskReport[] }) {
   const pad = { left: 54, right: 24, top: 28, bottom: 58 };
   const plotW = width - pad.left - pad.right;
   const plotH = height - pad.top - pad.bottom;
-  const values = ordered.flatMap((report) =>
+  const values = ordered.flatMap(({ report }) =>
     report.rows.map((row) => row.central_estimate_pct),
   );
   const minValue = Math.max(0, Math.floor((Math.min(...values, 0) - 10) / 10) * 10);
@@ -466,7 +495,8 @@ function ReportTrend({ reports }: { reports: RiskReport[] }) {
       <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-labelledby="report-trend-title report-trend-desc">
         <title id="report-trend-title">Evolución de la estimación central</title>
         <desc id="report-trend-desc">
-          Cambios entre los últimos cortes para horizontes de 7, 14, 21 y 28 días.
+          Cambios entre los últimos cortes para el nivel de{" "}
+          {formatNumber(threshold)} metros y horizontes de 7, 14, 21 y 28 días.
         </desc>
         {ticks.map((tick) => (
           <g key={tick}>
@@ -475,7 +505,7 @@ function ReportTrend({ reports }: { reports: RiskReport[] }) {
           </g>
         ))}
         {horizons.map((horizon) => {
-          const points = ordered.map((report, index) => {
+          const points = ordered.map(({ report }, index) => {
             const value = report.rows.find((row) => row.horizon_days === horizon)?.central_estimate_pct ?? 0;
             return { x: x(index), y: y(value), value };
           });
@@ -487,7 +517,7 @@ function ReportTrend({ reports }: { reports: RiskReport[] }) {
               <path d={path} fill="none" stroke={colors[horizon]} strokeWidth="3" />
               {points.map((point, index) => (
                 <circle
-                  key={`${horizon}-${ordered[index].id}`}
+                  key={`${horizon}-${ordered[index].cut.id}`}
                   cx={point.x}
                   cy={point.y}
                   r="4.5"
@@ -499,17 +529,17 @@ function ReportTrend({ reports }: { reports: RiskReport[] }) {
             </g>
           );
         })}
-        {ordered.map((report, index) => {
+        {ordered.map(({ cut }, index) => {
           const show = ordered.length <= 6 || index === 0 || index === ordered.length - 1 || index % 4 === 0;
           return show ? (
             <text
-              key={report.id}
+              key={cut.id}
               x={x(index)}
               y={height - 22}
               textAnchor="middle"
               className="report-axis-label"
             >
-              {formatReportDateTime(report.generated_at)}
+              {formatReportDateTime(cut.generated_at)}
             </text>
           ) : null;
         })}
@@ -523,7 +553,7 @@ function RiskReportSection({
   currentReport,
 }: {
   archive: RiskReportArchive;
-  currentReport?: RiskReport;
+  currentReport?: RiskReportCut;
 }) {
   const allReports = useMemo(() => {
     const byId = new Map(archive.reports.map((report) => [report.id, report]));
@@ -533,16 +563,29 @@ function RiskReportSection({
     );
   }, [archive, currentReport]);
   const [view, setView] = useState<"current" | "archive" | "trend">("current");
+  const [selectedThreshold, setSelectedThreshold] = useState(11.5);
   const [selectedId, setSelectedId] = useState(allReports[0]?.id ?? "");
-  const selectedReport =
+  const selectedCut =
     allReports.find((report) => report.id === selectedId) ?? allReports[0];
-  const selectedIndex = allReports.findIndex((report) => report.id === selectedReport?.id);
-  const previousReport =
+  const selectedIndex = allReports.findIndex((report) => report.id === selectedCut?.id);
+  const previousCut =
     selectedIndex >= 0 && selectedIndex < allReports.length - 1
       ? allReports[selectedIndex + 1]
       : undefined;
   const current = allReports[0];
   const previous = allReports[1];
+  const currentThresholdReport = thresholdReport(current, selectedThreshold);
+  const previousThresholdReport = thresholdReport(previous, selectedThreshold);
+  const selectedThresholdReport = thresholdReport(selectedCut, selectedThreshold);
+  const previousSelectedThresholdReport = thresholdReport(
+    previousCut,
+    selectedThreshold,
+  );
+  const availableThresholds =
+    archive.thresholds_m?.length
+      ? archive.thresholds_m
+      : current?.thresholds.map((report) => report.threshold_m) ?? [];
+  const thresholdLabel = `${formatNumber(selectedThreshold)} m`;
 
   useEffect(() => {
     if (allReports[0]?.id && !allReports.some((report) => report.id === selectedId)) {
@@ -550,7 +593,7 @@ function RiskReportSection({
     }
   }, [allReports, selectedId]);
 
-  if (!current) return null;
+  if (!current || !currentThresholdReport) return null;
 
   return (
     <section id="informes" className="content-section report-section">
@@ -558,10 +601,10 @@ function RiskReportSection({
         <div className="section-title report-title">
           <div>
             <span>INFORMES · PUERTO CONCORDIA</span>
-            <h2>Cómo cambió el riesgo de alcanzar 11,50 m</h2>
+            <h2>Riesgo por nivel y horizonte</h2>
             <p>
               El evento evaluado es que el puerto de Concordia alcance o supere
-              11,50 m al menos una vez dentro de cada período.
+              {" "}{thresholdLabel} al menos una vez dentro de cada período.
             </p>
           </div>
           <div className="report-cut">
@@ -570,6 +613,30 @@ function RiskReportSection({
               {formatReportDateTime(current.generated_at)}
             </strong>
             <small>{allReports.length} cortes guardados</small>
+          </div>
+        </div>
+
+        <div className="report-threshold-selector">
+          <div>
+            <span>NIVEL EVALUADO</span>
+            <strong>{thresholdLabel}</strong>
+          </div>
+          <div
+            className="report-threshold-options"
+            role="group"
+            aria-label="Seleccionar nivel del río"
+          >
+            {availableThresholds.map((threshold) => (
+              <button
+                type="button"
+                key={threshold}
+                aria-pressed={selectedThreshold === threshold}
+                className={selectedThreshold === threshold ? "active" : ""}
+                onClick={() => setSelectedThreshold(threshold)}
+              >
+                {formatNumber(threshold)} m
+              </button>
+            ))}
           </div>
         </div>
 
@@ -617,7 +684,10 @@ function RiskReportSection({
                 </p>
               )}
             </div>
-            <ReportTable report={current} previous={previous} />
+            <ReportTable
+              report={currentThresholdReport}
+              previous={previousThresholdReport}
+            />
           </div>
         )}
 
@@ -628,7 +698,7 @@ function RiskReportSection({
                 <button
                   type="button"
                   key={report.id}
-                  className={report.id === selectedReport?.id ? "active" : ""}
+                  className={report.id === selectedCut?.id ? "active" : ""}
                   onClick={() => setSelectedId(report.id)}
                 >
                   <span>{index === 0 ? "Vigente" : "Anterior"}</span>
@@ -639,20 +709,23 @@ function RiskReportSection({
                 </button>
               ))}
             </div>
-            {selectedReport && (
+            {selectedCut && selectedThresholdReport && (
               <div className="report-panel report-panel-archive">
                 <div className="report-panel-heading">
                   <div>
                     <span>CORTE SELECCIONADO</span>
                     <strong>
-                      {formatReportDateTime(selectedReport.generated_at, {
+                      {formatReportDateTime(selectedCut.generated_at, {
                         weekday: true,
                         year: true,
                       })}
                     </strong>
                   </div>
                 </div>
-                <ReportTable report={selectedReport} previous={previousReport} />
+                <ReportTable
+                  report={selectedThresholdReport}
+                  previous={previousSelectedThresholdReport}
+                />
               </div>
             )}
           </div>
@@ -667,7 +740,7 @@ function RiskReportSection({
               </div>
               <p>Se muestran hasta 24 actualizaciones, en orden cronológico.</p>
             </div>
-            <ReportTrend reports={allReports} />
+            <ReportTrend reports={allReports} threshold={selectedThreshold} />
           </div>
         )}
 
@@ -1285,7 +1358,7 @@ export default function Home() {
 
       <RiskReportSection
         archive={reportArchive}
-        currentReport={state.risk_report}
+        currentReport={state.risk_report_bundle}
       />
 
       <section id="cuenca" className="content-section">

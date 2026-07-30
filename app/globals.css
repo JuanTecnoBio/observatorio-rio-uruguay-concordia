@@ -890,6 +890,67 @@ p {
   text-transform: capitalize;
 }
 
+.report-threshold-selector {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr);
+  border: 1px solid var(--ink);
+  border-bottom: 0;
+  background: var(--paper);
+}
+
+.report-threshold-selector > div:first-child {
+  display: grid;
+  align-content: center;
+  gap: 5px;
+  min-height: 68px;
+  padding: 12px 18px;
+  border-right: 1px solid var(--ink);
+}
+
+.report-threshold-selector span {
+  color: var(--river);
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.report-threshold-selector strong {
+  font-size: 20px;
+}
+
+.report-threshold-options {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(92px, 1fr));
+}
+
+.report-threshold-options button {
+  min-height: 68px;
+  padding: 10px 8px;
+  color: var(--muted);
+  background: transparent;
+  border: 0;
+  border-right: 1px solid var(--rule-light);
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.report-threshold-options button:last-child {
+  border-right: 0;
+}
+
+.report-threshold-options button:hover,
+.report-threshold-options button.active {
+  color: var(--ink);
+  background: var(--yellow);
+}
+
+.report-threshold-options button.active {
+  box-shadow: inset 0 -4px 0 var(--river);
+}
+
 .report-tabs {
   display: flex;
   border-bottom: 1px solid var(--ink);
@@ -951,7 +1012,6 @@ p {
 
 .report-panel-heading strong {
   font-size: 19px;
-  text-transform: capitalize;
 }
 
 .report-panel-heading p {
@@ -1697,6 +1757,18 @@ footer {
     max-width: 360px;
   }
 
+  .report-threshold-selector {
+    grid-template-columns: 150px minmax(0, 1fr);
+  }
+
+  .report-threshold-options {
+    grid-template-columns: repeat(3, minmax(92px, 1fr));
+  }
+
+  .report-threshold-options button:nth-child(-n + 3) {
+    border-bottom: 1px solid var(--rule-light);
+  }
+
   .report-archive {
     grid-template-columns: 1fr;
   }
@@ -1847,6 +1919,21 @@ footer {
 
   .section-title h2 {
     font-size: 38px;
+  }
+
+  .report-threshold-selector {
+    grid-template-columns: 1fr;
+  }
+
+  .report-threshold-selector > div:first-child {
+    min-height: 58px;
+    border-right: 0;
+    border-bottom: 1px solid var(--ink);
+  }
+
+  .report-threshold-options button {
+    min-height: 54px;
+    font-size: 10px;
   }
 
   .report-tabs {
