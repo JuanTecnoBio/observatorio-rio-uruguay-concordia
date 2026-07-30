@@ -163,8 +163,9 @@ const OFFICIAL_LINKS = {
   caru: "https://www.caru.org.uy/",
 };
 
-const FALLBACK_STATE = initialState as RiverState;
-const FALLBACK_REPORT_ARCHIVE = initialReportArchive as RiskReportArchive;
+const FALLBACK_STATE = initialState as unknown as RiverState;
+const FALLBACK_REPORT_ARCHIVE =
+  initialReportArchive as unknown as RiskReportArchive;
 
 const FALLBACK_STATIONS: StationReading[] = [
   { name: "Paso de los Libres", group: "upstream", value_m: 8.62, variation_m: 0.03, variation_period_h: 3, trend: "crece", status: "Evacuación", observed_at_local: "2026-07-29T09:00:00-03:00", source: "PNA" },
