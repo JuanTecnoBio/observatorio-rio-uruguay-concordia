@@ -1,10 +1,10 @@
 {
   "schema_version": "0.2.0",
-  "generated_at": "2026-07-29T09:30:00-03:00",
+  "generated_at": "2026-07-30T10:52:31-03:00",
   "timezone": "America/Argentina/Cordoba",
   "update_status": {
-    "state": "fresh",
-    "message": "PNA y CTM consultadas correctamente en el corte."
+    "state": "stale",
+    "message": "No se pudo actualizar ninguna fuente; se conserva el último corte. PNA no disponible: ConnectTimeout: HTTPSConnectionPool(host='contenidosweb.prefecturanaval.gob.ar', port=443): Max retries exceeded with url: /alturas/pdf.php (Caused by ConnectTimeoutError(<HTTPSConnection(host='contenidosweb.prefecturanaval.gob.ar', port=443) at 0x7f6761c6f4d0>, 'Connection to contenidosweb.prefecturanaval.gob.ar timed out. (connect timeout=35)')) CTM horaria no disponible: HTTPError: 403 Client Error: Forbidden for url: https://www.saltogrande.org/datos_horarios.php Comunicado CTM no disponible: HTTPError: 403 Client Error: Forbidden for url: https://www.saltogrande.org/docs/hidrologia/Comunicado.pdf Pronóstico de lluvia no disponible: HTTPError: 403 Client Error: Forbidden for url: https://www.saltogrande.org/docs/hidrologia/PronosticosP.pdf"
   },
   "status": {
     "official_level_state": "ESTABLE",
@@ -30,7 +30,7 @@
       "unit": "m",
       "vertical_datum": "cero local no documentado en la ficha consultada",
       "temporal_aggregation": "instantánea",
-      "quality_flag": "official_unvalidated_by_observatory",
+      "quality_flag": "official_stale_copy",
       "is_official": true,
       "is_forecast": false,
       "source_reference": "https://contenidosweb.prefecturanaval.gob.ar/alturas/"
@@ -46,7 +46,7 @@
       "retrieved_at": "2026-07-29T09:30:00-03:00",
       "value": 8316,
       "unit": "m3/s",
-      "quality_flag": "official_preliminary",
+      "quality_flag": "official_stale_copy",
       "is_official": true,
       "is_forecast": false,
       "source_reference": "https://www.saltogrande.org/datos_horarios.php"
@@ -62,7 +62,7 @@
       "retrieved_at": "2026-07-29T09:30:00-03:00",
       "value": 6365,
       "unit": "m3/s",
-      "quality_flag": "official_preliminary",
+      "quality_flag": "official_stale_copy",
       "is_official": true,
       "is_forecast": false,
       "source_reference": "https://www.saltogrande.org/datos_horarios.php"
@@ -80,7 +80,7 @@
       "unit": "m",
       "vertical_datum": "cota CTM; datum no explicitado en la página horaria",
       "temporal_aggregation": "promedio horario",
-      "quality_flag": "official_preliminary",
+      "quality_flag": "official_stale_copy",
       "is_official": true,
       "is_forecast": false,
       "source_reference": "https://www.saltogrande.org/datos_horarios.php"
@@ -103,7 +103,8 @@
     "trend": "estable",
     "mean_daily_released_flow_min_m3s": 14000,
     "mean_daily_released_flow_max_m3s": 15000,
-    "source_reference": "https://www.saltogrande.org/docs/hidrologia/Comunicado.pdf"
+    "source_reference": "https://www.saltogrande.org/docs/hidrologia/Comunicado.pdf",
+    "quality_flag": "official_stale_copy"
   },
   "history": [
     {
@@ -229,7 +230,7 @@
   ],
   "signals": {
     "upstream": "Paso de los Libres: 8,62 m, en evacuación y creciendo a las 09:00",
-    "rainfall_7d_mm": 43,
+    "rainfall_7d_mm": null,
     "released_flow_m3s": 14681
   },
   "forecast_method": {
@@ -242,5 +243,339 @@
     "alert_exceedance": null,
     "evacuation_exceedance": null,
     "reason": "El escenario experimental todavía no está calibrado y validado para expresar probabilidades."
-  }
+  },
+  "source_status": {
+    "pna_alturas": {
+      "ok": false,
+      "message": "PNA no disponible: ConnectTimeout: HTTPSConnectionPool(host='contenidosweb.prefecturanaval.gob.ar', port=443): Max retries exceeded with url: /alturas/pdf.php (Caused by ConnectTimeoutError(<HTTPSConnection(host='contenidosweb.prefecturanaval.gob.ar', port=443) at 0x7f6761c6f4d0>, 'Connection to contenidosweb.prefecturanaval.gob.ar timed out. (connect timeout=35)'))",
+      "attempted_at": "2026-07-30T10:52:31-03:00"
+    },
+    "ctm_hourly": {
+      "ok": false,
+      "message": "CTM horaria no disponible: HTTPError: 403 Client Error: Forbidden for url: https://www.saltogrande.org/datos_horarios.php",
+      "attempted_at": "2026-07-30T10:52:31-03:00"
+    },
+    "ctm_communicado": {
+      "ok": false,
+      "message": "Comunicado CTM no disponible: HTTPError: 403 Client Error: Forbidden for url: https://www.saltogrande.org/docs/hidrologia/Comunicado.pdf",
+      "attempted_at": "2026-07-30T10:52:31-03:00"
+    },
+    "ctm_precip_forecast": {
+      "ok": false,
+      "message": "Pronóstico de lluvia no disponible: HTTPError: 403 Client Error: Forbidden for url: https://www.saltogrande.org/docs/hidrologia/PronosticosP.pdf",
+      "attempted_at": "2026-07-30T10:52:31-03:00"
+    }
+  },
+  "projection": [
+    {
+      "day": 0,
+      "date": "2026-07-30T10:52:31-03:00",
+      "min": 10.0,
+      "central": 10.0,
+      "max": 10.0,
+      "uncertainty": "Moderada",
+      "risk": "Bajo",
+      "basis": "official"
+    },
+    {
+      "day": 1,
+      "date": "2026-07-31T10:52:31-03:00",
+      "min": 9.86,
+      "central": 10.08,
+      "max": 10.34,
+      "uncertainty": "Moderada",
+      "risk": "Bajo",
+      "basis": "experimental"
+    },
+    {
+      "day": 2,
+      "date": "2026-08-01T10:52:31-03:00",
+      "min": 9.87,
+      "central": 10.12,
+      "max": 10.43,
+      "uncertainty": "Moderada",
+      "risk": "Bajo",
+      "basis": "experimental"
+    },
+    {
+      "day": 3,
+      "date": "2026-08-02T10:52:31-03:00",
+      "min": 9.87,
+      "central": 10.16,
+      "max": 10.52,
+      "uncertainty": "Moderada",
+      "risk": "Bajo",
+      "basis": "experimental"
+    },
+    {
+      "day": 4,
+      "date": "2026-08-03T10:52:31-03:00",
+      "min": 9.87,
+      "central": 10.2,
+      "max": 10.61,
+      "uncertainty": "Alta",
+      "risk": "Bajo",
+      "basis": "experimental"
+    },
+    {
+      "day": 5,
+      "date": "2026-08-04T10:52:31-03:00",
+      "min": 9.87,
+      "central": 10.24,
+      "max": 10.7,
+      "uncertainty": "Alta",
+      "risk": "Bajo",
+      "basis": "experimental"
+    },
+    {
+      "day": 6,
+      "date": "2026-08-05T10:52:31-03:00",
+      "min": 9.85,
+      "central": 10.27,
+      "max": 10.78,
+      "uncertainty": "Alta",
+      "risk": "Bajo",
+      "basis": "experimental"
+    },
+    {
+      "day": 7,
+      "date": "2026-08-06T10:52:31-03:00",
+      "min": 9.82,
+      "central": 10.28,
+      "max": 10.85,
+      "uncertainty": "Alta",
+      "risk": "Bajo",
+      "basis": "experimental"
+    },
+    {
+      "day": 8,
+      "date": "2026-08-07T10:52:31-03:00",
+      "min": 9.78,
+      "central": 10.28,
+      "max": 10.9,
+      "uncertainty": "Muy alta",
+      "risk": "Bajo",
+      "basis": "experimental"
+    },
+    {
+      "day": 9,
+      "date": "2026-08-08T10:52:31-03:00",
+      "min": 9.71,
+      "central": 10.26,
+      "max": 10.94,
+      "uncertainty": "Muy alta",
+      "risk": "Bajo",
+      "basis": "experimental"
+    },
+    {
+      "day": 10,
+      "date": "2026-08-09T10:52:31-03:00",
+      "min": 9.63,
+      "central": 10.23,
+      "max": 10.97,
+      "uncertainty": "Muy alta",
+      "risk": "Bajo",
+      "basis": "experimental"
+    },
+    {
+      "day": 11,
+      "date": "2026-08-10T10:52:31-03:00",
+      "min": 9.55,
+      "central": 10.2,
+      "max": 11.0,
+      "uncertainty": "Muy alta",
+      "risk": "Medio",
+      "basis": "experimental"
+    },
+    {
+      "day": 12,
+      "date": "2026-08-11T10:52:31-03:00",
+      "min": 9.46,
+      "central": 10.16,
+      "max": 11.03,
+      "uncertainty": "Muy alta",
+      "risk": "Medio",
+      "basis": "experimental"
+    },
+    {
+      "day": 13,
+      "date": "2026-08-12T10:52:31-03:00",
+      "min": 9.38,
+      "central": 10.13,
+      "max": 11.06,
+      "uncertainty": "Muy alta",
+      "risk": "Medio",
+      "basis": "experimental"
+    },
+    {
+      "day": 14,
+      "date": "2026-08-13T10:52:31-03:00",
+      "min": 9.3,
+      "central": 10.11,
+      "max": 11.11,
+      "uncertainty": "Muy alta",
+      "risk": "Medio",
+      "basis": "experimental"
+    },
+    {
+      "day": 15,
+      "date": "2026-08-14T10:52:31-03:00",
+      "min": 9.23,
+      "central": 10.09,
+      "max": 11.16,
+      "uncertainty": "Muy alta",
+      "risk": "Medio",
+      "basis": "experimental"
+    },
+    {
+      "day": 16,
+      "date": "2026-08-15T10:52:31-03:00",
+      "min": 9.16,
+      "central": 10.08,
+      "max": 11.22,
+      "uncertainty": "Muy alta",
+      "risk": "Medio",
+      "basis": "experimental"
+    },
+    {
+      "day": 17,
+      "date": "2026-08-16T10:52:31-03:00",
+      "min": 9.1,
+      "central": 10.08,
+      "max": 11.29,
+      "uncertainty": "Muy alta",
+      "risk": "Medio",
+      "basis": "experimental"
+    },
+    {
+      "day": 18,
+      "date": "2026-08-17T10:52:31-03:00",
+      "min": 9.04,
+      "central": 10.08,
+      "max": 11.37,
+      "uncertainty": "Muy alta",
+      "risk": "Medio",
+      "basis": "experimental"
+    },
+    {
+      "day": 19,
+      "date": "2026-08-18T10:52:31-03:00",
+      "min": 8.98,
+      "central": 10.08,
+      "max": 11.44,
+      "uncertainty": "Muy alta",
+      "risk": "Medio",
+      "basis": "experimental"
+    },
+    {
+      "day": 20,
+      "date": "2026-08-19T10:52:31-03:00",
+      "min": 8.92,
+      "central": 10.08,
+      "max": 11.52,
+      "uncertainty": "Muy alta",
+      "risk": "Medio",
+      "basis": "experimental"
+    },
+    {
+      "day": 21,
+      "date": "2026-08-20T10:52:31-03:00",
+      "min": 8.86,
+      "central": 10.08,
+      "max": 11.6,
+      "uncertainty": "Muy alta",
+      "risk": "Medio",
+      "basis": "experimental"
+    },
+    {
+      "day": 22,
+      "date": "2026-08-21T10:52:31-03:00",
+      "min": 8.79,
+      "central": 10.08,
+      "max": 11.68,
+      "uncertainty": "Muy alta",
+      "risk": "Medio",
+      "basis": "experimental"
+    },
+    {
+      "day": 23,
+      "date": "2026-08-22T10:52:31-03:00",
+      "min": 8.72,
+      "central": 10.08,
+      "max": 11.77,
+      "uncertainty": "Muy alta",
+      "risk": "Medio",
+      "basis": "experimental"
+    },
+    {
+      "day": 24,
+      "date": "2026-08-23T10:52:31-03:00",
+      "min": 8.66,
+      "central": 10.08,
+      "max": 11.85,
+      "uncertainty": "Muy alta",
+      "risk": "Medio",
+      "basis": "experimental"
+    },
+    {
+      "day": 25,
+      "date": "2026-08-24T10:52:31-03:00",
+      "min": 8.59,
+      "central": 10.08,
+      "max": 11.94,
+      "uncertainty": "Muy alta",
+      "risk": "Medio",
+      "basis": "experimental"
+    },
+    {
+      "day": 26,
+      "date": "2026-08-25T10:52:31-03:00",
+      "min": 8.52,
+      "central": 10.08,
+      "max": 12.03,
+      "uncertainty": "Muy alta",
+      "risk": "Medio",
+      "basis": "experimental"
+    },
+    {
+      "day": 27,
+      "date": "2026-08-26T10:52:31-03:00",
+      "min": 8.45,
+      "central": 10.09,
+      "max": 12.13,
+      "uncertainty": "Muy alta",
+      "risk": "Medio",
+      "basis": "experimental"
+    },
+    {
+      "day": 28,
+      "date": "2026-08-27T10:52:31-03:00",
+      "min": 8.38,
+      "central": 10.09,
+      "max": 12.22,
+      "uncertainty": "Muy alta",
+      "risk": "Medio",
+      "basis": "experimental"
+    },
+    {
+      "day": 29,
+      "date": "2026-08-28T10:52:31-03:00",
+      "min": 8.31,
+      "central": 10.09,
+      "max": 12.31,
+      "uncertainty": "Muy alta",
+      "risk": "Medio",
+      "basis": "experimental"
+    },
+    {
+      "day": 30,
+      "date": "2026-08-29T10:52:31-03:00",
+      "min": 8.23,
+      "central": 10.09,
+      "max": 12.41,
+      "uncertainty": "Muy alta",
+      "risk": "Medio",
+      "basis": "experimental"
+    }
+  ]
 }
