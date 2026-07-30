@@ -19,6 +19,7 @@ import {
   X,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import initialState from "../public/data/current_state.json";
 
 type Uncertainty = "Moderada" | "Alta" | "Muy alta";
 type Risk = "Bajo" | "Medio" | "Alto";
@@ -114,105 +115,7 @@ const OFFICIAL_LINKS = {
   caru: "https://www.caru.org.uy/",
 };
 
-const FALLBACK_STATE: RiverState = {
-  generated_at: "2026-07-29T09:30:00-03:00",
-  timezone: "America/Argentina/Cordoba",
-  update_status: {
-    state: "fresh",
-    message: "Fuentes principales consultadas correctamente.",
-  },
-  observations: [
-    {
-      source_id: "pna_alturas",
-      source_name: "Prefectura Naval Argentina",
-      variable: "river_stage",
-      station_id: "CONCORDIA_PNA",
-      station_name: "Concordia",
-      observed_at_local: "2026-07-29T00:00:00-03:00",
-      retrieved_at: "2026-07-29T09:30:00-03:00",
-      value: 10,
-      unit: "m",
-      quality_flag: "official_unvalidated_by_observatory",
-      source_reference: OFFICIAL_LINKS.pna,
-    },
-    {
-      source_id: "ctm_hourly",
-      source_name: "CTM Salto Grande",
-      variable: "turbined_discharge",
-      station_id: "SALTO_GRANDE",
-      station_name: "Salto Grande",
-      observed_at_local: "2026-07-29T09:00:00-03:00",
-      retrieved_at: "2026-07-29T09:30:00-03:00",
-      value: 8316,
-      unit: "m3/s",
-      quality_flag: "official_preliminary",
-      source_reference: OFFICIAL_LINKS.ctmHourly,
-    },
-    {
-      source_id: "ctm_hourly",
-      source_name: "CTM Salto Grande",
-      variable: "spilled_discharge",
-      station_id: "SALTO_GRANDE",
-      station_name: "Salto Grande",
-      observed_at_local: "2026-07-29T09:00:00-03:00",
-      retrieved_at: "2026-07-29T09:30:00-03:00",
-      value: 6365,
-      unit: "m3/s",
-      quality_flag: "official_preliminary",
-      source_reference: OFFICIAL_LINKS.ctmHourly,
-    },
-    {
-      source_id: "ctm_hourly",
-      source_name: "CTM Salto Grande",
-      variable: "reservoir_level",
-      station_id: "SALTO_GRANDE",
-      station_name: "Embalse de Salto Grande",
-      observed_at_local: "2026-07-29T09:00:00-03:00",
-      retrieved_at: "2026-07-29T09:30:00-03:00",
-      value: 33.17,
-      unit: "m",
-      quality_flag: "official_preliminary",
-      source_reference: OFFICIAL_LINKS.ctmHourly,
-    },
-  ],
-  thresholds: {
-    alert_m: 11,
-    evacuation_m: 12.5,
-    source: "Prefectura Naval Argentina",
-    source_reference: OFFICIAL_LINKS.pna,
-  },
-  official_forecast: {
-    source: "CTM Salto Grande",
-    issued_at_local: "2026-07-28T08:00:00-03:00",
-    valid_until_local: "2026-07-29T15:00:00-03:00",
-    concordia_min_m: 9.7,
-    concordia_max_m: 10.2,
-    trend: "estable",
-    mean_daily_released_flow_min_m3s: 14000,
-    mean_daily_released_flow_max_m3s: 15000,
-    source_reference: OFFICIAL_LINKS.ctmBulletin,
-  },
-  history: [
-    { date: "2026-07-25", label: "25 jul", value: 9.14, source: "PNA" },
-    { date: "2026-07-26", label: "26 jul", value: 9.64, source: "PNA" },
-    { date: "2026-07-27", label: "27 jul", value: 9.9, source: "PNA" },
-    { date: "2026-07-28", label: "28 jul", value: 9.96, source: "PNA" },
-    { date: "2026-07-29", label: "29 jul", value: 10, source: "PNA" },
-  ],
-  signals: {
-    upstream: "Paso de los Libres en evacuación y creciendo",
-    rainfall_7d_mm: 43,
-    released_flow_m3s: 14681,
-  },
-  forecast_method: {
-    model_id: "envelope-v0.2",
-    status: "experimental",
-    description:
-      "Escenario de persistencia ajustado con rango CTM, caudal evacuado, señales aguas arriba y precipitación publicada.",
-    validation:
-      "Sin calibración histórica suficiente. No usar como pronóstico oficial ni como probabilidad.",
-  },
-};
+const FALLBACK_STATE = initialState as RiverState;
 
 const FALLBACK_STATIONS: StationReading[] = [
   { name: "Paso de los Libres", group: "upstream", value_m: 8.62, variation_m: 0.03, variation_period_h: 3, trend: "crece", status: "Evacuación", observed_at_local: "2026-07-29T09:00:00-03:00", source: "PNA" },
@@ -273,7 +176,9 @@ function formatDate(iso: string, options: Intl.DateTimeFormatOptions) {
   return new Intl.DateTimeFormat("es-AR", {
     timeZone: "America/Argentina/Cordoba",
     ...options,
-  }).format(new Date(iso));
+  })
+    .format(new Date(iso))
+    .replace(/[\u00a0\u202f]/g, " ");
 }
 
 function formatStationVariation(station: StationReading) {
