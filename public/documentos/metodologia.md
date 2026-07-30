@@ -35,9 +35,18 @@ La categoría es propia y debe mostrarse separada del estado oficial.
 - Alta: existen forzantes meteorológicos, pero no traducción local validada a nivel.
 - Muy alta: horizonte sin habilidad cuantitativa demostrada.
 
-## 5. Pronóstico
+## 5. Pronóstico e informe de 11,50 m
 
-El sistema no publica percentiles ni probabilidades de superación porque aún no existe un conjunto histórico integrado y una validación temporal por horizonte. La habilitación requiere:
+El escenario hidrológico no publica percentiles ni probabilidades calibradas de superación porque aún no existe un conjunto histórico integrado y una validación temporal por horizonte.
+
+El informe de 11,50 m incluye porcentajes para comparar cortes. Son una **estimación exploratoria estructurada**, no una frecuencia estadística ni un producto oficial. La versión `expert-anchored-envelope-v0.1` parte del corte de referencia aportado y aplica siempre el mismo ajuste según:
+
+- la altura observada en Puerto Concordia;
+- el límite superior del escenario para 7, 14, 21 y 28 días;
+- una amplitud creciente del intervalo plausible;
+- la incertidumbre asignada a cada horizonte.
+
+Cada actualización conserva el informe anterior. La interfaz muestra el valor vigente, el archivo de cortes y la evolución por horizonte. La habilitación futura como pronóstico probabilístico requiere:
 
 1. series históricas auditadas;
 2. backtesting con origen móvil;
@@ -58,4 +67,4 @@ El corte inicial usa PNA para alturas y umbrales, CTM para operación, aportes y
 
 ## 8. Actualización
 
-La versión inicial es un corte verificable. No mantiene valores viejos como si fueran actuales. La automatización posterior deberá marcar datos vencidos, conservar el original cuando la licencia lo permita y registrar hash, ejecución y cambios de plantilla.
+La automatización consulta las fuentes cada tres horas, marca por separado las que fallan y conserva el último valor verificable con su estado de antigüedad. Cada ejecución genera un corte del informe y mantiene hasta 240 cortes recientes. Cuando el archivo nace o se reconstruye, recupera estados reales del historial Git en lugar de inventar observaciones anteriores.

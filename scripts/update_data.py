@@ -12,6 +12,7 @@ import io
 import json
 import math
 import re
+import subprocess
 import unicodedata
 from copy import deepcopy
 from dataclasses import dataclass
@@ -27,8 +28,24 @@ from pypdf import PdfReader
 
 ROOT = Path(__file__).resolve().parents[1]
 STATE_PATH = ROOT / "public" / "data" / "current_state.json"
+REPORT_HISTORY_PATH = ROOT / "public" / "data" / "risk_reports.json"
 TZ = ZoneInfo("America/Argentina/Cordoba")
 HTTP_TIMEOUT = 35
+REPORT_HISTORY_LIMIT = 240
+REPORT_THRESHOLD_M = 11.5
+REPORT_HORIZONS = (7, 14, 21, 28)
+REPORT_BASELINES = {
+    7: {"probability": 25, "max": 10.85, "lower": 13, "upper": 15},
+    14: {"probability": 35, "max": 11.11, "lower": 17, "upper": 20},
+    21: {"probability": 40, "max": 11.60, "lower": 22, "upper": 25},
+    28: {"probability": 45, "max": 12.22, "lower": 25, "upper": 25},
+}
+REPORT_UNCERTAINTY = {
+    7: "Moderada",
+    14: "Moderada-alta",
+    21: "Alta",
+    28: "Muy alta",
+}
 
 PNA_PDF = "https://contenidosweb.prefecturanaval.gob.ar/alturas/pdf.php"
 PNA_PAGE = "https://contenidosweb.prefecturanaval.gob.ar/alturas/"
@@ -504,6 +521,177 @@ def make_projection(state: dict[str, Any], generated: datetime) -> list[dict[str
     return projection
 
 
+def report_classification(probability: int) -> str:
+    if probability < 20:
+        return "BAJO"
+    if probability < 30:
+        return "MEDIO, franja baja"
+    if probability < 45:
+        return "MEDIO"
+    if probability < 50:
+        return "MEDIO, cerca del límite alto"
+    return "ALTO"
+
+
+def make_risk_report(
+    state: dict[str, Any], generated: datetime
+) -> dict[str, Any]:
+    """Construye una señal comparativa, no una probabilidad calibrada.
+
+    El corte aportado por el usuario funciona como referencia inicial. Los
+    cambios posteriores son reproducibles: responden al nivel de Concordia y
+    al máximo de la envolvente publicada para cada horizonte.
+    """
+
+    current = next(
+        item["value"]
+        for item in state["observations"]
+        if item["station_id"] == "CONCORDIA_PNA"
+    )
+    projection = {
+        point["day"]: point
+        for point in state.get("projection", make_projection(state, generated))
+    }
+    rows: list[dict[str, Any]] = []
+
+    for horizon in REPORT_HORIZONS:
+        point = projection[horizon]
+        baseline = REPORT_BASELINES[horizon]
+        raw_probability = (
+            baseline["probability"]
+            + (current - 10.0) * 18
+            + (point["max"] - baseline["max"]) * 8
+        )
+        probability = int(max(5, min(90, round(raw_probability / 5) * 5)))
+        lower = int(max(0, probability - baseline["lower"]))
+        upper = int(min(100, probability + baseline["upper"]))
+        rows.append(
+            {
+                "horizon_days": horizon,
+                "classification": report_classification(probability),
+                "central_estimate_pct": probability,
+                "plausible_interval_pct": [lower, upper],
+                "classification_uncertainty": REPORT_UNCERTAINTY[horizon],
+                "scenario_min_m": point["min"],
+                "scenario_central_m": point["central"],
+                "scenario_max_m": point["max"],
+            }
+        )
+
+    return {
+        "id": generated.isoformat(),
+        "generated_at": iso_local(generated),
+        "event": {
+            "station": "Puerto Concordia",
+            "threshold_m": REPORT_THRESHOLD_M,
+            "condition": (
+                "alcanzar o superar 11,50 m al menos una vez dentro de cada período"
+            ),
+        },
+        "method": {
+            "method_id": "expert-anchored-envelope-v0.1",
+            "calibrated": False,
+            "label": "Estimación exploratoria estructurada",
+            "note": (
+                "No es una probabilidad estadística calibrada. El corte inicial aportado "
+                "se ajusta de forma reproducible según el nivel observado y la envolvente "
+                "del escenario experimental."
+            ),
+        },
+        "data_status": state.get("update_status", {}).get("state", "stale"),
+        "snapshot": {
+            "concordia_m": current,
+            "released_flow_m3s": state.get("signals", {}).get("released_flow_m3s"),
+            "rainfall_7d_mm": state.get("signals", {}).get("rainfall_7d_mm"),
+        },
+        "rows": rows,
+    }
+
+
+def reports_from_git_history() -> list[dict[str, Any]]:
+    """Recupera cortes reales previos para que el archivo no empiece vacío."""
+
+    try:
+        log = subprocess.run(
+            [
+                "git",
+                "log",
+                f"-n{REPORT_HISTORY_LIMIT}",
+                "--format=%H",
+                "--",
+                "public/data/current_state.json",
+            ],
+            cwd=ROOT,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+    except (OSError, subprocess.CalledProcessError):
+        return []
+
+    reports: list[dict[str, Any]] = []
+    for revision in log.stdout.splitlines():
+        try:
+            stored = subprocess.run(
+                [
+                    "git",
+                    "show",
+                    f"{revision}:public/data/current_state.json",
+                ],
+                cwd=ROOT,
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            historical_state = json.loads(stored.stdout)
+            generated = datetime.fromisoformat(
+                historical_state["generated_at"].replace("Z", "+00:00")
+            )
+            if not historical_state.get("projection"):
+                historical_state["projection"] = make_projection(
+                    historical_state, generated
+                )
+            reports.append(make_risk_report(historical_state, generated))
+        except (KeyError, ValueError, json.JSONDecodeError, subprocess.CalledProcessError):
+            continue
+    return reports
+
+
+def save_report_history(current_report: dict[str, Any]) -> None:
+    existing: list[dict[str, Any]] = []
+    if REPORT_HISTORY_PATH.exists():
+        try:
+            existing = json.loads(
+                REPORT_HISTORY_PATH.read_text(encoding="utf-8")
+            ).get("reports", [])
+        except (OSError, json.JSONDecodeError):
+            existing = []
+
+    by_id = {
+        report["id"]: report
+        for report in [*reports_from_git_history(), *existing, current_report]
+        if report.get("id")
+    }
+    reports = sorted(by_id.values(), key=lambda report: report["generated_at"])[
+        -REPORT_HISTORY_LIMIT:
+    ]
+    archive = {
+        "schema_version": 1,
+        "updated_at": current_report["generated_at"],
+        "event": current_report["event"],
+        "method": current_report["method"],
+        "retention": {
+            "maximum_reports": REPORT_HISTORY_LIMIT,
+            "cadence": "cada actualización automática con un corte nuevo",
+        },
+        "reports": reports,
+    }
+    REPORT_HISTORY_PATH.write_text(
+        json.dumps(archive, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+
+
 def main() -> None:
     attempt = now_local()
     previous = json.loads(STATE_PATH.read_text(encoding="utf-8"))
@@ -541,6 +729,8 @@ def main() -> None:
         for result in results
     }
     state["projection"] = make_projection(state, attempt)
+    current_report = make_risk_report(state, attempt)
+    state["risk_report"] = current_report
     state["probabilities"] = {
         "alert_exceedance": None,
         "evacuation_exceedance": None,
@@ -553,6 +743,7 @@ def main() -> None:
     STATE_PATH.write_text(
         json.dumps(state, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
+    save_report_history(current_report)
     print(
         json.dumps(
             {

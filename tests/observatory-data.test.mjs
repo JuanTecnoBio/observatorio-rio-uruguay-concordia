@@ -25,6 +25,30 @@ test("publishes Concordia observations without invented probabilities", async ()
   assert.match(state.probabilities.reason, /calibrado y validado/i);
 });
 
+test("archives the exploratory 11.50 m report without presenting it as calibrated", async () => {
+  const state = await readJson("public/data/current_state.json");
+  const archive = await readJson("public/data/risk_reports.json");
+  const report = state.risk_report;
+
+  assert.equal(report.event.threshold_m, 11.5);
+  assert.equal(report.method.calibrated, false);
+  assert.match(report.method.note, /no es una probabilidad estadística calibrada/i);
+  assert.deepEqual(
+    report.rows.map((row) => row.horizon_days),
+    [7, 14, 21, 28],
+  );
+
+  for (const row of report.rows) {
+    assert.ok(row.central_estimate_pct >= 0 && row.central_estimate_pct <= 100);
+    assert.ok(row.plausible_interval_pct[0] <= row.central_estimate_pct);
+    assert.ok(row.plausible_interval_pct[1] >= row.central_estimate_pct);
+  }
+
+  assert.ok(archive.reports.length >= 1);
+  assert.equal(new Set(archive.reports.map((item) => item.id)).size, archive.reports.length);
+  assert.equal(archive.method.calibrated, false);
+});
+
 test("keeps the official CTM forecast bounded by its stated validity", async () => {
   const state = await readJson("public/data/current_state.json");
   const forecast = state.official_forecast;

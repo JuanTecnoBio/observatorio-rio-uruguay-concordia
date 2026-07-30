@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import initialState from "../public/data/current_state.json";
+import initialReportArchive from "../public/data/risk_reports.json";
 
 type Uncertainty = "Moderada" | "Alta" | "Muy alta";
 type Risk = "Bajo" | "Medio" | "Alto";
@@ -45,6 +46,52 @@ type StationReading = {
   status: string;
   observed_at_local: string;
   source: string;
+};
+
+type RiskReportRow = {
+  horizon_days: number;
+  classification: string;
+  central_estimate_pct: number;
+  plausible_interval_pct: [number, number];
+  classification_uncertainty: string;
+  scenario_min_m: number;
+  scenario_central_m: number;
+  scenario_max_m: number;
+};
+
+type RiskReport = {
+  id: string;
+  generated_at: string;
+  event: {
+    station: string;
+    threshold_m: number;
+    condition: string;
+  };
+  method: {
+    method_id: string;
+    calibrated: boolean;
+    label: string;
+    note: string;
+  };
+  data_status: "fresh" | "partial" | "stale";
+  snapshot: {
+    concordia_m: number;
+    released_flow_m3s: number | null;
+    rainfall_7d_mm: number | null;
+  };
+  rows: RiskReportRow[];
+};
+
+type RiskReportArchive = {
+  schema_version: number;
+  updated_at: string;
+  event: RiskReport["event"];
+  method: RiskReport["method"];
+  retention: {
+    maximum_reports: number;
+    cadence: string;
+  };
+  reports: RiskReport[];
 };
 
 type RiverState = {
@@ -103,6 +150,7 @@ type RiverState = {
     description: string;
     validation: string;
   };
+  risk_report?: RiskReport;
 };
 
 const OFFICIAL_LINKS = {
@@ -116,6 +164,7 @@ const OFFICIAL_LINKS = {
 };
 
 const FALLBACK_STATE = initialState as RiverState;
+const FALLBACK_REPORT_ARCHIVE = initialReportArchive as RiskReportArchive;
 
 const FALLBACK_STATIONS: StationReading[] = [
   { name: "Paso de los Libres", group: "upstream", value_m: 8.62, variation_m: 0.03, variation_period_h: 3, trend: "crece", status: "Evacuación", observed_at_local: "2026-07-29T09:00:00-03:00", source: "PNA" },
@@ -179,6 +228,27 @@ function formatDate(iso: string, options: Intl.DateTimeFormatOptions) {
   })
     .format(new Date(iso))
     .replace(/[\u00a0\u202f]/g, " ");
+}
+
+function formatReportDateTime(
+  iso: string,
+  options: { weekday?: boolean; year?: boolean } = {},
+) {
+  const parts = new Intl.DateTimeFormat("es-AR", {
+    timeZone: "America/Argentina/Cordoba",
+    weekday: options.weekday ? "long" : undefined,
+    day: "2-digit",
+    month: "short",
+    year: options.year ? "numeric" : undefined,
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(new Date(iso));
+  const value = (type: Intl.DateTimeFormatPartTypes) =>
+    parts.find((part) => part.type === type)?.value ?? "";
+  const weekday = options.weekday ? `${value("weekday")}, ` : "";
+  const year = options.year ? ` ${value("year")}` : "";
+  return `${weekday}${value("day")} ${value("month")}${year} · ${value("hour")}:${value("minute")}`;
 }
 
 function formatStationVariation(station: StationReading) {
@@ -275,6 +345,342 @@ function riskClass(value: Risk) {
   if (value === "Bajo") return "risk-low";
   if (value === "Medio") return "risk-medium";
   return "risk-high";
+}
+
+function reportUncertaintyClass(value: string) {
+  if (value === "Moderada") return "report-uncertainty-moderate";
+  if (value === "Moderada-alta") return "report-uncertainty-moderate-high";
+  if (value === "Alta") return "report-uncertainty-high";
+  return "report-uncertainty-very-high";
+}
+
+function ReportTable({
+  report,
+  previous,
+}: {
+  report: RiskReport;
+  previous?: RiskReport;
+}) {
+  const previousByHorizon = new Map(
+    previous?.rows.map((row) => [row.horizon_days, row.central_estimate_pct]) ?? [],
+  );
+
+  return (
+    <div className="report-table-wrap">
+      <table className="risk-report-table">
+        <thead>
+          <tr>
+            <th>Horizonte desde el corte</th>
+            <th>Clasificación</th>
+            <th>Estimación central</th>
+            <th>Intervalo plausible</th>
+            <th>Incertidumbre</th>
+            <th>Cambio</th>
+          </tr>
+        </thead>
+        <tbody>
+          {report.rows.map((row) => {
+            const previousValue = previousByHorizon.get(row.horizon_days);
+            const delta =
+              previousValue === undefined
+                ? null
+                : row.central_estimate_pct - previousValue;
+            return (
+              <tr key={row.horizon_days}>
+                <td><strong>{row.horizon_days} días</strong></td>
+                <td>{row.classification}</td>
+                <td className="report-probability">≈{row.central_estimate_pct}%</td>
+                <td>{row.plausible_interval_pct[0]}–{row.plausible_interval_pct[1]}%</td>
+                <td>
+                  <span className={`report-uncertainty ${reportUncertaintyClass(row.classification_uncertainty)}`}>
+                    {row.classification_uncertainty}
+                  </span>
+                </td>
+                <td>
+                  {delta === null ? (
+                    <span className="report-delta report-delta-neutral">—</span>
+                  ) : (
+                    <span
+                      className={`report-delta ${
+                        delta > 0
+                          ? "report-delta-up"
+                          : delta < 0
+                            ? "report-delta-down"
+                            : "report-delta-neutral"
+                      }`}
+                    >
+                      {delta > 0 ? "+" : ""}{delta} pt
+                    </span>
+                  )}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function ReportTrend({ reports }: { reports: RiskReport[] }) {
+  const ordered = [...reports]
+    .sort((a, b) => Date.parse(a.generated_at) - Date.parse(b.generated_at))
+    .slice(-24);
+  const horizons = [7, 14, 21, 28];
+  const colors: Record<number, string> = {
+    7: "#1d7f65",
+    14: "#1250ad",
+    21: "#d07b15",
+    28: "#b53427",
+  };
+  const width = 940;
+  const height = 330;
+  const pad = { left: 54, right: 24, top: 28, bottom: 58 };
+  const plotW = width - pad.left - pad.right;
+  const plotH = height - pad.top - pad.bottom;
+  const values = ordered.flatMap((report) =>
+    report.rows.map((row) => row.central_estimate_pct),
+  );
+  const minValue = Math.max(0, Math.floor((Math.min(...values, 0) - 10) / 10) * 10);
+  const maxValue = Math.min(100, Math.ceil((Math.max(...values, 50) + 10) / 10) * 10);
+  const x = (index: number) =>
+    pad.left + (ordered.length <= 1 ? plotW / 2 : (index / (ordered.length - 1)) * plotW);
+  const y = (value: number) =>
+    pad.top + ((maxValue - value) / Math.max(1, maxValue - minValue)) * plotH;
+  const ticks = Array.from(
+    { length: Math.floor((maxValue - minValue) / 10) + 1 },
+    (_, index) => minValue + index * 10,
+  );
+
+  return (
+    <div className="report-trend">
+      <div className="report-trend-legend" aria-label="Horizontes representados">
+        {horizons.map((horizon) => (
+          <span key={horizon}>
+            <i style={{ background: colors[horizon] }} />
+            {horizon} días
+          </span>
+        ))}
+      </div>
+      <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-labelledby="report-trend-title report-trend-desc">
+        <title id="report-trend-title">Evolución de la estimación central</title>
+        <desc id="report-trend-desc">
+          Cambios entre los últimos cortes para horizontes de 7, 14, 21 y 28 días.
+        </desc>
+        {ticks.map((tick) => (
+          <g key={tick}>
+            <line x1={pad.left} x2={width - pad.right} y1={y(tick)} y2={y(tick)} className="report-grid-line" />
+            <text x={pad.left - 12} y={y(tick) + 4} textAnchor="end" className="report-axis-label">{tick}%</text>
+          </g>
+        ))}
+        {horizons.map((horizon) => {
+          const points = ordered.map((report, index) => {
+            const value = report.rows.find((row) => row.horizon_days === horizon)?.central_estimate_pct ?? 0;
+            return { x: x(index), y: y(value), value };
+          });
+          const path = points
+            .map((point, index) => `${index ? "L" : "M"} ${point.x} ${point.y}`)
+            .join(" ");
+          return (
+            <g key={horizon}>
+              <path d={path} fill="none" stroke={colors[horizon]} strokeWidth="3" />
+              {points.map((point, index) => (
+                <circle
+                  key={`${horizon}-${ordered[index].id}`}
+                  cx={point.x}
+                  cy={point.y}
+                  r="4.5"
+                  fill={colors[horizon]}
+                  stroke="#f4f1e8"
+                  strokeWidth="2"
+                />
+              ))}
+            </g>
+          );
+        })}
+        {ordered.map((report, index) => {
+          const show = ordered.length <= 6 || index === 0 || index === ordered.length - 1 || index % 4 === 0;
+          return show ? (
+            <text
+              key={report.id}
+              x={x(index)}
+              y={height - 22}
+              textAnchor="middle"
+              className="report-axis-label"
+            >
+              {formatReportDateTime(report.generated_at)}
+            </text>
+          ) : null;
+        })}
+      </svg>
+    </div>
+  );
+}
+
+function RiskReportSection({
+  archive,
+  currentReport,
+}: {
+  archive: RiskReportArchive;
+  currentReport?: RiskReport;
+}) {
+  const allReports = useMemo(() => {
+    const byId = new Map(archive.reports.map((report) => [report.id, report]));
+    if (currentReport) byId.set(currentReport.id, currentReport);
+    return [...byId.values()].sort(
+      (a, b) => Date.parse(b.generated_at) - Date.parse(a.generated_at),
+    );
+  }, [archive, currentReport]);
+  const [view, setView] = useState<"current" | "archive" | "trend">("current");
+  const [selectedId, setSelectedId] = useState(allReports[0]?.id ?? "");
+  const selectedReport =
+    allReports.find((report) => report.id === selectedId) ?? allReports[0];
+  const selectedIndex = allReports.findIndex((report) => report.id === selectedReport?.id);
+  const previousReport =
+    selectedIndex >= 0 && selectedIndex < allReports.length - 1
+      ? allReports[selectedIndex + 1]
+      : undefined;
+  const current = allReports[0];
+  const previous = allReports[1];
+
+  useEffect(() => {
+    if (allReports[0]?.id && !allReports.some((report) => report.id === selectedId)) {
+      setSelectedId(allReports[0].id);
+    }
+  }, [allReports, selectedId]);
+
+  if (!current) return null;
+
+  return (
+    <section id="informes" className="content-section report-section">
+      <div className="page-width">
+        <div className="section-title report-title">
+          <div>
+            <span>INFORMES · PUERTO CONCORDIA</span>
+            <h2>Cómo cambió el riesgo de alcanzar 11,50 m</h2>
+            <p>
+              El evento evaluado es que el puerto de Concordia alcance o supere
+              11,50 m al menos una vez dentro de cada período.
+            </p>
+          </div>
+          <div className="report-cut">
+            <span>ÚLTIMO CORTE</span>
+            <strong>
+              {formatReportDateTime(current.generated_at)}
+            </strong>
+            <small>{allReports.length} cortes guardados</small>
+          </div>
+        </div>
+
+        <div className="report-tabs" role="tablist" aria-label="Vistas del informe">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={view === "current"}
+            className={view === "current" ? "active" : ""}
+            onClick={() => setView("current")}
+          >
+            Último informe
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={view === "archive"}
+            className={view === "archive" ? "active" : ""}
+            onClick={() => setView("archive")}
+          >
+            Informes anteriores
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={view === "trend"}
+            className={view === "trend" ? "active" : ""}
+            onClick={() => setView("trend")}
+          >
+            Cambios en el tiempo
+          </button>
+        </div>
+
+        {view === "current" && (
+          <div className="report-panel" role="tabpanel">
+            <div className="report-panel-heading">
+              <div>
+                <span>INFORME VIGENTE</span>
+                <strong>Estimación por horizonte</strong>
+              </div>
+              {previous && (
+                <p>
+                  La columna “Cambio” compara este corte con el de{" "}
+                  {formatReportDateTime(previous.generated_at)}.
+                </p>
+              )}
+            </div>
+            <ReportTable report={current} previous={previous} />
+          </div>
+        )}
+
+        {view === "archive" && (
+          <div className="report-archive" role="tabpanel">
+            <div className="report-list" aria-label="Cortes anteriores">
+              {allReports.map((report, index) => (
+                <button
+                  type="button"
+                  key={report.id}
+                  className={report.id === selectedReport?.id ? "active" : ""}
+                  onClick={() => setSelectedId(report.id)}
+                >
+                  <span>{index === 0 ? "Vigente" : "Anterior"}</span>
+                  <strong>
+                    {formatReportDateTime(report.generated_at)}
+                  </strong>
+                  <small>Concordia {formatNumber(report.snapshot.concordia_m)} m</small>
+                </button>
+              ))}
+            </div>
+            {selectedReport && (
+              <div className="report-panel report-panel-archive">
+                <div className="report-panel-heading">
+                  <div>
+                    <span>CORTE SELECCIONADO</span>
+                    <strong>
+                      {formatReportDateTime(selectedReport.generated_at, {
+                        weekday: true,
+                        year: true,
+                      })}
+                    </strong>
+                  </div>
+                </div>
+                <ReportTable report={selectedReport} previous={previousReport} />
+              </div>
+            )}
+          </div>
+        )}
+
+        {view === "trend" && (
+          <div className="report-panel" role="tabpanel">
+            <div className="report-panel-heading">
+              <div>
+                <span>EVOLUCIÓN ENTRE CORTES</span>
+                <strong>Estimación central por horizonte</strong>
+              </div>
+              <p>Se muestran hasta 24 actualizaciones, en orden cronológico.</p>
+            </div>
+            <ReportTrend reports={allReports} />
+          </div>
+        )}
+
+        <div className="report-method-note">
+          <Info size={18} />
+          <p>
+            <strong>{current.method.label}.</strong> {current.method.note} Sirve para
+            comparar cómo cambia el escenario entre cortes; no reemplaza un pronóstico
+            probabilístico oficial.
+          </p>
+        </div>
+      </div>
+    </section>
+  );
 }
 
 function Hydrograph({
@@ -611,6 +1017,9 @@ function TerritoryMap() {
 
 export default function Home() {
   const [state, setState] = useState<RiverState>(FALLBACK_STATE);
+  const [reportArchive, setReportArchive] = useState<RiskReportArchive>(
+    FALLBACK_REPORT_ARCHIVE,
+  );
   const [horizon, setHorizon] = useState(7);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -632,6 +1041,13 @@ export default function Home() {
           },
         }));
       });
+    fetch(`${basePath}/data/risk_reports.json`, { cache: "no-store" })
+      .then((response) => {
+        if (!response.ok) throw new Error("report archive unavailable");
+        return response.json();
+      })
+      .then((incoming: RiskReportArchive) => setReportArchive(incoming))
+      .catch(() => setReportArchive(FALLBACK_REPORT_ARCHIVE));
   }, []);
 
   const projection = useMemo(
@@ -696,6 +1112,7 @@ export default function Home() {
 
           <nav className={menuOpen ? "atlas-nav open" : "atlas-nav"} aria-label="Navegación">
             <a href="#nivel" onClick={() => setMenuOpen(false)}>Ahora</a>
+            <a href="#informes" onClick={() => setMenuOpen(false)}>Informes</a>
             <a href="#cuenca" onClick={() => setMenuOpen(false)}>Cuenca</a>
             <a href="#territorio" onClick={() => setMenuOpen(false)}>Lugares</a>
             <a href="#preparacion" onClick={() => setMenuOpen(false)}>Preparación</a>
@@ -864,6 +1281,11 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <RiskReportSection
+        archive={reportArchive}
+        currentReport={state.risk_report}
+      />
 
       <section id="cuenca" className="content-section">
         <div className="page-width">
@@ -1039,6 +1461,7 @@ export default function Home() {
             </div>
             <div className="download-links">
               <a href={`${publicBasePath}/data/current_state.json`} download><Database size={15} /> Datos JSON</a>
+              <a href={`${publicBasePath}/data/risk_reports.json`} download><Clock3 size={15} /> Historial de informes</a>
               <a href={`${publicBasePath}/boletines/2026-07-29.md`} download><Download size={15} /> Boletín</a>
             </div>
           </div>
