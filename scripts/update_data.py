@@ -29,7 +29,12 @@ from urllib3.util.retry import Retry
 
 from backfill_ctm_history import STATIONS as CTM_NETWORK_STATIONS
 from backfill_ctm_history import daily_records as aggregate_ctm_daily
-from forecast_model import build_forecast, build_risk_report, quantile
+from forecast_model import (
+    build_forecast,
+    build_risk_report,
+    quantile,
+    upgrade_risk_report_probabilities,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -1136,7 +1141,7 @@ def save_report_history(current_report: dict[str, Any]) -> None:
 
     current_method = current_report.get("method", {}).get("method_id")
     comparable_existing = [
-        report
+        upgrade_risk_report_probabilities(report)
         for report in existing
         if report.get("method", {}).get("method_id") == current_method
         and report.get("thresholds")
@@ -1153,7 +1158,7 @@ def save_report_history(current_report: dict[str, Any]) -> None:
         -REPORT_HISTORY_LIMIT:
     ]
     archive = {
-        "schema_version": 3,
+        "schema_version": 4,
         "updated_at": current_report["generated_at"],
         "station": current_report["station"],
         "thresholds_m": list(REPORT_THRESHOLDS_M),
@@ -1281,9 +1286,10 @@ def main() -> None:
             None,
         ),
         "reason": (
-            "Sólo se publica una probabilidad cuando esa combinación de nivel y horizonte "
-            "aprueba el bloque temporal final, el tamaño mínimo de eventos, Brier Skill "
-            "Score ≥ 0,05 y el control de confiabilidad."
+            "Se muestra la estimación calibrada para cada combinación de nivel y horizonte. "
+            "La etiqueta validada o exploratoria y la confianza indican si el bloque temporal "
+            "final supera el tamaño mínimo de eventos, Brier Skill Score ≥ 0,05 y el control "
+            "de confiabilidad."
         ),
     }
 

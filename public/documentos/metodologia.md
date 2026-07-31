@@ -8,7 +8,7 @@ La página mantiene separados tres tipos de información:
 2. **pronóstico oficial:** comunicado de corto plazo de CTM Salto Grande;
 3. **modelo experimental local:** ensamble de análogos, identificado con versión, período de entrenamiento y métricas fuera de muestra.
 
-El tercer producto no reemplaza al parte oficial. Si una métrica no supera los controles definidos en este documento, la interfaz no la publica como probabilidad.
+El tercer producto no reemplaza al parte oficial. La interfaz muestra la estimación calculada y separa explícitamente dos cuestiones: su valor numérico y la fuerza de la evidencia histórica que permite considerarla **validada** o solamente **exploratoria**.
 
 ## Datos usados por el modelo local
 
@@ -52,16 +52,18 @@ Los límites no significan “máximo y mínimo posible”. Son una banda predic
 
 Para 11,00; 11,25; 11,50; 11,75; 12,00 y 12,25 m se evalúa el evento “alcanzar o superar el nivel al menos una vez dentro de 7, 14, 21 o 28 días”.
 
-La frecuencia inicial es la suma de los pesos de los análogos cuyo máximo dentro del horizonte supera el nivel. Esa frecuencia se calibra mediante regresión logística de Platt en un período que no se usa para entrenar el ensamble. El intervalo mostrado es un intervalo muestral de Wilson aplicado al tamaño efectivo del ensamble y trasladado por la misma calibración; no representa toda la incertidumbre del modelo.
+La frecuencia inicial es la suma de los pesos de los análogos cuyo máximo dentro del horizonte supera el nivel. El intervalo mostrado es un intervalo muestral de Wilson aplicado al tamaño efectivo del ensamble; no representa toda la incertidumbre del modelo.
 
-Una celda sólo se publica como probabilidad si el bloque final contiene:
+Cuando una celda supera los controles de validación, la frecuencia y su intervalo se transforman mediante una regresión logística de Platt ajustada en un período separado. Cuando no los supera, se muestra la frecuencia ponderada original como **estimación exploratoria**: no se aplica una calibración que todavía no cuenta con evidencia suficiente. Esta decisión conserva el orden lógico entre niveles y horizontes y evita presentar como mejora una corrección inestable.
+
+Una celda se considera **validada** si el bloque final contiene:
 
 - al menos 80 orígenes semanales;
 - al menos 10 eventos y 10 no-eventos;
 - Brier Skill Score de 0,05 o más frente a la frecuencia del evento en el bloque de calibración;
 - error de confiabilidad de 0,12 o menos.
 
-Si falla cualquiera de estas condiciones, el cálculo interno se conserva para auditoría pero la interfaz muestra **NO HABILITADA**. No se relajan los controles para completar una tabla.
+Si falla cualquiera de estas condiciones, el porcentaje igualmente se muestra, pero se identifica de forma visible como **estimación exploratoria** y con confianza baja o muy baja. La tabla informa el tamaño de muestra, la cantidad de eventos y el Brier Skill Score. Mostrar el valor no implica afirmar que esté validado: permite seguir su evolución sin ocultar la limitación estadística.
 
 ## Validación temporal
 

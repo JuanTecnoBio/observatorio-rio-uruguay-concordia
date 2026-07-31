@@ -51,13 +51,13 @@ test("uses the temporally validated analog ensemble and coherent intervals", asy
   }
 });
 
-test("publishes probabilities only for cells that pass every validation gate", async () => {
+test("publishes every estimate and labels the strength of its validation", async () => {
   const state = await readJson("public/data/current_state.json");
   const archive = await readJson("public/data/risk_reports.json");
   const report = state.risk_report_bundle;
   const thresholds = [11, 11.25, 11.5, 11.75, 12, 12.25];
 
-  assert.equal(archive.schema_version, 3);
+  assert.equal(archive.schema_version, 4);
   assert.deepEqual(archive.thresholds_m, thresholds);
   assert.deepEqual(report.thresholds.map((item) => item.threshold_m), thresholds);
   assert.equal(report.method.calibrated, true);
@@ -71,19 +71,24 @@ test("publishes probabilities only for cells that pass every validation gate", a
     );
     for (const row of thresholdReport.rows) {
       assert.ok(row.validation);
+      assert.ok(row.central_estimate_pct >= 0 && row.central_estimate_pct <= 100);
+      assert.ok(row.plausible_interval_pct[0] <= row.central_estimate_pct);
+      assert.ok(row.plausible_interval_pct[1] >= row.central_estimate_pct);
+      assert.ok(["BAJO", "MEDIO", "ALTO"].includes(row.classification));
       if (row.validation.enabled) {
-        assert.ok(row.central_estimate_pct >= 0 && row.central_estimate_pct <= 100);
-        assert.ok(row.plausible_interval_pct[0] <= row.central_estimate_pct);
-        assert.ok(row.plausible_interval_pct[1] >= row.central_estimate_pct);
+        assert.equal(row.estimate_status, "validated");
+        assert.equal(row.evidence_confidence, "Moderada");
+        assert.equal(row.estimate_basis, "platt_calibrated");
         assert.ok(row.validation.sample_size >= 80);
         assert.ok(row.validation.event_count >= 10);
         assert.ok(row.validation.non_event_count >= 10);
         assert.ok(row.validation.brier_skill_score >= 0.05);
         assert.ok(row.validation.reliability_error <= 0.12);
       } else {
-        assert.equal(row.central_estimate_pct, null);
-        assert.equal(row.plausible_interval_pct, null);
-        assert.equal(row.classification, "NO HABILITADA");
+        assert.equal(row.estimate_status, "exploratory");
+        assert.equal(row.estimate_basis, "raw_analog_frequency");
+        assert.ok(["Baja", "Muy baja"].includes(row.evidence_confidence));
+        assert.match(row.confidence_reason, /exploratoria/i);
       }
     }
   }
@@ -91,8 +96,12 @@ test("publishes probabilities only for cells that pass every validation gate", a
   for (const horizon of [7, 14, 21, 28]) {
     const published = report.thresholds
       .map((item) => item.rows.find((row) => row.horizon_days === horizon).central_estimate_pct)
-      .filter((value) => value !== null);
     assert.deepEqual(published, [...published].sort((a, b) => b - a));
+  }
+
+  for (const thresholdReport of report.thresholds) {
+    const byHorizon = thresholdReport.rows.map((row) => row.central_estimate_pct);
+    assert.deepEqual(byHorizon, [...byHorizon].sort((a, b) => a - b));
   }
 
   assert.ok(archive.reports.length >= 1);

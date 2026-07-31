@@ -5,9 +5,9 @@ El modelo usa únicamente información disponible antes de cada origen. La
 evaluación temporal tiene tres bloques consecutivos: entrenamiento (60 %),
 calibración (20 %) y validación final (20 %). El bloque intermedio ajusta por
 conformalización la banda y calibra las probabilidades con regresión logística
-de Platt; el bloque final no interviene en ninguno de esos ajustes. Si una
-probabilidad no supera los requisitos mínimos de casos, eventos, Brier Skill y
-confiabilidad en ese último bloque, no se publica cuantitativamente.
+de Platt; el bloque final no interviene en ninguno de esos ajustes. Todas las
+estimaciones se muestran, pero las que no superan los requisitos mínimos de
+casos, eventos, Brier Skill y confiabilidad se rotulan como exploratorias.
 """
 
 from __future__ import annotations
@@ -447,12 +447,163 @@ def wilson_interval(probability: float, sample_size: float, z: float = 1.96) -> 
 
 def classification(probability_pct: int | None) -> str:
     if probability_pct is None:
-        return "NO HABILITADA"
+        return "SIN ESTIMACIÓN"
     if probability_pct < 20:
         return "BAJO"
     if probability_pct < 45:
         return "MEDIO"
     return "ALTO"
+
+
+def probability_evidence(validation: dict[str, Any]) -> dict[str, str]:
+    """Separa el valor calculado de la fuerza de la evidencia que lo sostiene."""
+
+    if validation.get("enabled"):
+        return {
+            "estimate_status": "validated",
+            "evidence_confidence": "Moderada",
+            "confidence_reason": (
+                "Supera los mínimos de casos, eventos, habilidad de Brier y "
+                "confiabilidad definidos antes de la validación final."
+            ),
+        }
+
+    sample_size = int(validation.get("sample_size") or 0)
+    event_count = int(validation.get("event_count") or 0)
+    non_event_count = int(validation.get("non_event_count") or 0)
+    brier_skill = validation.get("brier_skill_score")
+    reliability = validation.get("reliability_error")
+    parameters = validation.get("calibration_parameters")
+    failures: list[str] = []
+    if not parameters:
+        failures.append("calibración logística no disponible")
+    if sample_size < MIN_PROBABILITY_CASES:
+        failures.append(
+            f"{sample_size} casos; se requieren {MIN_PROBABILITY_CASES}"
+        )
+    if event_count < MIN_PROBABILITY_EVENTS:
+        failures.append(
+            f"{event_count} eventos; se requieren {MIN_PROBABILITY_EVENTS}"
+        )
+    if non_event_count < MIN_PROBABILITY_EVENTS:
+        failures.append(
+            f"{non_event_count} no-eventos; se requieren {MIN_PROBABILITY_EVENTS}"
+        )
+    if brier_skill is None or brier_skill < MIN_BRIER_SKILL:
+        failures.append("habilidad de Brier insuficiente o no calculable")
+    if reliability is None or reliability > MAX_RELIABILITY_ERROR:
+        failures.append("error de confiabilidad superior al máximo admitido")
+
+    other_controls_pass = bool(
+        parameters
+        and sample_size >= MIN_PROBABILITY_CASES
+        and non_event_count >= MIN_PROBABILITY_EVENTS
+        and brier_skill is not None
+        and brier_skill >= MIN_BRIER_SKILL
+        and reliability is not None
+        and reliability <= MAX_RELIABILITY_ERROR
+    )
+    confidence = "Baja" if other_controls_pass and event_count >= 5 else "Muy baja"
+    return {
+        "estimate_status": "exploratory",
+        "evidence_confidence": confidence,
+        "confidence_reason": "Estimación exploratoria: " + "; ".join(failures) + ".",
+    }
+
+
+def probability_display(
+    raw_probability: float,
+    validation: dict[str, Any],
+    effective_n: float,
+) -> dict[str, Any]:
+    """Prepara la estimación visible sin confundir cálculo con validación."""
+
+    parameters = validation.get("calibration_parameters")
+    use_calibration = bool(validation.get("enabled") and parameters)
+    probability = (
+        calibrated_probability(raw_probability, parameters)
+        if use_calibration
+        else raw_probability
+    )
+    raw_interval = wilson_interval(raw_probability, effective_n)
+    interval = (
+        [
+            round(calibrated_probability(bound / 100, parameters) * 100)
+            for bound in raw_interval
+        ]
+        if use_calibration
+        else raw_interval
+    )
+    probability_pct = round(probability * 100)
+    return {
+        "central_estimate_pct": probability_pct,
+        "plausible_interval_pct": [
+            min(interval[0], probability_pct),
+            max(interval[1], probability_pct),
+        ],
+        "estimate_basis": "platt_calibrated" if use_calibration else "raw_analog_frequency",
+        **probability_evidence(validation),
+    }
+
+
+def enforce_probability_monotonicity(reports: list[dict[str, Any]]) -> None:
+    """Impone dos relaciones físicas a los porcentajes mostrados.
+
+    A igual horizonte no pueden aumentar al subir el umbral; a igual umbral no
+    pueden disminuir al ampliar el horizonte. El segundo barrido preserva el
+    primero porque toma máximos acumulados de funciones no crecientes.
+    """
+
+    for horizon in HORIZONS:
+        previous_probability = 100
+        for report in reports:
+            row = next(item for item in report["rows"] if item["horizon_days"] == horizon)
+            row["central_estimate_pct"] = min(
+                previous_probability, row["central_estimate_pct"]
+            )
+            previous_probability = row["central_estimate_pct"]
+
+    for report in reports:
+        previous_probability = 0
+        for row in sorted(report["rows"], key=lambda item: item["horizon_days"]):
+            row["central_estimate_pct"] = max(
+                previous_probability, row["central_estimate_pct"]
+            )
+            previous_probability = row["central_estimate_pct"]
+
+    for report in reports:
+        for row in report["rows"]:
+            probability_pct = row["central_estimate_pct"]
+            lower, upper = row["plausible_interval_pct"]
+            row["plausible_interval_pct"] = [
+                min(lower, probability_pct),
+                max(upper, probability_pct),
+            ]
+            row["classification"] = classification(probability_pct)
+
+
+def upgrade_risk_report_probabilities(
+    report: dict[str, Any], effective_n: float = ANALOG_COUNT
+) -> dict[str, Any]:
+    """Completa porcentajes exploratorios en cortes guardados por esta versión."""
+
+    thresholds = report.get("thresholds") or []
+    for threshold_report in thresholds:
+        for row in threshold_report.get("rows", []):
+            validation = row.get("validation") or {}
+            raw_pct = row.get("raw_ensemble_probability_pct")
+            if raw_pct is None:
+                continue
+            row.update(probability_display(float(raw_pct) / 100, validation, effective_n))
+            row["classification"] = classification(row["central_estimate_pct"])
+    if thresholds and all(
+        row.get("central_estimate_pct") is not None
+        and row.get("plausible_interval_pct") is not None
+        for threshold_report in thresholds
+        for row in threshold_report.get("rows", [])
+    ):
+        enforce_probability_monotonicity(thresholds)
+    return report
 
 
 def validate(
@@ -649,11 +800,11 @@ def validate(
                 else None,
                 "enabled": enabled,
                 "reason": (
-                    "calibración y validación temporal aprobadas"
+                    "estimación con validación temporal suficiente"
                     if enabled
                     else (
-                        "no supera simultáneamente casos, eventos, BSS ≥ 0,05 "
-                        "y error de confiabilidad ≤ 0,12"
+                        "estimación calculada pero con evidencia insuficiente para "
+                        "considerarla validada"
                     )
                 ),
             }
@@ -788,7 +939,7 @@ def build_forecast(
         "validation": validation,
         "limitations": [
             "No anticipa decisiones futuras de operación de la represa.",
-            "La probabilidad se calibra en un bloque temporal y se deshabilita cuando el bloque final no demuestra habilidad suficiente.",
+            "La probabilidad se muestra como exploratoria cuando el bloque final no reúne evidencia suficiente para considerarla validada.",
             "GEOGLOWS se conserva como señal de caudal separada hasta acumular re-pronósticos locales para validarla.",
         ],
     }
@@ -811,26 +962,13 @@ def build_risk_report(
             validation = model["validation"]["probability_metrics"][
                 f"{threshold:.2f}:{horizon}"
             ]
-            enabled = bool(validation["enabled"])
-            parameters = validation.get("calibration_parameters")
-            probability = calibrated_probability(raw_probability, parameters)
-            probability_pct = round(probability * 100) if enabled else None
-            raw_interval = wilson_interval(raw_probability, effective_n)
-            calibrated_interval = [
-                round(
-                    calibrated_probability(bound / 100, parameters) * 100
-                )
-                for bound in raw_interval
-            ]
+            display = probability_display(raw_probability, validation, effective_n)
             rows.append(
                 {
                     "horizon_days": horizon,
-                    "classification": classification(probability_pct),
-                    "central_estimate_pct": probability_pct,
+                    "classification": classification(display["central_estimate_pct"]),
+                    **display,
                     "raw_ensemble_probability_pct": round(raw_probability * 100),
-                    "plausible_interval_pct": (
-                        calibrated_interval if enabled else None
-                    ),
                     "classification_uncertainty": (
                         "Moderada" if horizon == 7 else "Alta" if horizon == 14 else "Muy alta"
                     ),
@@ -851,26 +989,7 @@ def build_risk_report(
             }
         )
 
-    # Las calibraciones se estiman por celda. Este ajuste conservador final
-    # preserva una propiedad física básica: para un mismo horizonte, la
-    # probabilidad publicada no puede crecer al aumentar el nivel objetivo.
-    for horizon in HORIZONS:
-        previous_probability = 100
-        for report in reports:
-            row = next(item for item in report["rows"] if item["horizon_days"] == horizon)
-            if row["central_estimate_pct"] is None:
-                continue
-            row["central_estimate_pct"] = min(
-                previous_probability, row["central_estimate_pct"]
-            )
-            if row["plausible_interval_pct"]:
-                lower, upper = row["plausible_interval_pct"]
-                row["plausible_interval_pct"] = [
-                    min(lower, row["central_estimate_pct"]),
-                    max(upper, row["central_estimate_pct"]),
-                ]
-            row["classification"] = classification(row["central_estimate_pct"])
-            previous_probability = row["central_estimate_pct"]
+    enforce_probability_monotonicity(reports)
 
     current = next(
         observation["value"]
@@ -887,10 +1006,10 @@ def build_risk_report(
             "validated": True,
             "label": model["label"],
             "note": (
-                "La frecuencia ponderada de superación en 60 trayectorias análogas se "
-                "calibra en un bloque temporal separado. Cada celda se publica sólo si "
-                "en el bloque final obtiene BSS ≥ 0,05 frente a la climatología del bloque "
-                "de calibración y cumple los controles de confiabilidad y cantidad de eventos."
+                "El porcentaje exploratorio es la frecuencia ponderada de superación en 60 "
+                "trayectorias análogas. Sólo se aplica la calibración de Platt cuando el bloque "
+                "final supera los controles de eventos, Brier Skill y confiabilidad; la etiqueta "
+                "y la confianza hacen visible esa diferencia."
             ),
         },
         "data_status": state.get("update_status", {}).get("state", "stale"),

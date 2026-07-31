@@ -120,6 +120,10 @@ type RiskReportRow = {
   raw_ensemble_probability_pct?: number;
   plausible_interval_pct: [number, number] | null;
   classification_uncertainty: string;
+  estimate_status?: "validated" | "exploratory";
+  evidence_confidence?: string;
+  confidence_reason?: string;
+  estimate_basis?: "platt_calibrated" | "raw_analog_frequency";
   scenario_min_m: number;
   scenario_central_m: number;
   scenario_max_m: number;
@@ -415,6 +419,8 @@ function riskClass(value: Risk) {
 }
 
 function reportUncertaintyClass(value: string) {
+  if (value === "Baja") return "report-uncertainty-low";
+  if (value === "Muy baja") return "report-uncertainty-very-low";
   if (value === "Moderada") return "report-uncertainty-moderate";
   if (value === "Moderada-alta") return "report-uncertainty-moderate-high";
   if (value === "Alta") return "report-uncertainty-high";
@@ -439,9 +445,9 @@ function ReportTable({
           <tr>
             <th>Horizonte desde el corte</th>
             <th>Clasificación</th>
-            <th>Probabilidad publicada</th>
-            <th>Intervalo muestral</th>
-            <th>Incertidumbre</th>
+            <th>Probabilidad estimada</th>
+            <th>Intervalo aproximado</th>
+            <th>Confianza del dato</th>
             <th>Cambio</th>
           </tr>
         </thead>
@@ -457,16 +463,28 @@ function ReportTable({
                 <td><strong>{row.horizon_days} días</strong></td>
                 <td>{row.classification}</td>
                 <td className="report-probability">
-                  {row.central_estimate_pct === null ? "—" : `${row.central_estimate_pct}%`}
+                  <span>{row.central_estimate_pct === null ? "—" : `${row.central_estimate_pct}%`}</span>
+                  <small
+                    className={`estimate-status ${
+                      row.estimate_status === "validated" ? "validated" : "exploratory"
+                    }`}
+                  >
+                    {row.estimate_status === "validated" ? "VALIDADA" : "EXPLORATORIA"}
+                  </small>
                 </td>
                 <td>
                   {row.plausible_interval_pct
                     ? `${row.plausible_interval_pct[0]}–${row.plausible_interval_pct[1]}%`
-                    : "No publicado"}
+                    : "No calculable"}
                 </td>
                 <td>
-                  <span className={`report-uncertainty ${reportUncertaintyClass(row.classification_uncertainty)}`}>
-                    {row.classification_uncertainty}
+                  <span
+                    className={`report-uncertainty ${reportUncertaintyClass(
+                      row.evidence_confidence ?? row.classification_uncertainty,
+                    )}`}
+                    title={row.confidence_reason}
+                  >
+                    {row.evidence_confidence ?? row.classification_uncertainty}
                   </span>
                   {row.validation && (
                     <small className="validation-note">
@@ -570,7 +588,7 @@ function ReportTrend({
         ))}
       </div>
       <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-labelledby="report-trend-title report-trend-desc">
-        <title id="report-trend-title">Evolución de la probabilidad publicada</title>
+        <title id="report-trend-title">Evolución de la probabilidad estimada</title>
         <desc id="report-trend-desc">
           Cambios entre los últimos cortes para el nivel de{" "}
           {formatNumber(threshold)} metros y horizontes de 7, 14, 21 y 28 días.
@@ -680,8 +698,8 @@ function RiskReportSection({
             <p>
               El evento evaluado es que el puerto de Concordia alcance o supere
               {" "}{thresholdLabel} al menos una vez dentro de cada período. Un
-              porcentaje sólo aparece si esa celda aprueba la validación temporal;
-              en caso contrario se informa “no habilitada”.
+              porcentaje se muestra siempre. La etiqueta “validada” o “exploratoria”
+              y la confianza indican cuánta evidencia histórica lo respalda.
             </p>
           </div>
           <div className="report-cut">
@@ -752,7 +770,7 @@ function RiskReportSection({
             <div className="report-panel-heading">
               <div>
                 <span>INFORME VIGENTE</span>
-                <strong>Probabilidad validada por horizonte</strong>
+                <strong>Probabilidad estimada por horizonte</strong>
               </div>
               {previous && (
                 <p>
@@ -813,7 +831,7 @@ function RiskReportSection({
             <div className="report-panel-heading">
               <div>
                 <span>EVOLUCIÓN ENTRE CORTES</span>
-                <strong>Probabilidad publicada por horizonte</strong>
+                <strong>Probabilidad estimada por horizonte</strong>
               </div>
               <p>Se muestran hasta 24 actualizaciones, en orden cronológico.</p>
             </div>
@@ -1538,7 +1556,7 @@ export default function Home() {
                 conformal; no son máximos ni mínimos físicamente posibles.
                 {selected.validation
                   ? ` En el holdout temporal este horizonte tuvo una cobertura de ${Math.round((selected.validation.interval_80_coverage ?? 0) * 100)}% y habilidad MAE frente a persistencia de ${selected.validation.mae_skill_vs_persistence === null ? "no calculable" : `${Math.round(selected.validation.mae_skill_vs_persistence * 100)}%`}.`
-                  : " La probabilidad de superar cada nivel se evalúa aparte y sólo se publica si supera los controles de validación."}
+                  : " La probabilidad de superar cada nivel se calcula aparte y se presenta con su grado de confianza y sus límites de validación."}
               </p>
             </div>
           </div>
