@@ -1,6 +1,6 @@
 {
   "schema_version": "0.1.0",
-  "last_audit": "2026-07-29T08:00:00-03:00",
+  "last_audit": "2026-07-31T09:00:00-03:00",
   "sources": [
     {
       "source_id": "pna_alturas",
@@ -21,8 +21,30 @@
       "vertical_datum": "cero local; metadato no visible en tabla",
       "reliability": "oficial",
       "limitations": "las alturas entre puertos no son directamente comparables",
-      "fallback": "comunicado CTM para Concordia dentro de su vigencia",
+      "fallback": "estación Puerto Concordia de CTM, identificada como fuente distinta",
       "last_successful_test": "2026-07-29T08:00:00-03:00"
+    },
+    {
+      "source_id": "ctm_concordia_stage",
+      "name": "Estación Puerto Concordia",
+      "organization": "Comisión Técnica Mixta de Salto Grande",
+      "jurisdiction": "Binacional Argentina–Uruguay",
+      "variables": ["altura hidrométrica"],
+      "spatial_coverage": "Puerto Concordia",
+      "temporal_coverage": "actual e histórico consultable",
+      "update_frequency": "cada 15 minutos",
+      "latency": "aproximadamente 15 minutos",
+      "format": "HTML con serie temporal",
+      "url": "https://www.saltogrande.org/datos_estacion.php?estacion=A50012EE",
+      "license": "no identificada en la página consultada",
+      "reuse_conditions": "citar organismo, estación y hora de observación",
+      "extraction_method": "serie temporal incluida en la página oficial",
+      "units": ["m"],
+      "vertical_datum": "cero local de la estación; no usar como cota topográfica",
+      "reliability": "oficial preliminar",
+      "limitations": "se identifica por separado de la lectura de PNA; no se mezclan ambas fuentes",
+      "fallback": "PNA Alturas de los ríos",
+      "last_successful_test": "2026-07-31T08:30:00-03:00"
     },
     {
       "source_id": "ctm_hourly",
@@ -51,7 +73,7 @@
       "name": "Comunicado diario del Área Hidrología",
       "organization": "Comisión Técnica Mixta de Salto Grande",
       "jurisdiction": "Binacional Argentina–Uruguay",
-      "variables": ["aporte 24 h", "caudal evacuado", "nivel de embalse", "rango Concordia", "rango Salto", "tendencia"],
+      "variables": ["aporte 24 h", "caudal evacuado", "nivel de embalse", "máximo o rango Concordia", "máximo o rango Salto"],
       "spatial_coverage": "embalse y corredor inmediato aguas abajo",
       "temporal_coverage": "actual",
       "update_frequency": "diaria, aproximadamente 13:00",

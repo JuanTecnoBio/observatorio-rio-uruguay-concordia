@@ -129,7 +129,7 @@ type RiverState = {
     source: string;
     issued_at_local: string;
     valid_until_local: string;
-    concordia_min_m: number;
+    concordia_min_m: number | null;
     concordia_max_m: number;
     trend: string;
     mean_daily_released_flow_min_m3s: number;
@@ -160,6 +160,7 @@ type RiverState = {
 
 const OFFICIAL_LINKS = {
   pna: "https://contenidosweb.prefecturanaval.gob.ar/alturas/",
+  ctmConcordia: "https://www.saltogrande.org/datos_estacion.php?estacion=A50012EE",
   ctmHourly: "https://www.saltogrande.org/datos_horarios.php",
   ctmBulletin: "https://www.saltogrande.org/docs/hidrologia/Comunicado.pdf",
   ctmRain: "https://www.saltogrande.org/docs/hidrologia/PronosticosP.pdf",
@@ -167,6 +168,9 @@ const OFFICIAL_LINKS = {
   snih: "https://snih.hidricosargentina.gob.ar/",
   caru: "https://www.caru.org.uy/",
 };
+
+const LIVE_DATA_BASE =
+  "https://juantecnobio.github.io/observatorio-rio-uruguay-concordia/data";
 
 const FALLBACK_STATE = initialState as unknown as RiverState;
 const FALLBACK_REPORT_ARCHIVE =
@@ -208,6 +212,7 @@ const preparations = [
 
 const sourceRows = [
   ["PNA", "Altura, variación y umbrales por puerto", "Automática", OFFICIAL_LINKS.pna],
+  ["CTM · Puerto Concordia", "Altura cada 15 minutos", "Automática", OFFICIAL_LINKS.ctmConcordia],
   ["CTM · datos horarios", "Turbinado, vertido, embalse y restitución", "Automática", OFFICIAL_LINKS.ctmHourly],
   ["CTM · comunicado", "Rango oficial de corto plazo", "Automática", OFFICIAL_LINKS.ctmBulletin],
   ["CTM · lluvia", "Pronóstico GFS por cuenca incremental", "Automática", OFFICIAL_LINKS.ctmRain],
@@ -269,6 +274,7 @@ function createProjection(state: RiverState): ProjectionPoint[] {
   const start = new Date(state.generated_at);
   const official = state.official_forecast;
   const officialIsCurrent =
+    official.concordia_min_m !== null &&
     Date.parse(official.valid_until_local) >= Date.parse(state.generated_at);
 
   return Array.from({ length: 31 }, (_, day) => {
@@ -289,11 +295,12 @@ function createProjection(state: RiverState): ProjectionPoint[] {
     }
 
     if (day === 1 && officialIsCurrent) {
+      const officialMinimum = official.concordia_min_m!;
       return {
         day,
         date: date.toISOString(),
-        min: official.concordia_min_m,
-        central: round((official.concordia_min_m + official.concordia_max_m) / 2),
+        min: officialMinimum,
+        central: round((officialMinimum + official.concordia_max_m) / 2),
         max: official.concordia_max_m,
         uncertainty: "Moderada" as const,
         risk: official.concordia_max_m >= state.thresholds.alert_m ? "Medio" : "Bajo",
@@ -1098,8 +1105,13 @@ export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
+    const cacheBuster = Date.now();
     const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
-    fetch(`${basePath}/data/current_state.json`, { cache: "no-store" })
+    const dataBase =
+      window.location.hostname === "terminal.local"
+        ? `${basePath}/data`
+        : LIVE_DATA_BASE;
+    fetch(`${dataBase}/current_state.json?v=${cacheBuster}`, { cache: "no-store" })
       .then((response) => {
         if (!response.ok) throw new Error("data unavailable");
         return response.json();
@@ -1115,7 +1127,7 @@ export default function Home() {
           },
         }));
       });
-    fetch(`${basePath}/data/risk_reports.json`, { cache: "no-store" })
+    fetch(`${dataBase}/risk_reports.json?v=${cacheBuster}`, { cache: "no-store" })
       .then((response) => {
         if (!response.ok) throw new Error("report archive unavailable");
         return response.json();
@@ -1144,6 +1156,23 @@ export default function Home() {
   const totalRelease = state.signals?.released_flow_m3s ?? turbinated + spilled;
   const officialForecastIsCurrent =
     Date.parse(state.official_forecast.valid_until_local) >= Date.parse(state.generated_at);
+  const officialForecastHasRange = state.official_forecast.concordia_min_m !== null;
+  const stageAgeHours = concordiaObservation
+    ? Math.max(
+        0,
+        (Date.parse(state.generated_at) -
+          Date.parse(concordiaObservation.observed_at_local)) /
+          3_600_000,
+      )
+    : Number.POSITIVE_INFINITY;
+  const stageFreshness =
+    concordiaObservation?.quality_flag === "official_stale_copy" || stageAgeHours > 18
+      ? { label: "Dato viejo", className: "stage-stale" }
+      : stageAgeHours > 6
+        ? { label: "Con demora", className: "stage-delayed" }
+        : { label: "Dato vigente", className: "stage-current" };
+  const concordiaSource =
+    concordiaObservation?.source_id === "ctm_concordia_stage" ? "CTM" : "PNA";
   const publicBasePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
   const generated = formatDate(state.generated_at, {
@@ -1194,7 +1223,7 @@ export default function Home() {
           </nav>
 
           <div className="header-meta">
-            <span>Actualizado {generated}</span>
+            <span>Consulta automática {generated}</span>
             <a href="#metodo">Fuentes y criterios <ExternalLink size={14} /></a>
           </div>
           <button
@@ -1215,7 +1244,7 @@ export default function Home() {
             <span>Puerto Concordia</span>
             <strong>{formatNumber(concordia)} <small>m</small></strong>
             <em>
-              PNA ·{" "}
+              {concordiaSource} ·{" "}
               {concordiaObservation
                 ? formatDate(concordiaObservation.observed_at_local, {
                     day: "2-digit",
@@ -1224,6 +1253,10 @@ export default function Home() {
                     minute: "2-digit",
                   })
                 : "último corte incluido"}
+              {" · "}
+              <b className={`stage-freshness ${stageFreshness.className}`}>
+                {stageFreshness.label}
+              </b>
             </em>
           </div>
           <div className="reading reading-alert">
@@ -1239,8 +1272,10 @@ export default function Home() {
           <div className="reading reading-ctm">
             <span>Parte de Salto Grande</span>
             <strong>
-              {formatNumber(state.official_forecast.concordia_min_m)}–
-              {formatNumber(state.official_forecast.concordia_max_m)} <small>m</small>
+              {officialForecastHasRange && state.official_forecast.concordia_min_m !== null
+                ? `${formatNumber(state.official_forecast.concordia_min_m)}–${formatNumber(state.official_forecast.concordia_max_m)}`
+                : `máx. ${formatNumber(state.official_forecast.concordia_max_m)}`} {" "}
+              <small>m</small>
             </strong>
             <em>
               {officialForecastIsCurrent ? "Vigente hasta " : "Vigencia vencida · hasta "}
@@ -1273,14 +1308,18 @@ export default function Home() {
                 title={state.update_status?.message}
               >
                 <RefreshCw size={14} />
-                {state.update_status?.state === "fresh" ? "Fuentes al día" : "Revisar actualización"}
+                {state.update_status?.state === "fresh"
+                  ? "Fuentes al día"
+                  : state.update_status?.state === "partial"
+                    ? "Corte parcial"
+                    : "Datos con demora"}
               </div>
             </div>
 
             <p className="forecast-intro">
-              La línea azul muestra mediciones oficiales. La banda se abre desde hoy:
-              durante las primeras 24 horas reproduce el rango informado por CTM; después
-              representa un escenario experimental cuyo margen crece con el horizonte.
+              La línea azul muestra mediciones oficiales. {officialForecastIsCurrent && officialForecastHasRange
+                ? "Durante las primeras 24 horas la banda reproduce el rango informado por CTM; después representa un escenario experimental cuyo margen crece con el horizonte."
+                : "Cuando CTM publica solamente un máximo, ese valor se informa arriba pero no se inventa un mínimo para completar una banda. Desde hoy se muestra el escenario experimental con incertidumbre creciente."}
             </p>
             {state.update_status?.state !== "fresh" && (
               <p className="source-warning" role="status">
@@ -1534,8 +1573,8 @@ export default function Home() {
               <h2>Fuentes consultadas</h2>
             </div>
             <div className="download-links">
-              <a href={`${publicBasePath}/data/current_state.json`} download><Database size={15} /> Datos JSON</a>
-              <a href={`${publicBasePath}/data/risk_reports.json`} download><Clock3 size={15} /> Historial de informes</a>
+              <a href={`${LIVE_DATA_BASE}/current_state.json`} download><Database size={15} /> Datos JSON</a>
+              <a href={`${LIVE_DATA_BASE}/risk_reports.json`} download><Clock3 size={15} /> Historial de informes</a>
               <a href={`${publicBasePath}/boletines/2026-07-29.md`} download><Download size={15} /> Boletín</a>
             </div>
           </div>

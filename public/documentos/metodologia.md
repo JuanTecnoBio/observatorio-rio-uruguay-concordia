@@ -65,8 +65,10 @@ Los escenarios seco, base, húmedo y de erogación alta son cualitativos. No ant
 
 ## 7. Fuentes
 
-El corte inicial usa PNA para alturas y umbrales, CTM para operación, aportes y comunicado, y enlaces de continuidad a SMN, CARU y SNIH. Todo valor publicado conserva fecha, hora, unidad y URL de referencia.
+El corte inicial usa PNA para alturas y umbrales, CTM para la estación Puerto Concordia cada 15 minutos, operación, aportes y comunicado, y enlaces de continuidad a SMN, CARU y SNIH. Las lecturas de PNA y CTM se identifican como fuentes distintas: nunca se fusionan silenciosamente. Todo valor publicado conserva fecha, hora, unidad y URL de referencia.
+
+Cuando el comunicado diario de CTM publica solo una cota máxima para Concordia, la interfaz muestra únicamente ese máximo. No completa el parte con una mínima inferida.
 
 ## 8. Actualización
 
-La automatización consulta las fuentes cada tres horas, marca por separado las que fallan y conserva el último valor verificable con su estado de antigüedad. Cada ejecución genera un corte del informe y mantiene hasta 240 cortes recientes. Cuando el archivo nace o se reconstruye, recupera estados reales del historial Git en lugar de inventar observaciones anteriores.
+La automatización intenta consultar las fuentes cada hora. GitHub puede demorar el inicio de una ejecución programada, por lo que esa frecuencia es un objetivo de consulta y no una garantía al minuto. El sistema reintenta fallas transitorias, marca por separado las fuentes que no responden y conserva el último valor verificable con su fecha original y un indicador visible de antigüedad. Cada ejecución genera un corte del informe y mantiene hasta 240 cortes recientes. Cuando el archivo nace o se reconstruye, recupera estados reales del historial Git en lugar de inventar observaciones anteriores.

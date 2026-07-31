@@ -24,13 +24,15 @@ from zoneinfo import ZoneInfo
 import requests
 from bs4 import BeautifulSoup
 from pypdf import PdfReader
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 
 ROOT = Path(__file__).resolve().parents[1]
 STATE_PATH = ROOT / "public" / "data" / "current_state.json"
 REPORT_HISTORY_PATH = ROOT / "public" / "data" / "risk_reports.json"
 TZ = ZoneInfo("America/Argentina/Cordoba")
-HTTP_TIMEOUT = 35
+HTTP_TIMEOUT = (15, 35)
 REPORT_HISTORY_LIMIT = 240
 REPORT_ANCHOR_THRESHOLD_M = 11.5
 REPORT_THRESHOLDS_M = (11.0, 11.25, 11.5, 11.75, 12.0, 12.25)
@@ -51,11 +53,27 @@ REPORT_UNCERTAINTY = {
 
 PNA_PDF = "https://contenidosweb.prefecturanaval.gob.ar/alturas/pdf.php"
 PNA_PAGE = "https://contenidosweb.prefecturanaval.gob.ar/alturas/"
+CTM_CONCORDIA = "https://www.saltogrande.org/datos_estacion.php"
+CTM_CONCORDIA_ID = "A50012EE"
 CTM_HOURLY = "https://www.saltogrande.org/datos_horarios.php"
 CTM_BULLETIN = "https://www.saltogrande.org/docs/hidrologia/Comunicado.pdf"
 CTM_RAIN = "https://www.saltogrande.org/docs/hidrologia/PronosticosP.pdf"
 
 SESSION = requests.Session()
+SESSION.mount(
+    "https://",
+    HTTPAdapter(
+        max_retries=Retry(
+            total=2,
+            connect=2,
+            read=2,
+            status=2,
+            backoff_factor=1.5,
+            status_forcelist=(429, 500, 502, 503, 504),
+            allowed_methods=frozenset({"GET"}),
+        )
+    ),
+)
 SESSION.headers.update(
     {
         # CTM aplica una regla anti-bot que rechaza agentes de usuario
@@ -113,8 +131,8 @@ def number(value: str) -> float:
     return float(cleaned)
 
 
-def fetch(url: str) -> requests.Response:
-    response = SESSION.get(url, timeout=HTTP_TIMEOUT)
+def fetch(url: str, params: dict[str, str] | None = None) -> requests.Response:
+    response = SESSION.get(url, params=params, timeout=HTTP_TIMEOUT)
     response.raise_for_status()
     return response
 
@@ -231,6 +249,50 @@ def update_observation(
     )
 
 
+def update_river_stage(
+    state: dict[str, Any],
+    value: float,
+    observed_at: datetime,
+    retrieved_at: str,
+    *,
+    source_id: str,
+    source_name: str,
+    source_reference: str,
+    quality_flag: str,
+) -> None:
+    update_observation(
+        state,
+        "river_stage",
+        round(value, 2),
+        observed_at,
+        retrieved_at,
+    )
+    index = observation_index(state, "river_stage")
+    if index is None:
+        raise KeyError("No existe la observación base river_stage")
+    state["observations"][index].update(
+        {
+            "source_id": source_id,
+            "source_name": source_name,
+            "source_reference": source_reference,
+            "quality_flag": quality_flag,
+        }
+    )
+
+    history = state.get("history", [])
+    day_key = observed_at.date().isoformat()
+    history = [item for item in history if item.get("date") != day_key]
+    history.append(
+        {
+            "date": day_key,
+            "label": observed_at.strftime("%d %b").lower(),
+            "value": round(value, 2),
+            "source": source_name,
+        }
+    )
+    state["history"] = sorted(history, key=lambda item: item["date"])[-30:]
+
+
 def update_pna(state: dict[str, Any], attempt: datetime) -> AdapterResult:
     retrieved = iso_local(attempt)
     try:
@@ -265,27 +327,17 @@ def update_pna(state: dict[str, Any], attempt: datetime) -> AdapterResult:
 
         state["stations"] = readings
         observed = datetime.fromisoformat(concordia["observed_at_local"])
-        update_observation(
+        update_river_stage(
             state,
-            "river_stage",
             concordia["value_m"],
             observed,
             retrieved,
+            source_id="pna_alturas",
+            source_name="Prefectura Naval Argentina",
+            source_reference=PNA_PAGE,
+            quality_flag="official_unvalidated_by_observatory",
         )
         state["thresholds"]["retrieved_at"] = retrieved
-
-        history = state.get("history", [])
-        day_key = observed.date().isoformat()
-        history = [item for item in history if item.get("date") != day_key]
-        history.append(
-            {
-                "date": day_key,
-                "label": observed.strftime("%d %b").lower(),
-                "value": concordia["value_m"],
-                "source": "PNA",
-            }
-        )
-        state["history"] = sorted(history, key=lambda item: item["date"])[-30:]
 
         paso = next(
             (reading for reading in readings if reading["name"] == "Paso de los Libres"),
@@ -305,6 +357,101 @@ def update_pna(state: dict[str, Any], attempt: datetime) -> AdapterResult:
             "pna_alturas",
             False,
             f"PNA no disponible: {type(error).__name__}: {error}",
+            retrieved,
+        )
+
+
+def update_ctm_concordia(state: dict[str, Any], attempt: datetime) -> AdapterResult:
+    """Actualiza la altura con la estación oficial de CTM de quince minutos."""
+
+    retrieved = iso_local(attempt)
+    params = {
+        "estacion": CTM_CONCORDIA_ID,
+        "desde": (attempt - timedelta(days=1)).strftime("%d/%m/%Y"),
+        "hasta": attempt.strftime("%d/%m/%Y"),
+    }
+    try:
+        response = fetch(CTM_CONCORDIA, params=params)
+        points = [
+            (
+                datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S").replace(
+                    tzinfo=TZ
+                ),
+                float(value),
+            )
+            for timestamp, value in re.findall(
+                r'\["(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})",\s*'
+                r"(-?\d+(?:\.\d+)?)\]",
+                response.text,
+            )
+        ]
+        points = [point for point in points if -2 <= point[1] <= 20]
+        if not points:
+            raise ValueError("no se encontraron niveles en Puerto Concordia")
+
+        observed, level = max(points, key=lambda point: point[0])
+        comparison_target = observed - timedelta(hours=12)
+        previous_candidates = [
+            point for point in points if point[0] <= comparison_target
+        ]
+        previous = (
+            max(previous_candidates, key=lambda point: point[0])
+            if previous_candidates
+            else min(points, key=lambda point: point[0])
+        )
+        elapsed_hours = max(
+            1, round((observed - previous[0]).total_seconds() / 3600)
+        )
+        variation = round(level - previous[1], 2)
+        trend = "crece" if variation > 0.02 else "baja" if variation < -0.02 else "estable"
+        status = (
+            "Evacuación"
+            if level >= state["thresholds"]["evacuation_m"]
+            else "Alerta"
+            if level >= state["thresholds"]["alert_m"]
+            else "Seguimiento"
+        )
+
+        update_river_stage(
+            state,
+            level,
+            observed,
+            retrieved,
+            source_id="ctm_concordia_stage",
+            source_name="CTM Salto Grande",
+            source_reference=response.url,
+            quality_flag="official_preliminary",
+        )
+
+        concordia_station = {
+            "name": "Concordia",
+            "group": "downstream",
+            "value_m": round(level, 2),
+            "variation_m": variation,
+            "variation_period_h": elapsed_hours,
+            "trend": trend,
+            "status": status,
+            "observed_at_local": iso_local(observed),
+            "source": "CTM",
+        }
+        stations = [
+            station
+            for station in state.get("stations", [])
+            if station.get("name") != "Concordia"
+        ]
+        stations.append(concordia_station)
+        state["stations"] = stations
+        return AdapterResult(
+            "ctm_concordia_stage",
+            True,
+            "CTM Puerto Concordia actualizada",
+            retrieved,
+        )
+    except Exception as error:  # noqa: BLE001
+        return AdapterResult(
+            "ctm_concordia_stage",
+            False,
+            f"CTM Puerto Concordia no disponible: {type(error).__name__}: {error}",
             retrieved,
         )
 
@@ -373,15 +520,28 @@ def update_ctm_bulletin(state: dict[str, Any], attempt: datetime) -> AdapterResu
             text,
             re.I,
         )
-        if not concordia_match:
-            raise ValueError("no se encontró el rango de Concordia")
-        first_label, _, first_value, second_value = concordia_match.groups()
-        first, second = number(first_value), number(second_value)
-        if normalize(first_label).lower() == "maxima":
-            maximum, minimum = first, second
+        if concordia_match:
+            first_label, _, first_value, second_value = concordia_match.groups()
+            first, second = number(first_value), number(second_value)
+            if normalize(first_label).lower() == "maxima":
+                maximum, minimum = first, second
+            else:
+                minimum, maximum = first, second
         else:
-            minimum, maximum = first, second
-        if minimum > maximum or not (6 <= minimum <= 15 and 6 <= maximum <= 15):
+            maximum_match = re.search(
+                r"cotas\s+maximas.{0,100}?puertos\s+de\s+Concordia\s+y\s+Salto"
+                r".{0,120}?valores\s+de\s+(\d{1,2}[,.]\d{1,2})",
+                text,
+                re.I,
+            )
+            if not maximum_match:
+                raise ValueError("no se encontró la previsión de Concordia")
+            minimum = None
+            maximum = number(maximum_match.group(1))
+
+        if not 6 <= maximum <= 15 or (
+            minimum is not None and (minimum > maximum or minimum < 6)
+        ):
             raise ValueError("rango de Concordia fuera de control")
 
         issued = parse_source_datetime(text, attempt)
@@ -395,7 +555,7 @@ def update_ctm_bulletin(state: dict[str, Any], attempt: datetime) -> AdapterResu
             valid = valid.replace(
                 hour=int(valid_match.group(1)), minute=int(valid_match.group(2))
             )
-        if re.search(r"\bmañana\b", text, re.I) or valid <= issued:
+        if re.search(r"\b(?:manana|mañana)\b", text, re.I) or valid <= issued:
             valid += timedelta(days=1)
 
         lower = text.lower()
@@ -404,17 +564,18 @@ def update_ctm_bulletin(state: dict[str, Any], attempt: datetime) -> AdapterResu
             if "creciente" in lower
             else "decreciente"
             if "decreciente" in lower
-            else "estable"
+            else "no informada"
         )
         forecast = state["official_forecast"]
         forecast.update(
             {
                 "issued_at_local": iso_local(issued),
                 "valid_until_local": iso_local(valid),
-                "concordia_min_m": round(minimum, 2),
+                "concordia_min_m": round(minimum, 2) if minimum is not None else None,
                 "concordia_max_m": round(maximum, 2),
                 "trend": trend,
                 "retrieved_at": retrieved,
+                "quality_flag": "official_preliminary",
             }
         )
 
@@ -480,6 +641,7 @@ def make_projection(state: dict[str, Any], generated: datetime) -> list[dict[str
     official_current = (
         datetime.fromisoformat(forecast["valid_until_local"]) >= generated
         and forecast.get("quality_flag") != "official_stale_copy"
+        and forecast.get("concordia_min_m") is not None
     )
     alert = state["thresholds"]["alert_m"]
     evacuation = state["thresholds"]["evacuation_m"]
@@ -823,6 +985,7 @@ def main() -> None:
     state = deepcopy(previous)
     results = [
         update_pna(state, attempt),
+        update_ctm_concordia(state, attempt),
         update_ctm_hourly(state, attempt),
         update_ctm_bulletin(state, attempt),
         update_ctm_rain(state, attempt),
@@ -832,15 +995,31 @@ def main() -> None:
 
     if not failed:
         update_state = "fresh"
-        message = "PNA y CTM consultadas correctamente en el corte."
+        message = "Las cinco consultas oficiales respondieron correctamente."
     elif successful:
         update_state = "partial"
-        message = "Actualización parcial. " + " ".join(result.message for result in failed)
+        labels = {
+            "pna_alturas": "PNA",
+            "ctm_concordia_stage": "la estación Puerto Concordia de CTM",
+            "ctm_hourly": "los datos horarios de CTM",
+            "ctm_communicado": "el comunicado de CTM",
+            "ctm_precip_forecast": "el pronóstico de lluvia de CTM",
+        }
+        unavailable = ", ".join(labels[result.source_id] for result in failed)
+        stage = next(
+            observation
+            for observation in state["observations"]
+            if observation["variable"] == "river_stage"
+        )
+        message = (
+            f"Corte parcial: no respondieron {unavailable}. La altura publicada "
+            f"corresponde a {stage['source_name']} y conserva su hora de observación."
+        )
     else:
         update_state = "stale"
         message = (
-            "No se pudo actualizar ninguna fuente; se conserva el último corte. "
-            + " ".join(result.message for result in failed)
+            "Ninguna fuente respondió en este intento. Los valores conservados se "
+            "muestran con su fecha original y no deben leerse como actuales."
         )
 
     state["generated_at"] = iso_local(attempt)
