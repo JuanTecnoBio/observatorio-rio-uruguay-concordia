@@ -16,7 +16,7 @@ import subprocess
 import unicodedata
 from copy import deepcopy
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo
@@ -27,10 +27,16 @@ from pypdf import PdfReader
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
+from backfill_ctm_history import STATIONS as CTM_NETWORK_STATIONS
+from backfill_ctm_history import daily_records as aggregate_ctm_daily
+from forecast_model import build_forecast, build_risk_report, quantile
+
 
 ROOT = Path(__file__).resolve().parents[1]
 STATE_PATH = ROOT / "public" / "data" / "current_state.json"
 REPORT_HISTORY_PATH = ROOT / "public" / "data" / "risk_reports.json"
+HYDROMETRIC_HISTORY_PATH = ROOT / "public" / "data" / "hydrometric_history.json"
+FLOW_FORECAST_ARCHIVE_PATH = ROOT / "public" / "data" / "flow_forecast_archive.json"
 TZ = ZoneInfo("America/Argentina/Cordoba")
 HTTP_TIMEOUT = (15, 35)
 REPORT_HISTORY_LIMIT = 240
@@ -54,10 +60,15 @@ REPORT_UNCERTAINTY = {
 PNA_PDF = "https://contenidosweb.prefecturanaval.gob.ar/alturas/pdf.php"
 PNA_PAGE = "https://contenidosweb.prefecturanaval.gob.ar/alturas/"
 CTM_CONCORDIA = "https://www.saltogrande.org/datos_estacion.php"
+CTM_STATION_CSV = "https://www.saltogrande.org/datos_estacion_csv.php"
 CTM_CONCORDIA_ID = "A50012EE"
 CTM_HOURLY = "https://www.saltogrande.org/datos_horarios.php"
 CTM_BULLETIN = "https://www.saltogrande.org/docs/hidrologia/Comunicado.pdf"
 CTM_RAIN = "https://www.saltogrande.org/docs/hidrologia/PronosticosP.pdf"
+GEOGLOWS_RIVER_ID = 640460565
+GEOGLOWS_FORECAST = (
+    f"https://geoglows.ecmwf.int/api/v2/forecastensemble/{GEOGLOWS_RIVER_ID}"
+)
 
 SESSION = requests.Session()
 SESSION.mount(
@@ -456,6 +467,75 @@ def update_ctm_concordia(state: dict[str, Any], attempt: datetime) -> AdapterRes
         )
 
 
+def update_ctm_network_history(attempt: datetime) -> AdapterResult:
+    """Actualiza los últimos treinta días de la base usada por el ensamble.
+
+    El histórico inicial se reconstruye con ``backfill_ctm_history.py``. Cada
+    ejecución automática reemplaza el tramo reciente para incorporar
+    correcciones de la fuente y mantener disponibles los predictores aguas
+    arriba sin descargar nuevamente todos los años.
+    """
+
+    retrieved = iso_local(attempt)
+    try:
+        history = json.loads(HYDROMETRIC_HISTORY_PATH.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        return AdapterResult(
+            "ctm_historical_network",
+            False,
+            f"Histórico CTM no disponible: {type(error).__name__}: {error}",
+            retrieved,
+        )
+
+    refreshed: list[str] = []
+    failures: list[str] = []
+    start = (attempt - timedelta(days=29)).strftime("%d/%m/%Y")
+    end = attempt.strftime("%d/%m/%Y")
+    for key, metadata in CTM_NETWORK_STATIONS.items():
+        try:
+            response = fetch(
+                CTM_STATION_CSV,
+                params={"estacion": metadata["id"], "desde": start, "hasta": end},
+            )
+            recent = aggregate_ctm_daily([response.text])
+            if not recent:
+                raise ValueError("CSV sin días completos")
+            station = history.setdefault("stations", {}).setdefault(
+                key, {**metadata, "records": []}
+            )
+            by_date = {
+                record["date"]: record for record in station.get("records", [])
+            }
+            by_date.update({record["date"]: record for record in recent})
+            station["records"] = sorted(by_date.values(), key=lambda record: record["date"])
+            refreshed.append(key)
+        except Exception as error:  # noqa: BLE001
+            failures.append(f"{metadata['name']}: {type(error).__name__}")
+
+    history["generated_at"] = retrieved
+    history["recent_refresh"] = {
+        "start": start,
+        "end": end,
+        "stations_ok": refreshed,
+        "failures": failures,
+    }
+    HYDROMETRIC_HISTORY_PATH.write_text(
+        json.dumps(history, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    if "concordia" not in refreshed or len(refreshed) < 3:
+        return AdapterResult(
+            "ctm_historical_network",
+            False,
+            "Red histórica CTM incompleta: " + ", ".join(failures),
+            retrieved,
+        )
+    message = f"Red histórica CTM actualizada ({len(refreshed)}/5 estaciones)"
+    if failures:
+        message += "; faltan " + ", ".join(failures)
+    return AdapterResult("ctm_historical_network", True, message, retrieved)
+
+
 def labelled_value(text: str, patterns: list[str]) -> float:
     numeric = (
         r"(-?\d{1,3}(?:[.\s]\d{3})+(?:,\d+)?|"
@@ -627,6 +707,112 @@ def update_ctm_rain(state: dict[str, Any], attempt: datetime) -> AdapterResult:
             "ctm_precip_forecast",
             False,
             f"Pronóstico de lluvia no disponible: {type(error).__name__}: {error}",
+            retrieved,
+        )
+
+
+def update_geoglows(state: dict[str, Any], attempt: datetime) -> AdapterResult:
+    """Guarda el ensamble de caudal GEOGLOWS sin convertirlo a altura local."""
+
+    retrieved = iso_local(attempt)
+    try:
+        payload = fetch(GEOGLOWS_FORECAST, params={"format": "json"}).json()
+        timestamps = [datetime.fromisoformat(item) for item in payload["datetime"]]
+        member_keys = sorted(
+            (key for key in payload if key.startswith("ensemble_")),
+            key=lambda key: int(key.split("_")[1]),
+        )[:51]
+        if len(member_keys) < 50 or not timestamps:
+            raise ValueError("ensamble incompleto")
+
+        daily_members: dict[str, dict[str, list[float]]] = {}
+        for member_key in member_keys:
+            values = payload[member_key]
+            by_day: dict[str, list[float]] = {}
+            for timestamp, raw_value in zip(timestamps, values):
+                if raw_value in (None, ""):
+                    continue
+                try:
+                    numeric_value = float(raw_value)
+                except (TypeError, ValueError):
+                    continue
+                if not math.isfinite(numeric_value) or not 0 <= numeric_value <= 1_000_000:
+                    continue
+                day = timestamp.astimezone(TZ).date().isoformat()
+                by_day.setdefault(day, []).append(numeric_value)
+            for day, readings in by_day.items():
+                daily_members.setdefault(day, {})[member_key] = readings
+
+        daily: list[dict[str, Any]] = []
+        for day, members in sorted(daily_members.items()):
+            if date.fromisoformat(day) < attempt.date():
+                continue
+            member_means = [sum(values) / len(values) for values in members.values()]
+            if len(member_means) < 45:
+                continue
+            daily.append(
+                {
+                    "date": day,
+                    "p10_m3s": round(quantile(member_means, 0.10)),
+                    "median_m3s": round(quantile(member_means, 0.50)),
+                    "p90_m3s": round(quantile(member_means, 0.90)),
+                    "member_count": len(member_means),
+                }
+            )
+        if len(daily) < 10:
+            raise ValueError("menos de diez días de pronóstico")
+
+        forecast = {
+            "source_id": "geoglows_ecmwf",
+            "source_name": "GEOGLOWS ECMWF Streamflow Service",
+            "river_id": GEOGLOWS_RIVER_ID,
+            "generated_at": payload.get("metadata", {}).get("gen_date"),
+            "retrieved_at": retrieved,
+            "valid_until": daily[-1]["date"],
+            "unit": "m3/s",
+            "daily": daily,
+            "quality_flag": "external_ensemble_not_stage_calibrated",
+            "source_reference": GEOGLOWS_FORECAST,
+            "note": (
+                "Ensamble de caudal de 51 miembros. Se muestra como señal externa y "
+                "no se convierte a altura de Concordia hasta contar con validación local."
+            ),
+        }
+        state.setdefault("external_forecasts", {})["geoglows"] = forecast
+
+        archive = {"schema_version": 1, "forecasts": []}
+        if FLOW_FORECAST_ARCHIVE_PATH.exists():
+            try:
+                archive = json.loads(
+                    FLOW_FORECAST_ARCHIVE_PATH.read_text(encoding="utf-8")
+                )
+            except (OSError, json.JSONDecodeError):
+                pass
+        by_generation = {
+            item.get("generated_at"): item
+            for item in [*archive.get("forecasts", []), forecast]
+            if item.get("generated_at")
+            and item.get("river_id") == GEOGLOWS_RIVER_ID
+        }
+        archive["updated_at"] = retrieved
+        archive["forecasts"] = sorted(
+            by_generation.values(), key=lambda item: item["generated_at"]
+        )[-120:]
+        FLOW_FORECAST_ARCHIVE_PATH.write_text(
+            json.dumps(archive, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        return AdapterResult(
+            "geoglows_ecmwf",
+            True,
+            "GEOGLOWS actualizado; ensamble de caudal archivado",
+            retrieved,
+        )
+    except Exception as error:  # noqa: BLE001
+        return AdapterResult(
+            "geoglows_ecmwf",
+            False,
+            f"GEOGLOWS no disponible: {type(error).__name__}: {error}",
             retrieved,
         )
 
@@ -948,12 +1134,17 @@ def save_report_history(current_report: dict[str, Any]) -> None:
         except (OSError, json.JSONDecodeError):
             existing = []
 
-    upgraded_existing = [upgrade_saved_report(report) for report in existing]
+    current_method = current_report.get("method", {}).get("method_id")
+    comparable_existing = [
+        report
+        for report in existing
+        if report.get("method", {}).get("method_id") == current_method
+        and report.get("thresholds")
+    ]
     by_id = {
         report["id"]: report
         for report in [
-            *reports_from_git_history(),
-            *upgraded_existing,
+            *comparable_existing,
             current_report,
         ]
         if report.get("id") and report.get("thresholds")
@@ -962,7 +1153,7 @@ def save_report_history(current_report: dict[str, Any]) -> None:
         -REPORT_HISTORY_LIMIT:
     ]
     archive = {
-        "schema_version": 2,
+        "schema_version": 3,
         "updated_at": current_report["generated_at"],
         "station": current_report["station"],
         "thresholds_m": list(REPORT_THRESHOLDS_M),
@@ -986,24 +1177,28 @@ def main() -> None:
     results = [
         update_pna(state, attempt),
         update_ctm_concordia(state, attempt),
+        update_ctm_network_history(attempt),
         update_ctm_hourly(state, attempt),
         update_ctm_bulletin(state, attempt),
         update_ctm_rain(state, attempt),
+        update_geoglows(state, attempt),
     ]
     successful = [result for result in results if result.ok]
     failed = [result for result in results if not result.ok]
 
     if not failed:
         update_state = "fresh"
-        message = "Las cinco consultas oficiales respondieron correctamente."
+        message = "Las consultas oficiales y la red histórica respondieron correctamente."
     elif successful:
         update_state = "partial"
         labels = {
             "pna_alturas": "PNA",
             "ctm_concordia_stage": "la estación Puerto Concordia de CTM",
+            "ctm_historical_network": "la red histórica de estaciones CTM",
             "ctm_hourly": "los datos horarios de CTM",
             "ctm_communicado": "el comunicado de CTM",
             "ctm_precip_forecast": "el pronóstico de lluvia de CTM",
+            "geoglows_ecmwf": "el ensamble de caudal GEOGLOWS/ECMWF",
         }
         unavailable = ", ".join(labels[result.source_id] for result in failed)
         stage = next(
@@ -1032,16 +1227,63 @@ def main() -> None:
         }
         for result in results
     }
-    state["projection"] = make_projection(state, attempt)
-    current_report = make_risk_report_cut(state, attempt)
+    try:
+        history = json.loads(HYDROMETRIC_HISTORY_PATH.read_text(encoding="utf-8"))
+        current_level = next(
+            observation["value"]
+            for observation in state["observations"]
+            if observation["variable"] == "river_stage"
+        )
+        projection, model, members = build_forecast(history, current_level, attempt)
+        current_report = build_risk_report(
+            state, projection, model, members, attempt
+        )
+        state["projection"] = projection
+        state["forecast_method"] = model
+        state["source_status"]["local_forecast_model"] = {
+            "ok": True,
+            "message": "Ensamble local recalculado y validación temporal disponible",
+            "attempted_at": iso_local(attempt),
+        }
+    except Exception as error:  # noqa: BLE001
+        current_report = state.get("risk_report_bundle")
+        state["source_status"]["local_forecast_model"] = {
+            "ok": False,
+            "message": f"Modelo local no recalculado: {type(error).__name__}: {error}",
+            "attempted_at": iso_local(attempt),
+        }
+        state["update_status"] = {
+            "state": "partial",
+            "message": (
+                f"{message} El pronóstico conserva el último corte validado porque "
+                "el modelo local no pudo recalcularse."
+            ),
+        }
+        if not current_report:
+            raise
     state["risk_report_bundle"] = current_report
     state["risk_report"] = legacy_report_from_cut(current_report)
     state["probabilities"] = {
-        "alert_exceedance": None,
-        "evacuation_exceedance": None,
+        "alert_exceedance": next(
+            (
+                report["rows"][0]["central_estimate_pct"]
+                for report in current_report["thresholds"]
+                if math.isclose(report["threshold_m"], state["thresholds"]["alert_m"])
+            ),
+            None,
+        ),
+        "evacuation_exceedance": next(
+            (
+                report["rows"][0]["central_estimate_pct"]
+                for report in current_report["thresholds"]
+                if math.isclose(report["threshold_m"], state["thresholds"]["evacuation_m"])
+            ),
+            None,
+        ),
         "reason": (
-            "El escenario experimental todavía no está calibrado y validado para expresar "
-            "probabilidades."
+            "Sólo se publica una probabilidad cuando esa combinación de nivel y horizonte "
+            "aprueba el bloque temporal final, el tamaño mínimo de eventos, Brier Skill "
+            "Score ≥ 0,05 y el control de confiabilidad."
         ),
     }
 

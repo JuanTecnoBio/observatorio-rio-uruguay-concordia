@@ -35,3 +35,20 @@
 
 **Decisión:** clasificar el corte como vigilancia y aclarar que no es categoría oficial.  
 **Fundamento:** nivel estable bajo alerta, parte CTM bajo umbral, erogación alta y señal aguas arriba en Paso de los Libres.
+
+## D-008 — Ensamble local y probabilidades
+
+**Fecha:** 31/07/2026
+
+**Decisión:** reemplazar las fórmulas expertas por 60 análogos de la red CTM 2017–presente; separar entrenamiento, calibración y validación final; aplicar corrección conformal a la banda y calibración de Platt a cada probabilidad.
+**Fundamento:** las cifras deben derivar de resultados históricos observados y sólo publicarse cuando demuestren habilidad fuera de muestra. Una celda requiere 80 casos semanales, 10 eventos y 10 no-eventos, BSS ≥ 0,05 y error de confiabilidad ≤ 0,12.
+
+## D-009 — Señal GEOGLOWS
+
+**Decisión:** mostrar y archivar el ensamble de caudal GEOGLOWS/ECMWF en m³/s, separado de la altura local.
+**Fundamento:** aporta información meteorológica e hidrológica de 15 días, pero convertirla en altura de Concordia sin repronósticos y validación local generaría falsa precisión en un tramo regulado.
+
+## D-010 — Cartografía
+
+**Decisión:** sustituir el esquema decorativo por un mapa OpenStreetMap interactivo con puntos georreferenciados.
+**Fundamento:** el esquema anterior no permitía orientarse. Se mantienen fuera las manchas de inundación hasta contar con una capa hidráulica validada.

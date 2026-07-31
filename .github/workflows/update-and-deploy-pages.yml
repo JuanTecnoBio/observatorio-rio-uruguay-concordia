@@ -35,17 +35,23 @@ jobs:
       - name: Instalar adaptadores de datos
         run: pip install -r scripts/requirements-update.txt
 
+      - name: Preparar el histórico inicial de la red CTM
+        run: |
+          if [[ ! -f public/data/hydrometric_history.json ]]; then
+            python scripts/backfill_ctm_history.py --start-year 2017 --workers 8
+          fi
+
       - name: Consultar fuentes oficiales
         run: python scripts/update_data.py
 
       - name: Guardar el nuevo corte
         run: |
-          if git diff --quiet -- public/data/current_state.json public/data/risk_reports.json; then
+          if git diff --quiet -- public/data/current_state.json public/data/risk_reports.json public/data/hydrometric_history.json public/data/flow_forecast_archive.json; then
             exit 0
           fi
           git config user.name "observatorio-data-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add public/data/current_state.json public/data/risk_reports.json
+          git add public/data/current_state.json public/data/risk_reports.json public/data/hydrometric_history.json public/data/flow_forecast_archive.json
           git commit -m "datos: actualizar corte automático"
           git push
 

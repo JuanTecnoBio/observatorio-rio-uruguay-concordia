@@ -1,74 +1,92 @@
-# Metodología, calidad y límites
+# Cómo se calculan los escenarios y sus límites
 
-## 1. Jerarquía de evidencia
+## Qué es cada producto
 
-1. observación oficial;
-2. comunicado o pronóstico oficial;
-3. pronóstico experimental propio validado;
-4. escenario hipotético;
-5. reporte ciudadano moderado.
+La página mantiene separados tres tipos de información:
 
-La interfaz conserva estas categorías y nunca convierte silenciosamente una en otra.
+1. **observación oficial:** altura y variables operativas medidas por PNA o CTM;
+2. **pronóstico oficial:** comunicado de corto plazo de CTM Salto Grande;
+3. **modelo experimental local:** ensamble de análogos, identificado con versión, período de entrenamiento y métricas fuera de muestra.
 
-## 2. Alturas y datums
+El tercer producto no reemplaza al parte oficial. Si una métrica no supera los controles definidos en este documento, la interfaz no la publica como probabilidad.
 
-Las alturas de los puertos se refieren a ceros locales. La cota del embalse, la cota de restitución, la elevación de un modelo digital y la profundidad de inundación son magnitudes distintas. En esta versión no se calcula profundidad ni extensión a partir de una resta entre altura portuaria y terreno.
+## Datos usados por el modelo local
 
-## 3. Riesgo
+El proceso conserva la serie de 15 minutos de la [Comisión Técnica Mixta de Salto Grande](https://www.saltogrande.org/datos_estacion.php) y la agrega por día. Usa cinco estaciones:
 
-La categoría preliminar del observatorio combina:
+- Puerto Concordia;
+- Paso de los Libres;
+- Monte Caseros;
+- Federación;
+- Salto Grande.
 
-- distancia a alerta y evacuación;
-- tendencia local;
-- vigencia del parte oficial;
-- erogación informada;
-- señales aguas arriba;
-- exposición general conocida;
-- calidad y antigüedad del dato.
+Para cada fecha se calculan mediana, mínimo y máximo diarios del nivel, lluvia diaria acumulada y cantidad de lecturas. La reconstrucción reproducible comienza en 2017, primer año completo disponible en estas estaciones. Cada actualización reemplaza los últimos 30 días para incorporar correcciones de la fuente.
 
-La categoría es propia y debe mostrarse separada del estado oficial.
+Las alturas tienen ceros locales diferentes. No se restan entre sí ni se interpretan como elevaciones del terreno. En el modelo funcionan como estado y tendencia de cada estación.
 
-## 4. Incertidumbre
+## Cómo se forma el ensamble de 60 trayectorias
 
-- Baja: observación reciente y consistente.
-- Moderada: pronóstico oficial de corto plazo con alguna antigüedad.
-- Alta: existen forzantes meteorológicos, pero no traducción local validada a nivel.
-- Muy alta: horizonte sin habilidad cuantitativa demostrada.
+Para el día actual se construye un vector con:
 
-## 5. Pronóstico e informes por nivel
+- altura de Concordia;
+- cambios locales de 1, 3, 7 y 14 días;
+- variabilidad de los cambios diarios en la última semana;
+- altura y cambios de Paso de los Libres y Monte Caseros;
+- lluvia de 3 y 7 días en esas estaciones;
+- altura, cambios y lluvia de 7 días en Federación y Salto Grande;
+- componente estacional del día del año.
 
-El escenario hidrológico no publica percentiles ni probabilidades calibradas de superación porque aún no existe un conjunto histórico integrado y una validación temporal por horizonte.
+Las variables se normalizan con una escala robusta basada en el rango intercuartílico. La distancia es euclídea ponderada y exige al menos 65% de los predictores disponibles. Se seleccionan los 60 estados históricos más próximos y se les asigna un peso decreciente con la distancia.
 
-Los informes permiten evaluar 11,00; 11,25; 11,50; 11,75; 12,00 y 12,25 m. Incluyen porcentajes para comparar cortes y niveles. Son una **estimación exploratoria estructurada**, no una frecuencia estadística ni un producto oficial.
+Cada análogo aporta la trayectoria que realmente se observó en los 30 días posteriores. Esa trayectoria se traslada para que comience exactamente en la altura actual. El traslado conserva el cambio observado del episodio histórico y evita confundir los ceros locales.
 
-La versión `expert-anchored-multithreshold-v0.2` conserva 11,50 m como umbral de referencia. Para los demás niveles aplica una transformación monótona en escala logit: dentro de un mismo corte y horizonte, la estimación de alcanzar un nivel más bajo nunca puede ser menor que la de alcanzar uno más alto. El cálculo aplica además siempre el mismo ajuste según:
+## Línea central y banda
 
-- la altura observada en Puerto Concordia;
-- el límite superior del escenario para 7, 14, 21 y 28 días;
-- una amplitud creciente del intervalo plausible;
-- la incertidumbre asignada a cada horizonte.
+La banda comienza en los percentiles ponderados 10 y 90 de las 60 trayectorias. Después se aplica una corrección *split-conformal* estimada exclusivamente en el bloque temporal de calibración. El objetivo es una cobertura marginal de 80%; la cobertura realmente obtenida en el bloque final se publica por horizonte y puede diferir por cambio de régimen o dependencia temporal.
 
-Cada actualización guarda los seis niveles en un único corte temporal. La interfaz muestra el valor vigente, el archivo y la evolución por horizonte para el nivel seleccionado. La habilitación futura como pronóstico probabilístico requiere:
+La línea punteada usa la mediana del ensamble en los horizontes donde reduce el error absoluto medio (MAE) al menos 3% frente a mantener constante la última altura observada. Si no alcanza esa mejora, usa persistencia. Entre los horizontes evaluados se interpola para evitar saltos artificiales.
 
-1. series históricas auditadas;
-2. backtesting con origen móvil;
-3. comparación con persistencia;
-4. evaluación por 1–3, 4–7, 8–15 y 16–30 días;
-5. cobertura y ancho de intervalos;
-6. Brier Score y confiabilidad para umbrales;
-7. prueba específica en crecidas;
-8. model card y versión reproducible.
+Los límites no significan “máximo y mínimo posible”. Son una banda predictiva empírica. No incluyen todas las decisiones futuras posibles de operación de la represa ni eventos sin precedente en la serie.
 
-## 6. Escenarios
+## Probabilidad de superar un nivel
 
-Los escenarios seco, base, húmedo y de erogación alta son cualitativos. No anticipan decisiones de CTM ni generan una cota hasta que exista un motor calibrado. Su función es ordenar preguntas y acciones preventivas.
+Para 11,00; 11,25; 11,50; 11,75; 12,00 y 12,25 m se evalúa el evento “alcanzar o superar el nivel al menos una vez dentro de 7, 14, 21 o 28 días”.
 
-## 7. Fuentes
+La frecuencia inicial es la suma de los pesos de los análogos cuyo máximo dentro del horizonte supera el nivel. Esa frecuencia se calibra mediante regresión logística de Platt en un período que no se usa para entrenar el ensamble. El intervalo mostrado es un intervalo muestral de Wilson aplicado al tamaño efectivo del ensamble y trasladado por la misma calibración; no representa toda la incertidumbre del modelo.
 
-El corte inicial usa PNA para alturas y umbrales, CTM para la estación Puerto Concordia cada 15 minutos, operación, aportes y comunicado, y enlaces de continuidad a SMN, CARU y SNIH. Las lecturas de PNA y CTM se identifican como fuentes distintas: nunca se fusionan silenciosamente. Todo valor publicado conserva fecha, hora, unidad y URL de referencia.
+Una celda sólo se publica como probabilidad si el bloque final contiene:
 
-Cuando el comunicado diario de CTM publica solo una cota máxima para Concordia, la interfaz muestra únicamente ese máximo. No completa el parte con una mínima inferida.
+- al menos 80 orígenes semanales;
+- al menos 10 eventos y 10 no-eventos;
+- Brier Skill Score de 0,05 o más frente a la frecuencia del evento en el bloque de calibración;
+- error de confiabilidad de 0,12 o menos.
 
-## 8. Actualización
+Si falla cualquiera de estas condiciones, el cálculo interno se conserva para auditoría pero la interfaz muestra **NO HABILITADA**. No se relajan los controles para completar una tabla.
 
-La automatización intenta consultar las fuentes cada hora. GitHub puede demorar el inicio de una ejecución programada, por lo que esa frecuencia es un objetivo de consulta y no una garantía al minuto. El sistema reintenta fallas transitorias, marca por separado las fuentes que no responden y conserva el último valor verificable con su fecha original y un indicador visible de antigüedad. Cada ejecución genera un corte del informe y mantiene hasta 240 cortes recientes. Cuando el archivo nace o se reconstruye, recupera estados reales del historial Git en lugar de inventar observaciones anteriores.
+## Validación temporal
+
+Los orígenes históricos completos se dividen, sin mezclarlos aleatoriamente, en tres bloques consecutivos:
+
+- 60% inicial: entrenamiento y biblioteca fija de análogos;
+- 20% siguiente: calibración de probabilidades y corrección conformal;
+- 20% final: evaluación fuera de muestra.
+
+La evaluación usa un origen cada siete días para reducir la repetición de ventanas fuertemente solapadas. Se publican tamaño de muestra, MAE, MAE de persistencia, habilidad relativa, cobertura, ancho de banda, cantidad de eventos, Brier Score, Brier Skill Score y error de confiabilidad.
+
+Esta es una validación empírica local, no una validación hidrodinámica. La serie aún es corta para demostrar desempeño en todos los niveles altos y no permite anticipar operaciones no anunciadas de Salto Grande.
+
+## GEOGLOWS/ECMWF
+
+Se descarga por separado el pronóstico de caudal de 51 miembros de [GEOGLOWS/ECMWF](https://geoglows.ecmwf.int/documentation) para el tramo fluvial identificado cerca de Concordia. Se muestran P10, mediana y P90 diarios hasta 15 días, siempre en m³/s.
+
+No se convierte ese caudal en altura de Puerto Concordia: el punto está influido por la operación de la represa y todavía no existe un archivo local suficiente de repronósticos para validar una curva de transformación. El sistema guarda cada emisión para poder evaluar esa relación en el futuro.
+
+## Mapa
+
+El mapa usa cartografía de [OpenStreetMap](https://www.openstreetmap.org/copyright) y puntos georreferenciados de referencia, exposición, protección y cursos de agua. No dibuja áreas ni profundidades de inundación porque no se dispone todavía de una capa hidráulica local validada para cada altura.
+
+## Actualización y archivo
+
+GitHub Actions intenta consultar las fuentes cada hora. GitHub puede demorar una ejecución programada, por lo que la frecuencia es un objetivo y no una garantía al minuto. Cada corte conserva hora de observación, hora de recuperación, estado de la fuente, versión del modelo y métricas usadas para habilitar o rechazar cada probabilidad.
+
+Los informes sólo comparan cortes producidos por la misma versión metodológica. No se mezclan en la tendencia los porcentajes exploratorios de versiones anteriores.

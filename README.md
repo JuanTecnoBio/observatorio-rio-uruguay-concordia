@@ -1,12 +1,13 @@
 # Observatorio del Río Uruguay — Concordia
 
 Sitio público para seguir el nivel del río, las señales de la cuenca y un
-escenario experimental de 30 días. La portada combina un mapa del corredor local,
-la curva observada y una banda mínima–máxima que explicita cómo aumenta la
-incertidumbre.
+escenario experimental de 30 días. La portada combina un mapa OpenStreetMap con
+puntos georreferenciados, la curva observada y una banda predictiva construida a
+partir de 60 episodios históricos análogos.
 
-Los datos oficiales y el escenario experimental están separados. El sitio no
-publica probabilidades hasta contar con calibración y validación suficientes.
+Los datos oficiales y el escenario experimental están separados. Cada
+probabilidad se calibra y valida por nivel y horizonte; si no supera los controles
+de casos, eventos, Brier Skill y confiabilidad, se publica como «no habilitada».
 
 ## Ejecutar
 
@@ -25,13 +26,15 @@ npm run build:pages
 
 ## Actualización automática
 
-El workflow `.github/workflows/update-and-deploy-pages.yml` se ejecuta cada tres
-horas y también admite ejecución manual. Consulta:
+El workflow `.github/workflows/update-and-deploy-pages.yml` intenta ejecutarse a
+los 23 minutos de cada hora y también admite ejecución manual. Consulta:
 
 - PNA: alturas, variaciones, tendencias y umbrales.
 - CTM: datos horarios de explotación.
 - CTM: comunicado hidrológico de corto plazo.
 - CTM: precipitación GFS publicada para la cuenca.
+- CTM: histórico diario derivado de cinco estaciones de 15 minutos.
+- GEOGLOWS/ECMWF: ensamble de caudal a 15 días, conservado en unidades de caudal.
 
 El adaptador `scripts/update_data.py` conserva el último dato conocido cuando una
 fuente falla, pero lo marca como copia desactualizada y publica el error. Nunca
@@ -59,6 +62,14 @@ tanto en un proyecto `usuario.github.io` como en una página de proyecto.
 - CTM Salto Grande: operación, embalse, aporte y comunicado oficial.
 - CARU, SMN y SNIH: pendientes de automatización o integración completa.
 
-## Límites del escenario
+## Modelo y límites
 
-No se calculan profundidades de inundación. No se comparan alturas entre ceros locales. No se publican probabilidades ni cuantiles sin calibración. El sitio no emite órdenes de evacuación.
+El motor `scripts/forecast_model.py` usa bloques temporales 60/20/20 para
+entrenamiento, calibración y validación final. La banda P10–P90 se corrige por
+split conformal y la línea central sólo conserva la mediana del ensamble cuando
+mejora al menos 3% el MAE de persistencia. La descripción reproducible completa
+está en `public/documentos/metodologia.md`.
+
+No se calculan profundidades de inundación. No se comparan alturas entre ceros
+locales. GEOGLOWS no se transforma en altura sin validación local. El sitio no
+emite órdenes de evacuación.

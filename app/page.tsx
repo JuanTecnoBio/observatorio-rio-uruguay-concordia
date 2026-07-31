@@ -18,12 +18,67 @@ import {
   Waves,
   X,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import type { CircleMarker, Map as LeafletMap } from "leaflet";
 import initialState from "../public/data/current_state.json";
 import initialReportArchive from "../public/data/risk_reports.json";
 
 type Uncertainty = "Moderada" | "Alta" | "Muy alta";
 type Risk = "Bajo" | "Medio" | "Alto";
+
+type MonitoringPlace = {
+  id: string;
+  index: string;
+  name: string;
+  detail: string;
+  locations: Array<{
+    name: string;
+    lat: number;
+    lon: number;
+    kind: "reference" | "exposure" | "protection" | "waterway";
+  }>;
+};
+
+const MONITORING_PLACES: MonitoringPlace[] = [
+  {
+    id: "puerto",
+    index: "01",
+    name: "Puerto Concordia",
+    detail: "Referencia hidrométrica oficial",
+    locations: [{ name: "Puerto Concordia", lat: -31.4017995, lon: -58.0038176, kind: "reference" }],
+  },
+  {
+    id: "costanera",
+    index: "02",
+    name: "Costanera",
+    detail: "Usos públicos y equipamiento expuesto",
+    locations: [{ name: "Costanera", lat: -31.4070568, lon: -58.0124236, kind: "exposure" }],
+  },
+  {
+    id: "club",
+    index: "03",
+    name: "Club Comunicaciones",
+    detail: "Instalaciones deportivas junto al río",
+    locations: [{ name: "Club Comunicaciones", lat: -31.407312, lon: -58.0137452, kind: "exposure" }],
+  },
+  {
+    id: "defensa",
+    index: "04",
+    name: "Defensa Sur",
+    detail: "Terraplén, compuertas y estaciones de bombeo",
+    locations: [{ name: "Defensa Sur", lat: -31.4082906, lon: -58.0197024, kind: "protection" }],
+  },
+  {
+    id: "arroyos",
+    index: "05",
+    name: "Arroyos Concordia y Manzores",
+    detail: "Drenaje urbano condicionado por el río",
+    locations: [
+      { name: "Arroyo Concordia", lat: -31.4056226, lon: -58.0310753, kind: "waterway" },
+      { name: "Arroyo Manzores", lat: -31.3968611, lon: -58.0035936, kind: "waterway" },
+    ],
+  },
+];
 
 type ProjectionPoint = {
   day: number;
@@ -33,7 +88,17 @@ type ProjectionPoint = {
   max: number;
   uncertainty: Uncertainty;
   risk: Risk;
-  basis: "official" | "experimental";
+  basis: string;
+  interval?: string;
+  validation?: {
+    sample_size: number;
+    mae_m: number | null;
+    persistence_mae_m: number | null;
+    mae_skill_vs_persistence: number | null;
+    interval_80_coverage: number | null;
+    median_interval_width_m: number | null;
+    preferred_central: string;
+  } | null;
 };
 
 type StationReading = {
@@ -51,17 +116,31 @@ type StationReading = {
 type RiskReportRow = {
   horizon_days: number;
   classification: string;
-  central_estimate_pct: number;
-  plausible_interval_pct: [number, number];
+  central_estimate_pct: number | null;
+  raw_ensemble_probability_pct?: number;
+  plausible_interval_pct: [number, number] | null;
   classification_uncertainty: string;
   scenario_min_m: number;
   scenario_central_m: number;
   scenario_max_m: number;
+  validation?: {
+    sample_size: number;
+    event_count: number;
+    non_event_count?: number;
+    calibration_sample_size?: number;
+    calibration_event_count?: number;
+    brier_score: number | null;
+    brier_skill_score: number | null;
+    reliability_error: number | null;
+    enabled: boolean;
+    reason: string;
+  };
 };
 
 type RiskReportMethod = {
   method_id: string;
   calibrated: boolean;
+  validated?: boolean;
   label: string;
   note: string;
 };
@@ -152,8 +231,39 @@ type RiverState = {
   forecast_method?: {
     model_id: string;
     status: string;
-    description: string;
-    validation: string;
+    label?: string;
+    description?: string;
+    validation: string | {
+      strategy: string;
+      calibration_start: string;
+      calibration_end: string;
+      validation_start: string;
+      validation_end: string;
+      validation_origins: number;
+      calibration_origins?: number;
+      interval_target_coverage?: number;
+      point_metrics: Record<string, unknown>;
+      probability_metrics: Record<string, unknown>;
+    };
+    training_start?: string;
+    training_end?: string;
+    member_count?: number;
+    effective_member_count?: number;
+    interval_definition?: string;
+  };
+  external_forecasts?: {
+    geoglows?: {
+      generated_at: string;
+      valid_until: string;
+      unit: string;
+      note: string;
+      daily: Array<{
+        date: string;
+        p10_m3s: number;
+        median_m3s: number;
+        p90_m3s: number;
+      }>;
+    };
   };
   risk_report_bundle?: RiskReportCut;
 };
@@ -167,6 +277,7 @@ const OFFICIAL_LINKS = {
   smn: "https://www.smn.gob.ar/alertas",
   snih: "https://snih.hidricosargentina.gob.ar/",
   caru: "https://www.caru.org.uy/",
+  geoglows: "https://geoglows.ecmwf.int/",
 };
 
 const LIVE_DATA_BASE =
@@ -216,14 +327,11 @@ const sourceRows = [
   ["CTM · datos horarios", "Turbinado, vertido, embalse y restitución", "Automática", OFFICIAL_LINKS.ctmHourly],
   ["CTM · comunicado", "Rango oficial de corto plazo", "Automática", OFFICIAL_LINKS.ctmBulletin],
   ["CTM · lluvia", "Pronóstico GFS por cuenca incremental", "Automática", OFFICIAL_LINKS.ctmRain],
+  ["GEOGLOWS/ECMWF", "Ensamble de caudal de 51 miembros, 15 días", "Automática · señal separada", OFFICIAL_LINKS.geoglows],
   ["SMN", "Alertas meteorológicas", "Enlace de consulta", OFFICIAL_LINKS.smn],
   ["SNIH", "Series hidrológicas crudas", "En evaluación", OFFICIAL_LINKS.snih],
   ["CARU", "Información binacional del río Uruguay", "En evaluación", OFFICIAL_LINKS.caru],
 ];
-
-function round(value: number) {
-  return Math.round(value * 100) / 100;
-}
 
 function formatNumber(value: number, decimals = 2) {
   return new Intl.NumberFormat("es-AR", {
@@ -272,67 +380,19 @@ function createProjection(state: RiverState): ProjectionPoint[] {
   const current =
     state.observations.find((item) => item.station_id === "CONCORDIA_PNA")?.value ?? 10;
   const start = new Date(state.generated_at);
-  const official = state.official_forecast;
-  const officialIsCurrent =
-    official.concordia_min_m !== null &&
-    Date.parse(official.valid_until_local) >= Date.parse(state.generated_at);
-
   return Array.from({ length: 31 }, (_, day) => {
     const date = new Date(start);
     date.setDate(start.getDate() + day);
 
-    if (day === 0) {
-      return {
-        day,
-        date: date.toISOString(),
-        min: current,
-        central: current,
-        max: current,
-        uncertainty: "Moderada" as const,
-        risk: "Bajo" as const,
-        basis: "official" as const,
-      };
-    }
-
-    if (day === 1 && officialIsCurrent) {
-      const officialMinimum = official.concordia_min_m!;
-      return {
-        day,
-        date: date.toISOString(),
-        min: officialMinimum,
-        central: round((officialMinimum + official.concordia_max_m) / 2),
-        max: official.concordia_max_m,
-        uncertainty: "Moderada" as const,
-        risk: official.concordia_max_m >= state.thresholds.alert_m ? "Medio" : "Bajo",
-        basis: "official" as const,
-      };
-    }
-
-    const upstreamPulse = 0.24 * Math.exp(-Math.pow((day - 7) / 5.5, 2));
-    const persistence = 0.1 * (1 - Math.exp(-day / 14));
-    const central = round(current + upstreamPulse + persistence);
-    const lowerWidth = 0.18 + 0.035 * day + 0.0007 * day * day;
-    const upperWidth = 0.22 + 0.043 * day + 0.0009 * day * day;
-    const min = round(Math.max(7.5, central - lowerWidth));
-    const max = round(central + upperWidth);
-    const risk: Risk =
-      max >= state.thresholds.evacuation_m
-        ? "Alto"
-        : max >= state.thresholds.alert_m
-          ? "Medio"
-          : "Bajo";
-    const uncertainty: Uncertainty =
-      day <= 3 ? "Moderada" : day <= 7 ? "Alta" : "Muy alta";
-
     return {
       day,
       date: date.toISOString(),
-      min,
-      central,
-      max,
-      uncertainty,
-      risk,
-      basis: "experimental",
+      min: current,
+      central: current,
+      max: current,
+      uncertainty: day <= 3 ? "Moderada" : day <= 7 ? "Alta" : "Muy alta",
+      risk: "Bajo",
+      basis: day === 0 ? "official" : "unavailable",
     };
   });
 }
@@ -346,12 +406,6 @@ function normalizeState(incoming: RiverState): RiverState {
     signals: incoming.signals ?? FALLBACK_STATE.signals,
     forecast_method: incoming.forecast_method ?? FALLBACK_STATE.forecast_method,
   };
-}
-
-function uncertaintyClass(value: Uncertainty) {
-  if (value === "Moderada") return "uncertainty-moderate";
-  if (value === "Alta") return "uncertainty-high";
-  return "uncertainty-very-high";
 }
 
 function riskClass(value: Risk) {
@@ -385,8 +439,8 @@ function ReportTable({
           <tr>
             <th>Horizonte desde el corte</th>
             <th>Clasificación</th>
-            <th>Estimación central</th>
-            <th>Intervalo plausible</th>
+            <th>Probabilidad publicada</th>
+            <th>Intervalo muestral</th>
             <th>Incertidumbre</th>
             <th>Cambio</th>
           </tr>
@@ -395,19 +449,33 @@ function ReportTable({
           {report.rows.map((row) => {
             const previousValue = previousByHorizon.get(row.horizon_days);
             const delta =
-              previousValue === undefined
+              previousValue === undefined || previousValue === null || row.central_estimate_pct === null
                 ? null
                 : row.central_estimate_pct - previousValue;
             return (
               <tr key={row.horizon_days}>
                 <td><strong>{row.horizon_days} días</strong></td>
                 <td>{row.classification}</td>
-                <td className="report-probability">≈{row.central_estimate_pct}%</td>
-                <td>{row.plausible_interval_pct[0]}–{row.plausible_interval_pct[1]}%</td>
+                <td className="report-probability">
+                  {row.central_estimate_pct === null ? "—" : `${row.central_estimate_pct}%`}
+                </td>
+                <td>
+                  {row.plausible_interval_pct
+                    ? `${row.plausible_interval_pct[0]}–${row.plausible_interval_pct[1]}%`
+                    : "No publicado"}
+                </td>
                 <td>
                   <span className={`report-uncertainty ${reportUncertaintyClass(row.classification_uncertainty)}`}>
                     {row.classification_uncertainty}
                   </span>
+                  {row.validation && (
+                    <small className="validation-note">
+                      n={row.validation.sample_size} · eventos={row.validation.event_count}
+                      {row.validation.brier_skill_score === null
+                        ? " · BSS no calculable"
+                        : ` · BSS ${row.validation.brier_skill_score.toFixed(2)}`}
+                    </small>
+                  )}
                 </td>
                 <td>
                   {delta === null ? (
@@ -476,7 +544,9 @@ function ReportTrend({
   const plotW = width - pad.left - pad.right;
   const plotH = height - pad.top - pad.bottom;
   const values = ordered.flatMap(({ report }) =>
-    report.rows.map((row) => row.central_estimate_pct),
+    report.rows.flatMap((row) =>
+      row.central_estimate_pct === null ? [] : [row.central_estimate_pct],
+    ),
   );
   const minValue = Math.max(0, Math.floor((Math.min(...values, 0) - 10) / 10) * 10);
   const maxValue = Math.min(100, Math.ceil((Math.max(...values, 50) + 10) / 10) * 10);
@@ -500,7 +570,7 @@ function ReportTrend({
         ))}
       </div>
       <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-labelledby="report-trend-title report-trend-desc">
-        <title id="report-trend-title">Evolución de la estimación central</title>
+        <title id="report-trend-title">Evolución de la probabilidad publicada</title>
         <desc id="report-trend-desc">
           Cambios entre los últimos cortes para el nivel de{" "}
           {formatNumber(threshold)} metros y horizontes de 7, 14, 21 y 28 días.
@@ -512,9 +582,13 @@ function ReportTrend({
           </g>
         ))}
         {horizons.map((horizon) => {
-          const points = ordered.map(({ report }, index) => {
-            const value = report.rows.find((row) => row.horizon_days === horizon)?.central_estimate_pct ?? 0;
-            return { x: x(index), y: y(value), value };
+          const points = ordered.flatMap(({ report, cut }, index) => {
+            const value = report.rows.find(
+              (row) => row.horizon_days === horizon,
+            )?.central_estimate_pct;
+            return value === null || value === undefined
+              ? []
+              : [{ x: x(index), y: y(value), value, id: cut.id }];
           });
           const path = points
             .map((point, index) => `${index ? "L" : "M"} ${point.x} ${point.y}`)
@@ -524,7 +598,7 @@ function ReportTrend({
               <path d={path} fill="none" stroke={colors[horizon]} strokeWidth="3" />
               {points.map((point, index) => (
                 <circle
-                  key={`${horizon}-${ordered[index].cut.id}`}
+                  key={`${horizon}-${point.id}-${index}`}
                   cx={point.x}
                   cy={point.y}
                   r="4.5"
@@ -594,12 +668,6 @@ function RiskReportSection({
       : current?.thresholds.map((report) => report.threshold_m) ?? [];
   const thresholdLabel = `${formatNumber(selectedThreshold)} m`;
 
-  useEffect(() => {
-    if (allReports[0]?.id && !allReports.some((report) => report.id === selectedId)) {
-      setSelectedId(allReports[0].id);
-    }
-  }, [allReports, selectedId]);
-
   if (!current || !currentThresholdReport) return null;
 
   return (
@@ -608,10 +676,12 @@ function RiskReportSection({
         <div className="section-title report-title">
           <div>
             <span>INFORMES · PUERTO CONCORDIA</span>
-            <h2>Riesgo por nivel y horizonte</h2>
+            <h2>Superación de niveles por horizonte</h2>
             <p>
               El evento evaluado es que el puerto de Concordia alcance o supere
-              {" "}{thresholdLabel} al menos una vez dentro de cada período.
+              {" "}{thresholdLabel} al menos una vez dentro de cada período. Un
+              porcentaje sólo aparece si esa celda aprueba la validación temporal;
+              en caso contrario se informa “no habilitada”.
             </p>
           </div>
           <div className="report-cut">
@@ -682,7 +752,7 @@ function RiskReportSection({
             <div className="report-panel-heading">
               <div>
                 <span>INFORME VIGENTE</span>
-                <strong>Estimación por horizonte</strong>
+                <strong>Probabilidad validada por horizonte</strong>
               </div>
               {previous && (
                 <p>
@@ -743,7 +813,7 @@ function RiskReportSection({
             <div className="report-panel-heading">
               <div>
                 <span>EVOLUCIÓN ENTRE CORTES</span>
-                <strong>Estimación central por horizonte</strong>
+                <strong>Probabilidad publicada por horizonte</strong>
               </div>
               <p>Se muestran hasta 24 actualizaciones, en orden cronológico.</p>
             </div>
@@ -785,8 +855,18 @@ function Hydrograph({
   const historyDays = Math.max(4, history.length - 1);
   const minX = -historyDays;
   const maxX = 30;
-  const minY = 7.5;
-  const maxY = 13.5;
+  const plottedValues = [
+    ...history.map((point) => point.value),
+    ...projection.flatMap((point) => [point.min, point.central, point.max]),
+    state.thresholds.alert_m,
+    state.thresholds.evacuation_m,
+  ].filter(Number.isFinite);
+  const rawMinY = Math.min(...plottedValues);
+  const rawMaxY = Math.max(...plottedValues);
+  const roughStep = Math.max(0.1, (rawMaxY - rawMinY) / 5);
+  const tickStep = roughStep <= 0.5 ? 0.5 : roughStep <= 1 ? 1 : roughStep <= 2 ? 2 : 5;
+  const minY = Math.floor((rawMinY - tickStep * 0.25) / tickStep) * tickStep;
+  const maxY = Math.ceil((rawMaxY + tickStep * 0.25) / tickStep) * tickStep;
   const x = (day: number) => pad.left + ((day - minX) / (maxX - minX)) * plotW;
   const y = (value: number) => pad.top + ((maxY - value) / (maxY - minY)) * plotH;
 
@@ -803,7 +883,10 @@ function Hydrograph({
     .join(" ");
   const selectedX = x(horizon);
   const selectedY = y(selected.central);
-  const yTicks = [8, 9, 10, 11, 12, 13];
+  const yTicks = Array.from(
+    { length: Math.round((maxY - minY) / tickStep) + 1 },
+    (_, index) => minY + index * tickStep,
+  );
   const xTicks = [-historyDays, 0, 7, 14, 21, 30];
 
   return (
@@ -816,9 +899,11 @@ function Hydrograph({
       >
         <title id="hydro-title">Nivel observado y escenario a treinta días</title>
         <desc id="hydro-description">
-          La serie oficial observada llega hasta hoy. Desde hoy se abre una banda con
-          límites inferior y superior; su ancho muestra incertidumbre creciente y no
-          probabilidades.
+          La serie oficial observada llega hasta hoy. La banda posterior contiene los
+          percentiles 10 y 90 del ensamble de trayectorias históricas análogas,
+          ampliados con una corrección conformal. La línea punteada representa la
+          mediana sólo donde supera a persistencia; en los demás horizontes converge
+          hacia la altura actual.
         </desc>
 
         <defs>
@@ -919,13 +1004,13 @@ function Hydrograph({
           observado
         </text>
         <text x={x(0) + 12} y={pad.top + 18} className="plot-caption plot-caption-blue">
-          escenario experimental · incertidumbre creciente
+          ensamble local · P10–P90 corregido
         </text>
         <text x={x(26)} y={y(projection[26].max) - 12} className="bound-label">
-          máximo estimado
+          límite superior
         </text>
         <text x={x(26)} y={y(projection[26].min) + 22} className="bound-label">
-          mínimo estimado
+          límite inferior
         </text>
 
         {xTicks.map((tick) => {
@@ -997,102 +1082,190 @@ function Hydrograph({
   );
 }
 
-function TerritoryMap() {
-  const contours = Array.from({ length: 12 }, (_, index) => index);
+function InteractiveTerritoryMap({
+  selectedId,
+  onSelect,
+}: {
+  selectedId: string;
+  onSelect: (id: string) => void;
+}) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<LeafletMap | null>(null);
+  const markersRef = useRef<Record<string, CircleMarker[]>>({});
+
+  useEffect(() => {
+    let disposed = false;
+    let map: LeafletMap | null = null;
+
+    void import("leaflet").then((L) => {
+      if (disposed || !containerRef.current || mapRef.current) return;
+      map = L.map(containerRef.current, {
+        zoomControl: true,
+        scrollWheelZoom: false,
+      });
+      mapRef.current = map;
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        maxZoom: 19,
+      }).addTo(map);
+
+      const colors = {
+        reference: "#f2cf00",
+        exposure: "#d87525",
+        protection: "#bb1f1f",
+        waterway: "#1250ad",
+      };
+      const bounds: Array<[number, number]> = [];
+      const markerGroups: Record<string, CircleMarker[]> = {};
+
+      for (const place of MONITORING_PLACES) {
+        markerGroups[place.id] = place.locations.map((location) => {
+          bounds.push([location.lat, location.lon]);
+          const marker = L.circleMarker([location.lat, location.lon], {
+            radius: location.kind === "reference" ? 9 : 7,
+            color: "#fffdf7",
+            weight: 3,
+            fillColor: colors[location.kind],
+            fillOpacity: 1,
+          })
+            .addTo(map as LeafletMap)
+            .bindPopup(
+              `<strong>${location.name}</strong><br><span>${place.detail}</span>`,
+            );
+          marker.on("click", () => onSelect(place.id));
+          return marker;
+        });
+      }
+      markersRef.current = markerGroups;
+
+      L.circleMarker([-31.2749759, -57.9385132], {
+        radius: 7,
+        color: "#fffdf7",
+        weight: 3,
+        fillColor: "#113b76",
+        fillOpacity: 1,
+      })
+        .addTo(map)
+        .bindPopup("<strong>Represa de Salto Grande</strong><br><span>Referencia aguas arriba</span>");
+      bounds.push([-31.2749759, -57.9385132]);
+      map.fitBounds(bounds, { padding: [36, 36] });
+      window.setTimeout(() => map?.invalidateSize(), 50);
+    });
+
+    return () => {
+      disposed = true;
+      markersRef.current = {};
+      map?.remove();
+      mapRef.current = null;
+    };
+  }, [onSelect]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    const place = MONITORING_PLACES.find((item) => item.id === selectedId);
+    if (!map || !place) return;
+    const points = place.locations.map(
+      (location) => [location.lat, location.lon] as [number, number],
+    );
+    if (points.length === 1) {
+      map.flyTo(points[0], 15, { duration: 0.6 });
+      markersRef.current[selectedId]?.[0]?.openPopup();
+    } else {
+      void import("leaflet").then((L) => {
+        map.fitBounds(L.latLngBounds(points), { padding: [55, 55], maxZoom: 14 });
+      });
+    }
+  }, [selectedId]);
+
   return (
-    <div className="territory-map">
-      <svg viewBox="0 0 470 720" role="img" aria-labelledby="map-title map-desc">
-        <title id="map-title">Corredor del río Uruguay junto a Concordia</title>
-        <desc id="map-desc">
-          Esquema territorial con Salto Grande, Puerto Concordia, Costanera, Club
-          Comunicaciones, Defensa Sur y dirección del flujo. Las ubicaciones son
-          aproximadas.
-        </desc>
-        <rect width="470" height="720" className="map-paper" />
-        {contours.map((index) => (
-          <path
-            key={index}
-            d={`M ${-70 + index * 28} 0 C ${60 + index * 19} 145, ${-35 + index * 33} 280, ${
-              65 + index * 27
-            } 420 S ${10 + index * 38} 640, ${145 + index * 28} 720`}
-            className="contour-line"
-          />
-        ))}
-
-        <path
-          d="M 238 -20 C 197 70 258 120 222 190 C 194 246 234 291 202 350 C 176 400 210 454 184 520 C 164 575 205 640 177 748"
-          className="river-bank river-bank-left"
-        />
-        <path
-          d="M 302 -20 C 263 78 323 126 286 196 C 258 254 302 301 266 361 C 239 411 273 466 246 532 C 224 590 270 648 239 748"
-          className="river-bank river-bank-right"
-        />
-        <path
-          d="M 270 -20 C 230 75 291 123 254 193 C 226 249 268 296 234 356 C 207 405 242 460 216 526 C 194 582 237 644 208 748"
-          className="river-center"
-        />
-
-        <path d="M 160 333 C 177 342 188 350 202 357" className="creek-line" />
-        <path d="M 142 480 C 162 490 175 503 190 520" className="creek-line" />
-        <path d="M 118 577 C 142 570 160 560 177 548" className="defense-line" />
-
-        <text x="50" y="315" className="country-label">ARGENTINA</text>
-        <text x="329" y="315" className="country-label">URUGUAY</text>
-        <text x="73" y="350" className="micro-label">Arroyo Manzores</text>
-        <text x="57" y="502" className="micro-label">Arroyo Concordia</text>
-        <text x="43" y="604" className="micro-label">Defensa Sur</text>
-
-        <g transform="translate(220 80)">
-          <path d="M 0 0 L 82 0 M 7 -7 L 7 9 M 18 -7 L 18 9 M 29 -7 L 29 9 M 40 -7 L 40 9 M 51 -7 L 51 9 M 62 -7 L 62 9 M 73 -7 L 73 9" className="dam-symbol" />
-          <circle cx="42" cy="3" r="8" className="map-point dam-point" />
-          <text x="97" y="8" className="place-label">Salto Grande</text>
-        </g>
-
-        <g transform="translate(214 355)">
-          <circle cx="20" cy="0" r="11" className="map-point selected-point" />
-          <line x1="31" x2="107" y1="0" y2="0" className="leader-line" />
-          <text x="113" y="6" className="place-label">Puerto Concordia</text>
-        </g>
-
-        <g transform="translate(197 443)">
-          <circle cx="20" cy="0" r="7" className="map-point coast-point" />
-          <line x1="28" x2="95" y1="0" y2="0" className="leader-line" />
-          <text x="101" y="6" className="place-label">Costanera</text>
-        </g>
-
-        <g transform="translate(184 538)">
-          <circle cx="20" cy="0" r="7" className="map-point club-point" />
-          <line x1="27" x2="78" y1="0" y2="0" className="leader-line" />
-          <text x="84" y="-2" className="place-label">Club</text>
-          <text x="84" y="16" className="place-label">Comunicaciones</text>
-        </g>
-
-        <g transform="translate(45 70)">
-          <text x="0" y="0" className="north-label">N</text>
-          <path d="M 8 16 L -2 55 L 8 47 L 18 55 Z" className="north-arrow" />
-        </g>
-
-        <g transform="translate(355 92)">
-          <path d="M 0 55 L 0 0 M -8 12 L 0 0 L 8 12" className="flow-arrow" />
-          <text x="-18" y="76" className="micro-label">aguas arriba</text>
-        </g>
-        <g transform="translate(350 602)">
-          <path d="M 0 0 L 0 55 M -8 43 L 0 55 L 8 43" className="flow-arrow" />
-          <text x="-18" y="-10" className="micro-label">aguas abajo</text>
-        </g>
-
-        <g transform="translate(48 672)">
-          <line x1="0" x2="105" y1="0" y2="0" className="scale-line" />
-          <line x1="0" x2="0" y1="-5" y2="5" className="scale-line" />
-          <line x1="105" x2="105" y1="-5" y2="5" className="scale-line" />
-          <text x="52" y="-10" textAnchor="middle" className="micro-label">2 km</text>
-        </g>
-      </svg>
+    <div className="interactive-map-shell">
+      <div
+        ref={containerRef}
+        className="interactive-map"
+        role="application"
+        aria-label="Mapa interactivo de puntos bajo seguimiento en Concordia"
+      />
+      <div className="map-legend" aria-label="Referencias del mapa">
+        <span><i className="legend-reference" /> Nivel oficial</span>
+        <span><i className="legend-exposure" /> Exposición</span>
+        <span><i className="legend-protection" /> Protección</span>
+        <span><i className="legend-waterway" /> Cursos de agua</span>
+      </div>
       <p className="map-caption">
-        Esquema de referencia. Los puntos ayudan a leer el corredor y no sustituyen
-        cartografía operativa.
+        Cartografía OpenStreetMap y ubicaciones georreferenciadas. No representa
+        extensión ni profundidad de inundación.
       </p>
     </div>
+  );
+}
+
+function GeoglowsSignal({
+  forecast,
+}: {
+  forecast: NonNullable<RiverState["external_forecasts"]>["geoglows"];
+}) {
+  if (!forecast?.daily?.length) return null;
+  const daily = forecast.daily;
+  const width = 720;
+  const height = 190;
+  const pad = { left: 58, right: 18, top: 20, bottom: 38 };
+  const values = daily.flatMap((point) => [point.p10_m3s, point.median_m3s, point.p90_m3s]);
+  const minimum = Math.min(...values);
+  const maximum = Math.max(...values);
+  const margin = Math.max(100, (maximum - minimum) * 0.12);
+  const minY = Math.max(0, minimum - margin);
+  const maxY = maximum + margin;
+  const x = (index: number) =>
+    pad.left + (index / Math.max(1, daily.length - 1)) * (width - pad.left - pad.right);
+  const y = (value: number) =>
+    pad.top + ((maxY - value) / Math.max(1, maxY - minY)) * (height - pad.top - pad.bottom);
+  const upper = daily.map((point, index) => `${x(index)},${y(point.p90_m3s)}`).join(" ");
+  const lower = [...daily]
+    .reverse()
+    .map((point, reverseIndex) => {
+      const index = daily.length - 1 - reverseIndex;
+      return `${x(index)},${y(point.p10_m3s)}`;
+    })
+    .join(" ");
+  const median = daily
+    .map((point, index) => `${index ? "L" : "M"} ${x(index)} ${y(point.median_m3s)}`)
+    .join(" ");
+  const first = daily[0].median_m3s;
+  const last = daily[daily.length - 1].median_m3s;
+  const change = first ? (last - first) / first : 0;
+  const tendency = change > 0.08 ? "ascendente" : change < -0.08 ? "descendente" : "sin cambio marcado";
+
+  return (
+    <article className="flow-signal">
+      <div className="flow-signal-copy">
+        <span>SEÑAL EXTERNA · 15 DÍAS</span>
+        <h3>Caudal previsto aguas arriba de Concordia</h3>
+        <p>
+          Ensamble GEOGLOWS/ECMWF para el tramo fluvial más cercano. La mediana termina
+          en <strong>{new Intl.NumberFormat("es-AR").format(Math.round(last))} m³/s</strong>,
+          con tendencia {tendency}. Se mantiene en caudal: no se transforma en altura
+          local porque esa relación todavía no fue validada para este punto regulado.
+        </p>
+        <small>
+          Emitido {formatReportDateTime(forecast.generated_at)} · 51 miembros · banda P10–P90
+        </small>
+      </div>
+      <div className="flow-signal-chart">
+        <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Pronóstico de caudal GEOGLOWS con mediana e intervalo P10 a P90">
+          <polygon points={`${upper} ${lower}`} className="flow-band" />
+          <path d={median} className="flow-median" />
+          <line x1={pad.left} x2={width - pad.right} y1={height - pad.bottom} y2={height - pad.bottom} className="flow-axis" />
+          <text x={pad.left} y={height - 12} className="flow-label">hoy</text>
+          <text x={width - pad.right} y={height - 12} textAnchor="end" className="flow-label">+{daily.length - 1} días</text>
+          <text x={pad.left - 8} y={y(maximum) + 4} textAnchor="end" className="flow-label">
+            {new Intl.NumberFormat("es-AR", { notation: "compact" }).format(Math.round(maximum))}
+          </text>
+          <text x={pad.left - 8} y={y(minimum) + 4} textAnchor="end" className="flow-label">
+            {new Intl.NumberFormat("es-AR", { notation: "compact" }).format(Math.round(minimum))}
+          </text>
+        </svg>
+      </div>
+    </article>
   );
 }
 
@@ -1103,6 +1276,7 @@ export default function Home() {
   );
   const [horizon, setHorizon] = useState(7);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [selectedPlace, setSelectedPlace] = useState("puerto");
 
   useEffect(() => {
     const cacheBuster = Date.now();
@@ -1157,6 +1331,7 @@ export default function Home() {
   const officialForecastIsCurrent =
     Date.parse(state.official_forecast.valid_until_local) >= Date.parse(state.generated_at);
   const officialForecastHasRange = state.official_forecast.concordia_min_m !== null;
+  const modelReady = state.forecast_method?.model_id === "ctm-analog-ensemble-v1.1";
   const stageAgeHours = concordiaObservation
     ? Math.max(
         0,
@@ -1293,10 +1468,6 @@ export default function Home() {
 
       <section id="nivel" className="atlas-stage">
         <div className="page-width stage-grid">
-          <aside className="map-column">
-            <TerritoryMap />
-          </aside>
-
           <div className="forecast-column">
             <div className="forecast-heading">
               <div>
@@ -1317,9 +1488,12 @@ export default function Home() {
             </div>
 
             <p className="forecast-intro">
-              La línea azul muestra mediciones oficiales. {officialForecastIsCurrent && officialForecastHasRange
-                ? "Durante las primeras 24 horas la banda reproduce el rango informado por CTM; después representa un escenario experimental cuyo margen crece con el horizonte."
-                : "Cuando CTM publica solamente un máximo, ese valor se informa arriba pero no se inventa un mínimo para completar una banda. Desde hoy se muestra el escenario experimental con incertidumbre creciente."}
+              La línea continua muestra mediciones oficiales. {modelReady
+                ? "Desde hoy, la banda parte de 60 trayectorias históricas análogas de la red CTM y se ensancha con una corrección conformal calculada en un período separado; la línea punteada usa la mediana sólo donde mejora al menos 3% a la persistencia."
+                : "El pronóstico cuantitativo no está disponible en este corte; se conserva únicamente la altura observada."}
+              {officialForecastIsCurrent
+                ? " El parte oficial de corto plazo permanece separado y se informa en la franja superior."
+                : " El último parte de corto plazo está vencido."}
             </p>
             {state.update_status?.state !== "fresh" && (
               <p className="source-warning" role="status">
@@ -1339,17 +1513,19 @@ export default function Home() {
                 </strong>
               </div>
               <div>
-                <span>Rango del escenario</span>
+                <span>Banda predictiva corregida</span>
                 <strong>{formatNumber(selected.min)}–{formatNumber(selected.max)} m</strong>
               </div>
               <div>
-                <span>Riesgo de alcanzar umbrales</span>
+                <span>Lectura del percentil 90</span>
                 <strong className={riskClass(selected.risk)}>{selected.risk}</strong>
               </div>
               <div>
-                <span>Incertidumbre</span>
-                <strong className={uncertaintyClass(selected.uncertainty)}>
-                  {selected.uncertainty}
+                <span>Validación del horizonte</span>
+                <strong>
+                  {selected.validation?.mae_m !== null && selected.validation?.mae_m !== undefined
+                    ? `MAE ${formatNumber(selected.validation.mae_m)} m`
+                    : selected.uncertainty}
                 </strong>
               </div>
             </div>
@@ -1357,10 +1533,12 @@ export default function Home() {
             <div className="interpretation-note">
               <Info size={17} />
               <p>
-                <strong>{selected.basis === "official" ? "Cobertura oficial." : "Estimación experimental."}</strong>{" "}
-                “Mínimo” y “máximo” son límites del escenario bajo los supuestos actuales,
-                no extremos físicamente posibles ni probabilidades. La incertidumbre es
-                {` ${selected.uncertainty.toLowerCase()}`}.
+                <strong>{modelReady ? "Ensamble local validado con límites." : "Sin pronóstico habilitado."}</strong>{" "}
+                Los límites parten de P10 y P90 y luego incorporan la corrección
+                conformal; no son máximos ni mínimos físicamente posibles.
+                {selected.validation
+                  ? ` En el holdout temporal este horizonte tuvo una cobertura de ${Math.round((selected.validation.interval_80_coverage ?? 0) * 100)}% y habilidad MAE frente a persistencia de ${selected.validation.mae_skill_vs_persistence === null ? "no calculable" : `${Math.round(selected.validation.mae_skill_vs_persistence * 100)}%`}.`
+                  : " La probabilidad de superar cada nivel se evalúa aparte y sólo se publica si supera los controles de validación."}
               </p>
             </div>
           </div>
@@ -1475,25 +1653,37 @@ export default function Home() {
               ni un tiempo de llegada a Concordia.
             </p>
           </div>
+          <GeoglowsSignal forecast={state.external_forecasts?.geoglows} />
         </div>
       </section>
 
       <section id="territorio" className="content-section territory-section">
-        <div className="page-width territory-layout">
+        <div className="page-width">
           <div className="section-title">
             <span>CONCORDIA Y SU COSTA</span>
-            <h2>Lugares que requieren seguimiento</h2>
+            <h2>Puntos bajo seguimiento</h2>
             <p>
-              El mapa prioriza puntos conocidos y sistemas de protección. No dibuja
-              áreas inundadas cuando no existe una capa validada para el escenario.
+              Ubicaciones verificables para leer el corredor costero. El mapa no
+              dibuja áreas inundadas porque todavía no existe una capa local validada
+              para cada altura.
             </p>
           </div>
-          <div className="places-list">
-            <div><b>01</b><span><strong>Puerto Concordia</strong><small>Referencia hidrométrica oficial</small></span></div>
-            <div><b>02</b><span><strong>Costanera</strong><small>Usos públicos y equipamiento expuesto</small></span></div>
-            <div><b>03</b><span><strong>Club Comunicaciones</strong><small>Instalaciones deportivas junto al río</small></span></div>
-            <div><b>04</b><span><strong>Defensa Sur</strong><small>Terraplén, compuertas y estaciones de bombeo</small></span></div>
-            <div><b>05</b><span><strong>Arroyos Concordia y Manzores</strong><small>Drenaje urbano condicionado por el río</small></span></div>
+          <div className="territory-layout">
+            <InteractiveTerritoryMap selectedId={selectedPlace} onSelect={setSelectedPlace} />
+            <div className="places-list" aria-label="Seleccionar un punto del mapa">
+              {MONITORING_PLACES.map((place) => (
+                <button
+                  type="button"
+                  key={place.id}
+                  className={selectedPlace === place.id ? "active" : ""}
+                  onClick={() => setSelectedPlace(place.id)}
+                  aria-pressed={selectedPlace === place.id}
+                >
+                  <b>{place.index}</b>
+                  <span><strong>{place.name}</strong><small>{place.detail}</small></span>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -1539,27 +1729,29 @@ export default function Home() {
           <div className="method-steps">
             <div>
               <b>1</b>
-              <span><strong>Medición</strong><small>La serie observada proviene de PNA y conserva fecha, unidad y estación.</small></span>
+              <span><strong>Red observada</strong><small>Niveles y lluvia de Concordia, Paso de los Libres, Monte Caseros, Federación y Salto Grande, agregados desde las mediciones CTM de 15 minutos.</small></span>
             </div>
             <div>
               <b>2</b>
-              <span><strong>Primeras 24 horas</strong><small>La banda reproduce el mínimo y máximo del comunicado diario de CTM.</small></span>
+              <span><strong>Sesenta análogos</strong><small>Se buscan estados históricos similares usando nivel local, cambios de 1–14 días, estaciones aguas arriba, embalse, lluvia y época del año.</small></span>
             </div>
             <div>
               <b>3</b>
-              <span><strong>Días 2 a 30</strong><small>Un escenario de persistencia incorpora descarga, señal aguas arriba y lluvia publicada.</small></span>
+              <span><strong>Trayectorias y banda</strong><small>Cada análogo aporta sus 30 días posteriores. P10–P90 se amplía por calibración conformal; el centro usa mediana sólo con una mejora MAE mínima de 3%.</small></span>
             </div>
             <div>
               <b>4</b>
-              <span><strong>Incertidumbre</strong><small>El rango se ensancha con el horizonte porque el método todavía no está calibrado.</small></span>
+              <span><strong>Probabilidad condicionada</strong><small>La frecuencia ponderada de superación se calibra en un bloque separado. Sólo se publica con suficientes eventos, BSS ≥ 0,05 y error de confiabilidad ≤ 0,12 en el bloque final.</small></span>
             </div>
           </div>
           <div className="method-warning">
             <Info size={18} />
             <p>
-              Este es un primer modelo experimental y auditable. No tiene todavía
-              backtesting suficiente para informar probabilidades. Su función es hacer
-              visible el abanico de escenarios, no reemplazar los partes oficiales.
+              <strong>Validación temporal, no promesa de certeza.</strong> El tramo final
+              del historial queda fuera del entrenamiento. GEOGLOWS/ECMWF y el parte de
+              CTM se muestran separados: no se convierten silenciosamente en altura ni
+              se usan como si fueran observaciones locales. El modelo no anticipa
+              decisiones futuras de operación de la represa.
             </p>
           </div>
         </div>
