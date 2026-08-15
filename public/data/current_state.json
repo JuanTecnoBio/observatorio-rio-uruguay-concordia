@@ -1,10 +1,10 @@
 {
   "schema_version": "0.2.0",
-  "generated_at": "2026-08-15T06:45:29-03:00",
+  "generated_at": "2026-08-15T07:44:13-03:00",
   "timezone": "America/Argentina/Cordoba",
   "update_status": {
     "state": "partial",
-    "message": "Corte parcial: no respondieron PNA. La altura publicada corresponde a CTM Salto Grande y conserva su hora de observación."
+    "message": "Corte parcial: no respondieron PNA, el ensamble de caudal GEOGLOWS/ECMWF. La altura publicada corresponde a CTM Salto Grande y conserva su hora de observación."
   },
   "status": {
     "official_level_state": "ESTABLE",
@@ -23,9 +23,9 @@
       "station_name": "CONCORDIA",
       "latitude": -31.4,
       "longitude": -58.017,
-      "observed_at_utc": "2026-08-15T09:15:00Z",
-      "observed_at_local": "2026-08-15T06:15:00-03:00",
-      "retrieved_at": "2026-08-15T06:45:29-03:00",
+      "observed_at_utc": "2026-08-15T10:15:00Z",
+      "observed_at_local": "2026-08-15T07:15:00-03:00",
+      "retrieved_at": "2026-08-15T07:44:13-03:00",
       "value": 8.74,
       "unit": "m",
       "vertical_datum": "cero local no documentado en la ficha consultada",
@@ -41,10 +41,10 @@
       "variable": "turbined_discharge",
       "station_id": "SALTO_GRANDE",
       "station_name": "Salto Grande",
-      "observed_at_utc": "2026-08-15T09:00:00Z",
-      "observed_at_local": "2026-08-15T06:00:00-03:00",
-      "retrieved_at": "2026-08-15T06:45:29-03:00",
-      "value": 7957,
+      "observed_at_utc": "2026-08-15T10:00:00Z",
+      "observed_at_local": "2026-08-15T07:00:00-03:00",
+      "retrieved_at": "2026-08-15T07:44:13-03:00",
+      "value": 7956,
       "unit": "m3/s",
       "quality_flag": "official_preliminary",
       "is_official": true,
@@ -57,10 +57,10 @@
       "variable": "spilled_discharge",
       "station_id": "SALTO_GRANDE",
       "station_name": "Salto Grande",
-      "observed_at_utc": "2026-08-15T09:00:00Z",
-      "observed_at_local": "2026-08-15T06:00:00-03:00",
-      "retrieved_at": "2026-08-15T06:45:29-03:00",
-      "value": 4018,
+      "observed_at_utc": "2026-08-15T10:00:00Z",
+      "observed_at_local": "2026-08-15T07:00:00-03:00",
+      "retrieved_at": "2026-08-15T07:44:13-03:00",
+      "value": 4029,
       "unit": "m3/s",
       "quality_flag": "official_preliminary",
       "is_official": true,
@@ -73,10 +73,10 @@
       "variable": "reservoir_level",
       "station_id": "SALTO_GRANDE",
       "station_name": "Embalse de Salto Grande",
-      "observed_at_utc": "2026-08-15T09:00:00Z",
-      "observed_at_local": "2026-08-15T06:00:00-03:00",
-      "retrieved_at": "2026-08-15T06:45:29-03:00",
-      "value": 34.61,
+      "observed_at_utc": "2026-08-15T10:00:00Z",
+      "observed_at_local": "2026-08-15T07:00:00-03:00",
+      "retrieved_at": "2026-08-15T07:44:13-03:00",
+      "value": 34.59,
       "unit": "m",
       "vertical_datum": "cota CTM; datum no explicitado en la página horaria",
       "temporal_aggregation": "promedio horario",
@@ -105,7 +105,7 @@
     "mean_daily_released_flow_max_m3s": 12500,
     "source_reference": "https://www.saltogrande.org/docs/hidrologia/Comunicado.pdf",
     "quality_flag": "official_preliminary",
-    "retrieved_at": "2026-08-15T06:45:29-03:00"
+    "retrieved_at": "2026-08-15T07:44:13-03:00"
   },
   "history": [
     {
@@ -321,20 +321,20 @@
       "variation_period_h": 12,
       "trend": "crece",
       "status": "Seguimiento",
-      "observed_at_local": "2026-08-15T06:15:00-03:00",
+      "observed_at_local": "2026-08-15T07:15:00-03:00",
       "source": "CTM"
     }
   ],
   "signals": {
     "upstream": "6.27 m · seguimiento · baja · 14/08 19:44",
     "rainfall_7d_mm": 8,
-    "released_flow_m3s": 11975
+    "released_flow_m3s": 11985
   },
   "forecast_method": {
     "model_id": "ctm-analog-ensemble-v1.1",
     "label": "Ensamble local de análogos hidrométricos",
     "status": "validated_with_limits",
-    "generated_at": "2026-08-15T06:45:29-03:00",
+    "generated_at": "2026-08-15T07:44:13-03:00",
     "training_source": "CTM Salto Grande · red de estaciones de 15 minutos agregada por día",
     "training_start": "2017-01-01",
     "training_end": "2026-08-15",
@@ -947,49 +947,49 @@
   "source_status": {
     "pna_alturas": {
       "ok": false,
-      "message": "PNA no disponible: ConnectTimeout: HTTPSConnectionPool(host='contenidosweb.prefecturanaval.gob.ar', port=443): Max retries exceeded with url: /alturas/ (Caused by ConnectTimeoutError(<HTTPSConnection(host='contenidosweb.prefecturanaval.gob.ar', port=443) at 0x7f2e2e2168d0>, 'Connection to contenidosweb.prefecturanaval.gob.ar timed out. (connect timeout=15)'))",
-      "attempted_at": "2026-08-15T06:45:29-03:00"
+      "message": "PNA no disponible: ConnectTimeout: HTTPSConnectionPool(host='contenidosweb.prefecturanaval.gob.ar', port=443): Max retries exceeded with url: /alturas/ (Caused by ConnectTimeoutError(<HTTPSConnection(host='contenidosweb.prefecturanaval.gob.ar', port=443) at 0x7f8a498ea780>, 'Connection to contenidosweb.prefecturanaval.gob.ar timed out. (connect timeout=15)'))",
+      "attempted_at": "2026-08-15T07:44:13-03:00"
     },
     "ctm_concordia_stage": {
       "ok": true,
       "message": "CTM Puerto Concordia actualizada",
-      "attempted_at": "2026-08-15T06:45:29-03:00"
+      "attempted_at": "2026-08-15T07:44:13-03:00"
     },
     "ctm_historical_network": {
       "ok": true,
       "message": "Red histórica CTM actualizada (5/5 estaciones)",
-      "attempted_at": "2026-08-15T06:45:29-03:00"
+      "attempted_at": "2026-08-15T07:44:13-03:00"
     },
     "ctm_hourly": {
       "ok": true,
       "message": "CTM horaria actualizada",
-      "attempted_at": "2026-08-15T06:45:29-03:00"
+      "attempted_at": "2026-08-15T07:44:13-03:00"
     },
     "ctm_communicado": {
       "ok": true,
       "message": "Comunicado CTM actualizado",
-      "attempted_at": "2026-08-15T06:45:29-03:00"
+      "attempted_at": "2026-08-15T07:44:13-03:00"
     },
     "ctm_precip_forecast": {
       "ok": true,
       "message": "Lluvia CTM actualizada",
-      "attempted_at": "2026-08-15T06:45:29-03:00"
+      "attempted_at": "2026-08-15T07:44:13-03:00"
     },
     "geoglows_ecmwf": {
-      "ok": true,
-      "message": "GEOGLOWS actualizado; ensamble de caudal archivado",
-      "attempted_at": "2026-08-15T06:45:29-03:00"
+      "ok": false,
+      "message": "GEOGLOWS no disponible: HTTPError: 400 Client Error: BAD REQUEST for url: https://geoglows.ecmwf.int/api/v2/forecastensemble/640460565?format=json",
+      "attempted_at": "2026-08-15T07:44:13-03:00"
     },
     "local_forecast_model": {
       "ok": true,
       "message": "Ensamble local recalculado y validación temporal disponible",
-      "attempted_at": "2026-08-15T06:45:29-03:00"
+      "attempted_at": "2026-08-15T07:44:13-03:00"
     }
   },
   "projection": [
     {
       "day": 0,
-      "date": "2026-08-15T06:45:29-03:00",
+      "date": "2026-08-15T07:44:13-03:00",
       "min": 8.74,
       "central": 8.74,
       "max": 8.74,
@@ -1001,7 +1001,7 @@
     },
     {
       "day": 1,
-      "date": "2026-08-16T06:45:29-03:00",
+      "date": "2026-08-16T07:44:13-03:00",
       "min": 8.0,
       "central": 8.66,
       "max": 9.23,
@@ -1022,7 +1022,7 @@
     },
     {
       "day": 2,
-      "date": "2026-08-17T06:45:29-03:00",
+      "date": "2026-08-17T07:44:13-03:00",
       "min": 7.19,
       "central": 8.41,
       "max": 9.36,
@@ -1034,7 +1034,7 @@
     },
     {
       "day": 3,
-      "date": "2026-08-18T06:45:29-03:00",
+      "date": "2026-08-18T07:44:13-03:00",
       "min": 6.44,
       "central": 8.17,
       "max": 9.14,
@@ -1055,7 +1055,7 @@
     },
     {
       "day": 4,
-      "date": "2026-08-19T06:45:29-03:00",
+      "date": "2026-08-19T07:44:13-03:00",
       "min": 6.6,
       "central": 8.15,
       "max": 9.56,
@@ -1067,7 +1067,7 @@
     },
     {
       "day": 5,
-      "date": "2026-08-20T06:45:29-03:00",
+      "date": "2026-08-20T07:44:13-03:00",
       "min": 6.41,
       "central": 8.12,
       "max": 9.91,
@@ -1079,7 +1079,7 @@
     },
     {
       "day": 6,
-      "date": "2026-08-21T06:45:29-03:00",
+      "date": "2026-08-21T07:44:13-03:00",
       "min": 6.4,
       "central": 8.1,
       "max": 9.91,
@@ -1091,7 +1091,7 @@
     },
     {
       "day": 7,
-      "date": "2026-08-22T06:45:29-03:00",
+      "date": "2026-08-22T07:44:13-03:00",
       "min": 6.25,
       "central": 8.08,
       "max": 10.57,
@@ -1112,7 +1112,7 @@
     },
     {
       "day": 8,
-      "date": "2026-08-23T06:45:29-03:00",
+      "date": "2026-08-23T07:44:13-03:00",
       "min": 5.86,
       "central": 8.0,
       "max": 10.87,
@@ -1124,7 +1124,7 @@
     },
     {
       "day": 9,
-      "date": "2026-08-24T06:45:29-03:00",
+      "date": "2026-08-24T07:44:13-03:00",
       "min": 5.57,
       "central": 7.92,
       "max": 11.07,
@@ -1136,7 +1136,7 @@
     },
     {
       "day": 10,
-      "date": "2026-08-25T06:45:29-03:00",
+      "date": "2026-08-25T07:44:13-03:00",
       "min": 5.23,
       "central": 7.84,
       "max": 11.13,
@@ -1148,7 +1148,7 @@
     },
     {
       "day": 11,
-      "date": "2026-08-26T06:45:29-03:00",
+      "date": "2026-08-26T07:44:13-03:00",
       "min": 5.44,
       "central": 7.77,
       "max": 11.47,
@@ -1160,7 +1160,7 @@
     },
     {
       "day": 12,
-      "date": "2026-08-27T06:45:29-03:00",
+      "date": "2026-08-27T07:44:13-03:00",
       "min": 4.72,
       "central": 7.69,
       "max": 11.71,
@@ -1172,7 +1172,7 @@
     },
     {
       "day": 13,
-      "date": "2026-08-28T06:45:29-03:00",
+      "date": "2026-08-28T07:44:13-03:00",
       "min": 5.21,
       "central": 7.61,
       "max": 11.78,
@@ -1184,7 +1184,7 @@
     },
     {
       "day": 14,
-      "date": "2026-08-29T06:45:29-03:00",
+      "date": "2026-08-29T07:44:13-03:00",
       "min": 4.67,
       "central": 7.53,
       "max": 12.18,
@@ -1205,7 +1205,7 @@
     },
     {
       "day": 15,
-      "date": "2026-08-30T06:45:29-03:00",
+      "date": "2026-08-30T07:44:13-03:00",
       "min": 4.77,
       "central": 7.7,
       "max": 12.45,
@@ -1217,7 +1217,7 @@
     },
     {
       "day": 16,
-      "date": "2026-08-31T06:45:29-03:00",
+      "date": "2026-08-31T07:44:13-03:00",
       "min": 4.69,
       "central": 7.88,
       "max": 12.62,
@@ -1229,7 +1229,7 @@
     },
     {
       "day": 17,
-      "date": "2026-09-01T06:45:29-03:00",
+      "date": "2026-09-01T07:44:13-03:00",
       "min": 5.0,
       "central": 8.05,
       "max": 12.75,
@@ -1241,7 +1241,7 @@
     },
     {
       "day": 18,
-      "date": "2026-09-02T06:45:29-03:00",
+      "date": "2026-09-02T07:44:13-03:00",
       "min": 4.77,
       "central": 8.22,
       "max": 12.94,
@@ -1253,7 +1253,7 @@
     },
     {
       "day": 19,
-      "date": "2026-09-03T06:45:29-03:00",
+      "date": "2026-09-03T07:44:13-03:00",
       "min": 5.11,
       "central": 8.39,
       "max": 12.95,
@@ -1265,7 +1265,7 @@
     },
     {
       "day": 20,
-      "date": "2026-09-04T06:45:29-03:00",
+      "date": "2026-09-04T07:44:13-03:00",
       "min": 5.23,
       "central": 8.57,
       "max": 13.13,
@@ -1277,7 +1277,7 @@
     },
     {
       "day": 21,
-      "date": "2026-09-05T06:45:29-03:00",
+      "date": "2026-09-05T07:44:13-03:00",
       "min": 5.5,
       "central": 8.74,
       "max": 13.17,
@@ -1298,7 +1298,7 @@
     },
     {
       "day": 22,
-      "date": "2026-09-06T06:45:29-03:00",
+      "date": "2026-09-06T07:44:13-03:00",
       "min": 5.71,
       "central": 8.74,
       "max": 13.42,
@@ -1310,7 +1310,7 @@
     },
     {
       "day": 23,
-      "date": "2026-09-07T06:45:29-03:00",
+      "date": "2026-09-07T07:44:13-03:00",
       "min": 5.47,
       "central": 8.74,
       "max": 13.54,
@@ -1322,7 +1322,7 @@
     },
     {
       "day": 24,
-      "date": "2026-09-08T06:45:29-03:00",
+      "date": "2026-09-08T07:44:13-03:00",
       "min": 5.5,
       "central": 8.74,
       "max": 12.73,
@@ -1334,7 +1334,7 @@
     },
     {
       "day": 25,
-      "date": "2026-09-09T06:45:29-03:00",
+      "date": "2026-09-09T07:44:13-03:00",
       "min": 5.41,
       "central": 8.74,
       "max": 12.06,
@@ -1346,7 +1346,7 @@
     },
     {
       "day": 26,
-      "date": "2026-09-10T06:45:29-03:00",
+      "date": "2026-09-10T07:44:13-03:00",
       "min": 5.36,
       "central": 8.74,
       "max": 11.45,
@@ -1358,7 +1358,7 @@
     },
     {
       "day": 27,
-      "date": "2026-09-11T06:45:29-03:00",
+      "date": "2026-09-11T07:44:13-03:00",
       "min": 5.32,
       "central": 8.74,
       "max": 11.22,
@@ -1370,7 +1370,7 @@
     },
     {
       "day": 28,
-      "date": "2026-09-12T06:45:29-03:00",
+      "date": "2026-09-12T07:44:13-03:00",
       "min": 5.52,
       "central": 8.74,
       "max": 11.07,
@@ -1391,7 +1391,7 @@
     },
     {
       "day": 29,
-      "date": "2026-09-13T06:45:29-03:00",
+      "date": "2026-09-13T07:44:13-03:00",
       "min": 5.44,
       "central": 8.74,
       "max": 11.62,
@@ -1403,7 +1403,7 @@
     },
     {
       "day": 30,
-      "date": "2026-09-14T06:45:29-03:00",
+      "date": "2026-09-14T07:44:13-03:00",
       "min": 5.66,
       "central": 8.74,
       "max": 12.36,
@@ -1424,8 +1424,8 @@
     }
   ],
   "risk_report": {
-    "id": "2026-08-15T06:45:29-03:00",
-    "generated_at": "2026-08-15T06:45:29-03:00",
+    "id": "2026-08-15T07:44:13-03:00",
+    "generated_at": "2026-08-15T07:44:13-03:00",
     "event": {
       "station": "Puerto Concordia",
       "threshold_m": 11.5,
@@ -1441,7 +1441,7 @@
     "data_status": "partial",
     "snapshot": {
       "concordia_m": 8.74,
-      "released_flow_m3s": 11975,
+      "released_flow_m3s": 11985,
       "rainfall_7d_mm": 8
     },
     "rows": [
@@ -1596,8 +1596,8 @@
     ]
   },
   "risk_report_bundle": {
-    "id": "2026-08-15T06:45:29-03:00",
-    "generated_at": "2026-08-15T06:45:29-03:00",
+    "id": "2026-08-15T07:44:13-03:00",
+    "generated_at": "2026-08-15T07:44:13-03:00",
     "station": "Puerto Concordia",
     "method": {
       "method_id": "ctm-analog-ensemble-v1.1",
@@ -1609,7 +1609,7 @@
     "data_status": "partial",
     "snapshot": {
       "concordia_m": 8.74,
-      "released_flow_m3s": 11975,
+      "released_flow_m3s": 11985,
       "rainfall_7d_mm": 8
     },
     "thresholds": [
