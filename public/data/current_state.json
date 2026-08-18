@@ -1,10 +1,10 @@
 {
   "schema_version": "0.2.0",
-  "generated_at": "2026-08-18T07:51:54-03:00",
+  "generated_at": "2026-08-18T08:46:26-03:00",
   "timezone": "America/Argentina/Cordoba",
   "update_status": {
     "state": "partial",
-    "message": "Corte parcial: no respondieron PNA, el ensamble de caudal GEOGLOWS/ECMWF. La altura publicada corresponde a CTM Salto Grande y conserva su hora de observación."
+    "message": "Corte parcial: no respondieron PNA, la estación Puerto Concordia de CTM, la red histórica de estaciones CTM, los datos horarios de CTM. La altura publicada corresponde a CTM Salto Grande y conserva su hora de observación."
   },
   "status": {
     "official_level_state": "ESTABLE",
@@ -30,7 +30,7 @@
       "unit": "m",
       "vertical_datum": "cero local no documentado en la ficha consultada",
       "temporal_aggregation": "instantánea",
-      "quality_flag": "official_preliminary",
+      "quality_flag": "official_stale_copy",
       "is_official": true,
       "is_forecast": false,
       "source_reference": "https://www.saltogrande.org/datos_estacion.php?estacion=A50012EE&desde=17%2F08%2F2026&hasta=18%2F08%2F2026"
@@ -46,7 +46,7 @@
       "retrieved_at": "2026-08-18T07:51:54-03:00",
       "value": 8463,
       "unit": "m3/s",
-      "quality_flag": "official_preliminary",
+      "quality_flag": "official_stale_copy",
       "is_official": true,
       "is_forecast": false,
       "source_reference": "https://www.saltogrande.org/datos_horarios.php"
@@ -62,7 +62,7 @@
       "retrieved_at": "2026-08-18T07:51:54-03:00",
       "value": 4055,
       "unit": "m3/s",
-      "quality_flag": "official_preliminary",
+      "quality_flag": "official_stale_copy",
       "is_official": true,
       "is_forecast": false,
       "source_reference": "https://www.saltogrande.org/datos_horarios.php"
@@ -80,7 +80,7 @@
       "unit": "m",
       "vertical_datum": "cota CTM; datum no explicitado en la página horaria",
       "temporal_aggregation": "promedio horario",
-      "quality_flag": "official_preliminary",
+      "quality_flag": "official_stale_copy",
       "is_official": true,
       "is_forecast": false,
       "source_reference": "https://www.saltogrande.org/datos_horarios.php"
@@ -105,7 +105,7 @@
     "mean_daily_released_flow_max_m3s": 13500,
     "source_reference": "https://www.saltogrande.org/docs/hidrologia/Comunicado.pdf",
     "quality_flag": "official_preliminary",
-    "retrieved_at": "2026-08-18T07:51:54-03:00"
+    "retrieved_at": "2026-08-18T08:46:26-03:00"
   },
   "history": [
     {
@@ -352,7 +352,7 @@
     "model_id": "ctm-analog-ensemble-v1.1",
     "label": "Ensamble local de análogos hidrométricos",
     "status": "validated_with_limits",
-    "generated_at": "2026-08-18T07:51:54-03:00",
+    "generated_at": "2026-08-18T08:46:26-03:00",
     "training_source": "CTM Salto Grande · red de estaciones de 15 minutos agregada por día",
     "training_start": "2017-01-01",
     "training_end": "2026-08-18",
@@ -965,49 +965,49 @@
   "source_status": {
     "pna_alturas": {
       "ok": false,
-      "message": "PNA no disponible: ConnectTimeout: HTTPSConnectionPool(host='contenidosweb.prefecturanaval.gob.ar', port=443): Max retries exceeded with url: /alturas/ (Caused by ConnectTimeoutError(<HTTPSConnection(host='contenidosweb.prefecturanaval.gob.ar', port=443) at 0x7f5488d526c0>, 'Connection to contenidosweb.prefecturanaval.gob.ar timed out. (connect timeout=15)'))",
-      "attempted_at": "2026-08-18T07:51:54-03:00"
+      "message": "PNA no disponible: ConnectTimeout: HTTPSConnectionPool(host='contenidosweb.prefecturanaval.gob.ar', port=443): Max retries exceeded with url: /alturas/ (Caused by ConnectTimeoutError(<HTTPSConnection(host='contenidosweb.prefecturanaval.gob.ar', port=443) at 0x7f37bc53aa50>, 'Connection to contenidosweb.prefecturanaval.gob.ar timed out. (connect timeout=15)'))",
+      "attempted_at": "2026-08-18T08:46:26-03:00"
     },
     "ctm_concordia_stage": {
-      "ok": true,
-      "message": "CTM Puerto Concordia actualizada",
-      "attempted_at": "2026-08-18T07:51:54-03:00"
+      "ok": false,
+      "message": "CTM Puerto Concordia no disponible: HTTPError: 526 Server Error: <none> for url: https://www.saltogrande.org/datos_estacion.php?estacion=A50012EE&desde=17%2F08%2F2026&hasta=18%2F08%2F2026",
+      "attempted_at": "2026-08-18T08:46:26-03:00"
     },
     "ctm_historical_network": {
-      "ok": true,
-      "message": "Red histórica CTM actualizada (5/5 estaciones)",
-      "attempted_at": "2026-08-18T07:51:54-03:00"
+      "ok": false,
+      "message": "Red histórica CTM incompleta: Puerto Concordia: HTTPError, Paso de los Libres: HTTPError, Monte Caseros: HTTPError, Federación: HTTPError, Salto Grande: HTTPError",
+      "attempted_at": "2026-08-18T08:46:26-03:00"
     },
     "ctm_hourly": {
-      "ok": true,
-      "message": "CTM horaria actualizada",
-      "attempted_at": "2026-08-18T07:51:54-03:00"
+      "ok": false,
+      "message": "CTM horaria no disponible: HTTPError: 526 Server Error: <none> for url: https://www.saltogrande.org/datos_horarios.php",
+      "attempted_at": "2026-08-18T08:46:26-03:00"
     },
     "ctm_communicado": {
       "ok": true,
       "message": "Comunicado CTM actualizado",
-      "attempted_at": "2026-08-18T07:51:54-03:00"
+      "attempted_at": "2026-08-18T08:46:26-03:00"
     },
     "ctm_precip_forecast": {
       "ok": true,
       "message": "Lluvia CTM actualizada",
-      "attempted_at": "2026-08-18T07:51:54-03:00"
+      "attempted_at": "2026-08-18T08:46:26-03:00"
     },
     "geoglows_ecmwf": {
-      "ok": false,
-      "message": "GEOGLOWS no disponible: HTTPError: 400 Client Error: BAD REQUEST for url: https://geoglows.ecmwf.int/api/v2/forecastensemble/640460565?format=json",
-      "attempted_at": "2026-08-18T07:51:54-03:00"
+      "ok": true,
+      "message": "GEOGLOWS actualizado; ensamble de caudal archivado",
+      "attempted_at": "2026-08-18T08:46:26-03:00"
     },
     "local_forecast_model": {
       "ok": true,
       "message": "Ensamble local recalculado y validación temporal disponible",
-      "attempted_at": "2026-08-18T07:51:54-03:00"
+      "attempted_at": "2026-08-18T08:46:26-03:00"
     }
   },
   "projection": [
     {
       "day": 0,
-      "date": "2026-08-18T07:51:54-03:00",
+      "date": "2026-08-18T08:46:26-03:00",
       "min": 9.44,
       "central": 9.44,
       "max": 9.44,
@@ -1019,7 +1019,7 @@
     },
     {
       "day": 1,
-      "date": "2026-08-19T07:51:54-03:00",
+      "date": "2026-08-19T08:46:26-03:00",
       "min": 8.66,
       "central": 9.44,
       "max": 10.02,
@@ -1040,7 +1040,7 @@
     },
     {
       "day": 2,
-      "date": "2026-08-20T07:51:54-03:00",
+      "date": "2026-08-20T08:46:26-03:00",
       "min": 8.41,
       "central": 9.49,
       "max": 10.57,
@@ -1052,7 +1052,7 @@
     },
     {
       "day": 3,
-      "date": "2026-08-21T07:51:54-03:00",
+      "date": "2026-08-21T08:46:26-03:00",
       "min": 8.4,
       "central": 9.54,
       "max": 11.58,
@@ -1073,7 +1073,7 @@
     },
     {
       "day": 4,
-      "date": "2026-08-22T07:51:54-03:00",
+      "date": "2026-08-22T08:46:26-03:00",
       "min": 7.98,
       "central": 9.51,
       "max": 11.79,
@@ -1085,7 +1085,7 @@
     },
     {
       "day": 5,
-      "date": "2026-08-23T07:51:54-03:00",
+      "date": "2026-08-23T08:46:26-03:00",
       "min": 7.84,
       "central": 9.48,
       "max": 12.12,
@@ -1097,7 +1097,7 @@
     },
     {
       "day": 6,
-      "date": "2026-08-24T07:51:54-03:00",
+      "date": "2026-08-24T08:46:26-03:00",
       "min": 7.84,
       "central": 9.45,
       "max": 12.29,
@@ -1109,7 +1109,7 @@
     },
     {
       "day": 7,
-      "date": "2026-08-25T07:51:54-03:00",
+      "date": "2026-08-25T08:46:26-03:00",
       "min": 7.64,
       "central": 9.42,
       "max": 12.2,
@@ -1130,7 +1130,7 @@
     },
     {
       "day": 8,
-      "date": "2026-08-26T07:51:54-03:00",
+      "date": "2026-08-26T08:46:26-03:00",
       "min": 7.63,
       "central": 9.42,
       "max": 12.61,
@@ -1142,7 +1142,7 @@
     },
     {
       "day": 9,
-      "date": "2026-08-27T07:51:54-03:00",
+      "date": "2026-08-27T08:46:26-03:00",
       "min": 7.34,
       "central": 9.43,
       "max": 12.76,
@@ -1154,7 +1154,7 @@
     },
     {
       "day": 10,
-      "date": "2026-08-28T07:51:54-03:00",
+      "date": "2026-08-28T08:46:26-03:00",
       "min": 6.89,
       "central": 9.43,
       "max": 13.23,
@@ -1166,7 +1166,7 @@
     },
     {
       "day": 11,
-      "date": "2026-08-29T07:51:54-03:00",
+      "date": "2026-08-29T08:46:26-03:00",
       "min": 6.7,
       "central": 9.43,
       "max": 13.47,
@@ -1178,7 +1178,7 @@
     },
     {
       "day": 12,
-      "date": "2026-08-30T07:51:54-03:00",
+      "date": "2026-08-30T08:46:26-03:00",
       "min": 6.6,
       "central": 9.43,
       "max": 13.54,
@@ -1190,7 +1190,7 @@
     },
     {
       "day": 13,
-      "date": "2026-08-31T07:51:54-03:00",
+      "date": "2026-08-31T08:46:26-03:00",
       "min": 6.65,
       "central": 9.44,
       "max": 13.69,
@@ -1202,7 +1202,7 @@
     },
     {
       "day": 14,
-      "date": "2026-09-01T07:51:54-03:00",
+      "date": "2026-09-01T08:46:26-03:00",
       "min": 6.25,
       "central": 9.44,
       "max": 13.69,
@@ -1223,7 +1223,7 @@
     },
     {
       "day": 15,
-      "date": "2026-09-02T07:51:54-03:00",
+      "date": "2026-09-02T08:46:26-03:00",
       "min": 5.61,
       "central": 9.44,
       "max": 13.87,
@@ -1235,7 +1235,7 @@
     },
     {
       "day": 16,
-      "date": "2026-09-03T07:51:54-03:00",
+      "date": "2026-09-03T08:46:26-03:00",
       "min": 5.44,
       "central": 9.44,
       "max": 14.07,
@@ -1247,7 +1247,7 @@
     },
     {
       "day": 17,
-      "date": "2026-09-04T07:51:54-03:00",
+      "date": "2026-09-04T08:46:26-03:00",
       "min": 5.6,
       "central": 9.44,
       "max": 14.16,
@@ -1259,7 +1259,7 @@
     },
     {
       "day": 18,
-      "date": "2026-09-05T07:51:54-03:00",
+      "date": "2026-09-05T08:46:26-03:00",
       "min": 5.18,
       "central": 9.44,
       "max": 14.27,
@@ -1271,7 +1271,7 @@
     },
     {
       "day": 19,
-      "date": "2026-09-06T07:51:54-03:00",
+      "date": "2026-09-06T08:46:26-03:00",
       "min": 5.31,
       "central": 9.44,
       "max": 14.16,
@@ -1283,7 +1283,7 @@
     },
     {
       "day": 20,
-      "date": "2026-09-07T07:51:54-03:00",
+      "date": "2026-09-07T08:46:26-03:00",
       "min": 5.41,
       "central": 9.44,
       "max": 14.04,
@@ -1295,7 +1295,7 @@
     },
     {
       "day": 21,
-      "date": "2026-09-08T07:51:54-03:00",
+      "date": "2026-09-08T08:46:26-03:00",
       "min": 5.78,
       "central": 9.44,
       "max": 13.79,
@@ -1316,7 +1316,7 @@
     },
     {
       "day": 22,
-      "date": "2026-09-09T07:51:54-03:00",
+      "date": "2026-09-09T08:46:26-03:00",
       "min": 5.91,
       "central": 9.44,
       "max": 13.75,
@@ -1328,7 +1328,7 @@
     },
     {
       "day": 23,
-      "date": "2026-09-10T07:51:54-03:00",
+      "date": "2026-09-10T08:46:26-03:00",
       "min": 5.94,
       "central": 9.44,
       "max": 13.6,
@@ -1340,7 +1340,7 @@
     },
     {
       "day": 24,
-      "date": "2026-09-11T07:51:54-03:00",
+      "date": "2026-09-11T08:46:26-03:00",
       "min": 5.44,
       "central": 9.44,
       "max": 13.04,
@@ -1352,7 +1352,7 @@
     },
     {
       "day": 25,
-      "date": "2026-09-12T07:51:54-03:00",
+      "date": "2026-09-12T08:46:26-03:00",
       "min": 5.53,
       "central": 9.44,
       "max": 12.64,
@@ -1364,7 +1364,7 @@
     },
     {
       "day": 26,
-      "date": "2026-09-13T07:51:54-03:00",
+      "date": "2026-09-13T08:46:26-03:00",
       "min": 5.74,
       "central": 9.44,
       "max": 12.58,
@@ -1376,7 +1376,7 @@
     },
     {
       "day": 27,
-      "date": "2026-09-14T07:51:54-03:00",
+      "date": "2026-09-14T08:46:26-03:00",
       "min": 5.73,
       "central": 9.44,
       "max": 12.39,
@@ -1388,7 +1388,7 @@
     },
     {
       "day": 28,
-      "date": "2026-09-15T07:51:54-03:00",
+      "date": "2026-09-15T08:46:26-03:00",
       "min": 5.79,
       "central": 9.44,
       "max": 12.41,
@@ -1409,7 +1409,7 @@
     },
     {
       "day": 29,
-      "date": "2026-09-16T07:51:54-03:00",
+      "date": "2026-09-16T08:46:26-03:00",
       "min": 5.54,
       "central": 9.44,
       "max": 12.56,
@@ -1421,7 +1421,7 @@
     },
     {
       "day": 30,
-      "date": "2026-09-17T07:51:54-03:00",
+      "date": "2026-09-17T08:46:26-03:00",
       "min": 5.42,
       "central": 9.44,
       "max": 12.91,
@@ -1442,8 +1442,8 @@
     }
   ],
   "risk_report": {
-    "id": "2026-08-18T07:51:54-03:00",
-    "generated_at": "2026-08-18T07:51:54-03:00",
+    "id": "2026-08-18T08:46:26-03:00",
+    "generated_at": "2026-08-18T08:46:26-03:00",
     "event": {
       "station": "Puerto Concordia",
       "threshold_m": 11.5,
@@ -1614,8 +1614,8 @@
     ]
   },
   "risk_report_bundle": {
-    "id": "2026-08-18T07:51:54-03:00",
-    "generated_at": "2026-08-18T07:51:54-03:00",
+    "id": "2026-08-18T08:46:26-03:00",
+    "generated_at": "2026-08-18T08:46:26-03:00",
     "station": "Puerto Concordia",
     "method": {
       "method_id": "ctm-analog-ensemble-v1.1",
@@ -2562,107 +2562,114 @@
       "source_id": "geoglows_ecmwf",
       "source_name": "GEOGLOWS ECMWF Streamflow Service",
       "river_id": 640460565,
-      "generated_at": "2026-08-18T09:00:56+00:00",
-      "retrieved_at": "2026-08-18T05:58:52-03:00",
-      "valid_until": "2026-08-31",
+      "generated_at": "2026-08-18T11:48:13+00:00",
+      "retrieved_at": "2026-08-18T08:46:26-03:00",
+      "valid_until": "2026-09-01",
       "unit": "m3/s",
       "daily": [
         {
           "date": "2026-08-18",
-          "p10_m3s": 9031,
-          "median_m3s": 9231,
-          "p90_m3s": 9632,
+          "p10_m3s": 7550,
+          "median_m3s": 7564,
+          "p90_m3s": 7597,
           "member_count": 51
         },
         {
           "date": "2026-08-19",
-          "p10_m3s": 9900,
-          "median_m3s": 10496,
-          "p90_m3s": 11277,
+          "p10_m3s": 7911,
+          "median_m3s": 8002,
+          "p90_m3s": 8161,
           "member_count": 51
         },
         {
           "date": "2026-08-20",
-          "p10_m3s": 10509,
-          "median_m3s": 11369,
-          "p90_m3s": 12530,
+          "p10_m3s": 8361,
+          "median_m3s": 8740,
+          "p90_m3s": 9099,
           "member_count": 51
         },
         {
           "date": "2026-08-21",
-          "p10_m3s": 11213,
-          "median_m3s": 12129,
-          "p90_m3s": 13841,
+          "p10_m3s": 8924,
+          "median_m3s": 9531,
+          "p90_m3s": 10084,
           "member_count": 51
         },
         {
           "date": "2026-08-22",
-          "p10_m3s": 10691,
-          "median_m3s": 11903,
-          "p90_m3s": 13647,
+          "p10_m3s": 9462,
+          "median_m3s": 10388,
+          "p90_m3s": 11053,
           "member_count": 51
         },
         {
           "date": "2026-08-23",
-          "p10_m3s": 9750,
-          "median_m3s": 11082,
-          "p90_m3s": 12827,
+          "p10_m3s": 8872,
+          "median_m3s": 10035,
+          "p90_m3s": 10997,
           "member_count": 51
         },
         {
           "date": "2026-08-24",
-          "p10_m3s": 9239,
-          "median_m3s": 10359,
-          "p90_m3s": 11881,
+          "p10_m3s": 8521,
+          "median_m3s": 9714,
+          "p90_m3s": 11030,
           "member_count": 51
         },
         {
           "date": "2026-08-25",
-          "p10_m3s": 8977,
-          "median_m3s": 10130,
-          "p90_m3s": 11451,
+          "p10_m3s": 8901,
+          "median_m3s": 9758,
+          "p90_m3s": 10994,
           "member_count": 51
         },
         {
           "date": "2026-08-26",
-          "p10_m3s": 8478,
-          "median_m3s": 9482,
-          "p90_m3s": 10650,
+          "p10_m3s": 8575,
+          "median_m3s": 9210,
+          "p90_m3s": 9936,
           "member_count": 51
         },
         {
           "date": "2026-08-27",
-          "p10_m3s": 8505,
-          "median_m3s": 9542,
-          "p90_m3s": 10366,
+          "p10_m3s": 8392,
+          "median_m3s": 9020,
+          "p90_m3s": 9824,
           "member_count": 51
         },
         {
           "date": "2026-08-28",
-          "p10_m3s": 8479,
-          "median_m3s": 9443,
-          "p90_m3s": 10495,
+          "p10_m3s": 8381,
+          "median_m3s": 9098,
+          "p90_m3s": 9796,
           "member_count": 51
         },
         {
           "date": "2026-08-29",
-          "p10_m3s": 8360,
-          "median_m3s": 9296,
-          "p90_m3s": 10279,
+          "p10_m3s": 7995,
+          "median_m3s": 8656,
+          "p90_m3s": 9490,
           "member_count": 51
         },
         {
           "date": "2026-08-30",
-          "p10_m3s": 8072,
-          "median_m3s": 9111,
-          "p90_m3s": 10328,
+          "p10_m3s": 7875,
+          "median_m3s": 8462,
+          "p90_m3s": 9300,
           "member_count": 51
         },
         {
           "date": "2026-08-31",
-          "p10_m3s": 7932,
-          "median_m3s": 9005,
-          "p90_m3s": 10243,
+          "p10_m3s": 7877,
+          "median_m3s": 8567,
+          "p90_m3s": 9398,
+          "member_count": 51
+        },
+        {
+          "date": "2026-09-01",
+          "p10_m3s": 7690,
+          "median_m3s": 8449,
+          "p90_m3s": 9311,
           "member_count": 51
         }
       ],
