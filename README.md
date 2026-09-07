@@ -3,11 +3,15 @@
 Sitio público para seguir el nivel del río, las señales de la cuenca y un
 escenario experimental de 30 días. La portada combina un mapa OpenStreetMap con
 puntos georreferenciados, la curva observada y una banda predictiva construida a
-partir de 60 episodios históricos análogos.
+partir de 60 trayectorias históricas análogas (pueden compartir una crecida).
 
 Los datos oficiales y el escenario experimental están separados. Cada
-probabilidad se calibra y valida por nivel y horizonte; si no supera los controles
-de casos, eventos, Brier Skill y confiabilidad, se publica como «no habilitada».
+probabilidad se publica con su evidencia por nivel y horizonte. En la versión
+`v1.2-audit` se mantiene como exploratoria: falta evaluación por crecidas y
+reproducción operativa. No se ocultan las estimaciones ni se afirma validación municipal.
+
+El plan de evolución y los hallazgos de septiembre están en
+[`docs/plan-municipal-2026-09-07.md`](docs/plan-municipal-2026-09-07.md).
 
 ## Ejecutar
 
@@ -22,6 +26,7 @@ npm run dev
 npm run lint
 npm test
 npm run build:pages
+python -m unittest discover -s tests -p 'test_*.py' -v
 ```
 
 ## Actualización automática
@@ -65,7 +70,9 @@ tanto en un proyecto `usuario.github.io` como en una página de proyecto.
 ## Modelo y límites
 
 El motor `scripts/forecast_model.py` usa bloques temporales 60/20/20 para
-entrenamiento, calibración y validación final. La banda P10–P90 se corrige por
+entrenamiento, calibración y evaluación, con una purga de 30 días en las fronteras
+para impedir que las etiquetas futuras invadan el siguiente bloque. La superación
+se evalúa con máximos diarios, no con medianas. La banda P10–P90 se corrige por
 split conformal y la línea central sólo conserva la mediana del ensamble cuando
 mejora al menos 3% el MAE de persistencia. La descripción reproducible completa
 está en `public/documentos/metodologia.md`.

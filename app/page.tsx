@@ -488,7 +488,7 @@ function ReportTable({
                   </span>
                   {row.validation && (
                     <small className="validation-note">
-                      n={row.validation.sample_size} · eventos={row.validation.event_count}
+                      n={row.validation.sample_size} · fechas con superación={row.validation.event_count}
                       {row.validation.brier_skill_score === null
                         ? " · BSS no calculable"
                         : ` · BSS ${row.validation.brier_skill_score.toFixed(2)}`}
@@ -1349,7 +1349,9 @@ export default function Home() {
   const officialForecastIsCurrent =
     Date.parse(state.official_forecast.valid_until_local) >= Date.parse(state.generated_at);
   const officialForecastHasRange = state.official_forecast.concordia_min_m !== null;
-  const modelReady = state.forecast_method?.model_id === "ctm-analog-ensemble-v1.1";
+  const modelReady = ["ctm-analog-ensemble-v1.1", "ctm-analog-ensemble-v1.2-audit"].includes(
+    state.forecast_method?.model_id ?? "",
+  );
   const stageAgeHours = concordiaObservation
     ? Math.max(
         0,
@@ -1551,7 +1553,7 @@ export default function Home() {
             <div className="interpretation-note">
               <Info size={17} />
               <p>
-                <strong>{modelReady ? "Ensamble local validado con límites." : "Sin pronóstico habilitado."}</strong>{" "}
+                <strong>{modelReady ? "Ensamble local experimental; evaluación retrospectiva." : "Sin pronóstico habilitado."}</strong>{" "}
                 Los límites parten de P10 y P90 y luego incorporan la corrección
                 conformal; no son máximos ni mínimos físicamente posibles.
                 {selected.validation

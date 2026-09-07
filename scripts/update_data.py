@@ -1286,7 +1286,7 @@ def main() -> None:
             None,
         ),
         "reason": (
-            "Se muestra la estimación calibrada para cada combinación de nivel y horizonte. "
+            "Se muestra la frecuencia de superación del ensamble para cada nivel y horizonte. "
             "La etiqueta validada o exploratoria y la confianza indican si el bloque temporal "
             "final supera el tamaño mínimo de eventos, Brier Skill Score ≥ 0,05 y el control "
             "de confiabilidad."

@@ -28,7 +28,12 @@ test("uses the temporally validated analog ensemble and coherent intervals", asy
   const state = await readJson("public/data/current_state.json");
   const model = state.forecast_method;
 
-  assert.equal(model.model_id, "ctm-analog-ensemble-v1.1");
+  assert.match(model.model_id, /^ctm-analog-ensemble-v1\.(1|2-audit)$/);
+  if (model.model_id.endsWith("v1.2-audit")) {
+    assert.ok(model.validation.training_label_end < model.validation.calibration_start);
+    assert.ok(model.validation.calibration_label_end < model.validation.validation_start);
+    assert.equal(model.validation.operational_replay_validated, false);
+  }
   assert.equal(model.member_count, 60);
   assert.match(model.validation.strategy, /60\/20\/20/);
   assert.ok(model.validation.calibration_origins >= 80);
@@ -60,9 +65,12 @@ test("publishes every estimate and labels the strength of its validation", async
   assert.equal(archive.schema_version, 4);
   assert.deepEqual(archive.thresholds_m, thresholds);
   assert.deepEqual(report.thresholds.map((item) => item.threshold_m), thresholds);
-  assert.equal(report.method.calibrated, true);
-  assert.equal(report.method.validated, true);
-  assert.equal(report.method.method_id, "ctm-analog-ensemble-v1.1");
+  if (report.method.method_id.endsWith("v1.2-audit")) {
+    const rows = report.thresholds.flatMap((item) => item.rows);
+    assert.equal(report.method.calibrated, rows.every((row) => row.estimate_basis === "platt_calibrated"));
+    assert.equal(report.method.validated, rows.every((row) => row.estimate_status === "validated"));
+  }
+  assert.match(report.method.method_id, /^ctm-analog-ensemble-v1\.(1|2-audit)$/);
 
   for (const thresholdReport of report.thresholds) {
     assert.deepEqual(
