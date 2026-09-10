@@ -1,0 +1,2588 @@
+{
+  "snapshot_at": "2026-09-07T07:30:43-03:00",
+  "observation": {
+    "source_id": "ctm_concordia_stage",
+    "source_name": "CTM Salto Grande",
+    "variable": "river_stage",
+    "station_id": "CONCORDIA_PNA",
+    "station_name": "CONCORDIA",
+    "latitude": -31.4,
+    "longitude": -58.017,
+    "observed_at_utc": "2026-09-07T10:00:00Z",
+    "observed_at_local": "2026-09-07T07:00:00-03:00",
+    "retrieved_at": "2026-09-07T07:30:43-03:00",
+    "value": 7.51,
+    "unit": "m",
+    "vertical_datum": "cero local no documentado en la ficha consultada",
+    "temporal_aggregation": "instantánea",
+    "quality_flag": "official_preliminary",
+    "is_official": true,
+    "is_forecast": false,
+    "source_reference": "https://www.saltogrande.org/datos_estacion.php?estacion=A50012EE&desde=06%2F09%2F2026&hasta=07%2F09%2F2026"
+  },
+  "public_data_modified": false,
+  "purpose": "diagnóstico retrospectivo; no validación operativa municipal",
+  "previous_point_metrics": {
+    "1": {
+      "sample_size": 100,
+      "mae_m": 0.374,
+      "persistence_mae_m": 0.401,
+      "mae_skill_vs_persistence": 0.067,
+      "interval_80_coverage": 0.78,
+      "median_interval_width_m": 1.292,
+      "conformal_correction_m": 0.0,
+      "preferred_central": "analog_median"
+    },
+    "3": {
+      "sample_size": 100,
+      "mae_m": 0.589,
+      "persistence_mae_m": 0.681,
+      "mae_skill_vs_persistence": 0.135,
+      "interval_80_coverage": 0.89,
+      "median_interval_width_m": 2.377,
+      "conformal_correction_m": 0.04,
+      "preferred_central": "analog_median"
+    },
+    "7": {
+      "sample_size": 100,
+      "mae_m": 1.03,
+      "persistence_mae_m": 1.118,
+      "mae_skill_vs_persistence": 0.079,
+      "interval_80_coverage": 0.76,
+      "median_interval_width_m": 3.18,
+      "conformal_correction_m": 0.0,
+      "preferred_central": "analog_median"
+    },
+    "14": {
+      "sample_size": 100,
+      "mae_m": 1.672,
+      "persistence_mae_m": 1.727,
+      "mae_skill_vs_persistence": 0.032,
+      "interval_80_coverage": 0.87,
+      "median_interval_width_m": 6.0,
+      "conformal_correction_m": 0.62,
+      "preferred_central": "analog_median"
+    },
+    "21": {
+      "sample_size": 100,
+      "mae_m": 1.956,
+      "persistence_mae_m": 1.987,
+      "mae_skill_vs_persistence": 0.016,
+      "interval_80_coverage": 0.82,
+      "median_interval_width_m": 6.325,
+      "conformal_correction_m": 0.31,
+      "preferred_central": "persistence"
+    },
+    "28": {
+      "sample_size": 100,
+      "mae_m": 2.204,
+      "persistence_mae_m": 2.251,
+      "mae_skill_vs_persistence": 0.021,
+      "interval_80_coverage": 0.77,
+      "median_interval_width_m": 6.122,
+      "conformal_correction_m": 0.01,
+      "preferred_central": "persistence"
+    },
+    "30": {
+      "sample_size": 100,
+      "mae_m": 2.181,
+      "persistence_mae_m": 2.369,
+      "mae_skill_vs_persistence": 0.079,
+      "interval_80_coverage": 0.78,
+      "median_interval_width_m": 6.297,
+      "conformal_correction_m": 0.07,
+      "preferred_central": "analog_median"
+    }
+  },
+  "previous_event_target": "superación de medianas diarias; no comparar Brier directamente con máximos",
+  "model": {
+    "model_id": "ctm-analog-ensemble-v1.2-audit",
+    "label": "Ensamble local de análogos hidrométricos",
+    "status": "experimental_under_review",
+    "generated_at": "2026-09-07T07:30:43-03:00",
+    "training_source": "CTM Salto Grande · red de estaciones de 15 minutos agregada por día",
+    "training_start": "2017-01-01",
+    "training_end": "2026-09-07",
+    "member_count": 60,
+    "effective_member_count": 59.4,
+    "predictors": [
+      "local_level",
+      "local_d1",
+      "local_d3",
+      "local_d7",
+      "local_d14",
+      "local_vol7",
+      "season_sin",
+      "season_cos",
+      "paso_libres_level",
+      "paso_libres_d1",
+      "paso_libres_d3",
+      "paso_libres_d7",
+      "paso_libres_rain3",
+      "paso_libres_rain7",
+      "monte_caseros_level",
+      "monte_caseros_d1",
+      "monte_caseros_d3",
+      "monte_caseros_d7",
+      "monte_caseros_rain3",
+      "monte_caseros_rain7",
+      "federacion_level",
+      "federacion_d1",
+      "federacion_d3",
+      "federacion_d7",
+      "federacion_rain7",
+      "salto_grande_level",
+      "salto_grande_d1",
+      "salto_grande_d3",
+      "salto_grande_d7",
+      "salto_grande_rain7"
+    ],
+    "interval_definition": "percentiles ponderados 10 y 90, ampliados mediante split conformal en un bloque temporal separado con cobertura objetivo del 80 %",
+    "central_definition": "mediana del ensamble cuando supera persistencia en validación; persistencia en los horizontes sin habilidad positiva",
+    "validation": {
+      "strategy": "bloques temporales 60/20/20 con purga de trayectorias de 30 días",
+      "label_purge_days": 30,
+      "training_label_end": "2022-10-10",
+      "calibration_label_end": "2024-09-08",
+      "event_target": "nivel actual o máximo diario observado en días futuros dentro del horizonte",
+      "operational_replay_validated": false,
+      "training_start": "2017-01-15",
+      "training_end": "2022-09-10",
+      "calibration_start": "2022-10-11",
+      "calibration_end": "2024-08-09",
+      "validation_start": "2024-09-09",
+      "validation_end": "2026-08-08",
+      "calibration_origins": 96,
+      "validation_origins": 100,
+      "validation_stride_days": 7,
+      "interval_target_coverage": 0.8,
+      "conformal_corrections_m": {
+        "1": 0.0,
+        "3": 0.04,
+        "7": 0.0,
+        "14": 0.79,
+        "21": 0.45,
+        "28": 0.075,
+        "30": 0.115
+      },
+      "probability_gate": {
+        "independent_flood_validation_required": true,
+        "operational_replay_required": true,
+        "minimum_cases": 80,
+        "minimum_events_and_non_events": 10,
+        "minimum_brier_skill_score": 0.05,
+        "maximum_reliability_error": 0.12
+      },
+      "minimum_point_mae_skill": 0.03,
+      "point_metrics": {
+        "1": {
+          "sample_size": 100,
+          "mae_m": 0.379,
+          "persistence_mae_m": 0.401,
+          "mae_skill_vs_persistence": 0.055,
+          "interval_80_coverage": 0.77,
+          "median_interval_width_m": 1.29,
+          "conformal_correction_m": 0.0,
+          "preferred_central": "analog_median"
+        },
+        "3": {
+          "sample_size": 100,
+          "mae_m": 0.582,
+          "persistence_mae_m": 0.681,
+          "mae_skill_vs_persistence": 0.145,
+          "interval_80_coverage": 0.9,
+          "median_interval_width_m": 2.36,
+          "conformal_correction_m": 0.04,
+          "preferred_central": "analog_median"
+        },
+        "7": {
+          "sample_size": 100,
+          "mae_m": 1.031,
+          "persistence_mae_m": 1.118,
+          "mae_skill_vs_persistence": 0.078,
+          "interval_80_coverage": 0.74,
+          "median_interval_width_m": 3.152,
+          "conformal_correction_m": 0.0,
+          "preferred_central": "analog_median"
+        },
+        "14": {
+          "sample_size": 100,
+          "mae_m": 1.671,
+          "persistence_mae_m": 1.727,
+          "mae_skill_vs_persistence": 0.032,
+          "interval_80_coverage": 0.9,
+          "median_interval_width_m": 6.322,
+          "conformal_correction_m": 0.79,
+          "preferred_central": "analog_median"
+        },
+        "21": {
+          "sample_size": 100,
+          "mae_m": 1.982,
+          "persistence_mae_m": 1.987,
+          "mae_skill_vs_persistence": 0.003,
+          "interval_80_coverage": 0.84,
+          "median_interval_width_m": 6.547,
+          "conformal_correction_m": 0.45,
+          "preferred_central": "persistence"
+        },
+        "28": {
+          "sample_size": 100,
+          "mae_m": 2.207,
+          "persistence_mae_m": 2.251,
+          "mae_skill_vs_persistence": 0.02,
+          "interval_80_coverage": 0.77,
+          "median_interval_width_m": 6.223,
+          "conformal_correction_m": 0.075,
+          "preferred_central": "persistence"
+        },
+        "30": {
+          "sample_size": 100,
+          "mae_m": 2.184,
+          "persistence_mae_m": 2.369,
+          "mae_skill_vs_persistence": 0.078,
+          "interval_80_coverage": 0.79,
+          "median_interval_width_m": 6.385,
+          "conformal_correction_m": 0.115,
+          "preferred_central": "analog_median"
+        }
+      },
+      "probability_metrics": {
+        "11.00:7": {
+          "sample_size": 100,
+          "event_count": 6,
+          "non_event_count": 94,
+          "event_count_definition": "fechas cuyo horizonte contiene una superación; no crecidas independientes",
+          "nonoverlapping_positive_windows": 3,
+          "independent_flood_count": null,
+          "calibration_sample_size": 96,
+          "calibration_event_count": 12,
+          "calibration_parameters": {
+            "intercept": -0.773291,
+            "slope": 1.265206
+          },
+          "reference": "frecuencia del evento en el bloque de calibración",
+          "reference_probability": 0.1289,
+          "scored_estimate_basis": "raw_analog_frequency",
+          "brier_score": 0.0133,
+          "reference_brier_score": 0.0611,
+          "brier_skill_score": 0.782,
+          "reliability_error": 0.008,
+          "candidate_calibrated_metrics": {
+            "brier_score": 0.016736311926103295,
+            "brier_skill_score": 0.7262737768556625,
+            "reliability_error": 0.016070763249413263,
+            "diagnostic_controls_pass": false
+          },
+          "enabled": false,
+          "reason": "Pendiente de validación por crecidas y reproducción operativa con datos disponibles al emitir."
+        },
+        "11.00:14": {
+          "sample_size": 100,
+          "event_count": 8,
+          "non_event_count": 92,
+          "event_count_definition": "fechas cuyo horizonte contiene una superación; no crecidas independientes",
+          "nonoverlapping_positive_windows": 3,
+          "independent_flood_count": null,
+          "calibration_sample_size": 96,
+          "calibration_event_count": 14,
+          "calibration_parameters": {
+            "intercept": -0.520635,
+            "slope": 1.763686
+          },
+          "reference": "frecuencia del evento en el bloque de calibración",
+          "reference_probability": 0.1495,
+          "scored_estimate_basis": "raw_analog_frequency",
+          "brier_score": 0.0301,
+          "reference_brier_score": 0.0784,
+          "brier_skill_score": 0.617,
+          "reliability_error": 0.011,
+          "candidate_calibrated_metrics": {
+            "brier_score": 0.03433582747037077,
+            "brier_skill_score": 0.5621999367572553,
+            "reliability_error": 0.03177234908683418,
+            "diagnostic_controls_pass": false
+          },
+          "enabled": false,
+          "reason": "Pendiente de validación por crecidas y reproducción operativa con datos disponibles al emitir."
+        },
+        "11.00:21": {
+          "sample_size": 100,
+          "event_count": 10,
+          "non_event_count": 90,
+          "event_count_definition": "fechas cuyo horizonte contiene una superación; no crecidas independientes",
+          "nonoverlapping_positive_windows": 3,
+          "independent_flood_count": null,
+          "calibration_sample_size": 96,
+          "calibration_event_count": 16,
+          "calibration_parameters": {
+            "intercept": -0.590074,
+            "slope": 1.105436
+          },
+          "reference": "frecuencia del evento en el bloque de calibración",
+          "reference_probability": 0.1701,
+          "scored_estimate_basis": "raw_analog_frequency",
+          "brier_score": 0.0411,
+          "reference_brier_score": 0.0949,
+          "brier_skill_score": 0.567,
+          "reliability_error": 0.019,
+          "candidate_calibrated_metrics": {
+            "brier_score": 0.045944590376096654,
+            "brier_skill_score": 0.5159367887031034,
+            "reliability_error": 0.04409199358021086,
+            "diagnostic_controls_pass": true
+          },
+          "enabled": false,
+          "reason": "Pendiente de validación por crecidas y reproducción operativa con datos disponibles al emitir."
+        },
+        "11.00:28": {
+          "sample_size": 100,
+          "event_count": 12,
+          "non_event_count": 88,
+          "event_count_definition": "fechas cuyo horizonte contiene una superación; no crecidas independientes",
+          "nonoverlapping_positive_windows": 3,
+          "independent_flood_count": null,
+          "calibration_sample_size": 96,
+          "calibration_event_count": 18,
+          "calibration_parameters": {
+            "intercept": -0.462371,
+            "slope": 0.86268
+          },
+          "reference": "frecuencia del evento en el bloque de calibración",
+          "reference_probability": 0.1907,
+          "scored_estimate_basis": "raw_analog_frequency",
+          "brier_score": 0.0554,
+          "reference_brier_score": 0.1106,
+          "brier_skill_score": 0.5,
+          "reliability_error": 0.025,
+          "candidate_calibrated_metrics": {
+            "brier_score": 0.05820310775665579,
+            "brier_skill_score": 0.4737586692140736,
+            "reliability_error": 0.03312389494066201,
+            "diagnostic_controls_pass": true
+          },
+          "enabled": false,
+          "reason": "Pendiente de validación por crecidas y reproducción operativa con datos disponibles al emitir."
+        },
+        "11.25:7": {
+          "sample_size": 100,
+          "event_count": 5,
+          "non_event_count": 95,
+          "event_count_definition": "fechas cuyo horizonte contiene una superación; no crecidas independientes",
+          "nonoverlapping_positive_windows": 3,
+          "independent_flood_count": null,
+          "calibration_sample_size": 96,
+          "calibration_event_count": 12,
+          "calibration_parameters": {
+            "intercept": -0.380896,
+            "slope": 1.008818
+          },
+          "reference": "frecuencia del evento en el bloque de calibración",
+          "reference_probability": 0.1289,
+          "scored_estimate_basis": "raw_analog_frequency",
+          "brier_score": 0.0065,
+          "reference_brier_score": 0.0537,
+          "brier_skill_score": 0.879,
+          "reliability_error": 0.016,
+          "candidate_calibrated_metrics": {
+            "brier_score": 0.007382162212418425,
+            "brier_skill_score": 0.8625803457183797,
+            "reliability_error": 0.005354187770628811,
+            "diagnostic_controls_pass": false
+          },
+          "enabled": false,
+          "reason": "Pendiente de validación por crecidas y reproducción operativa con datos disponibles al emitir."
+        },
+        "11.25:14": {
+          "sample_size": 100,
+          "event_count": 7,
+          "non_event_count": 93,
+          "event_count_definition": "fechas cuyo horizonte contiene una superación; no crecidas independientes",
+          "nonoverlapping_positive_windows": 3,
+          "independent_flood_count": null,
+          "calibration_sample_size": 96,
+          "calibration_event_count": 14,
+          "calibration_parameters": {
+            "intercept": 0.359568,
+            "slope": 1.824643
+          },
+          "reference": "frecuencia del evento en el bloque de calibración",
+          "reference_probability": 0.1495,
+          "scored_estimate_basis": "raw_analog_frequency",
+          "brier_score": 0.0217,
+          "reference_brier_score": 0.0714,
+          "brier_skill_score": 0.696,
+          "reliability_error": 0.017,
+          "candidate_calibrated_metrics": {
+            "brier_score": 0.022817911514774226,
+            "brier_skill_score": 0.6805010202203808,
+            "reliability_error": 0.02472406424978844,
+            "diagnostic_controls_pass": false
+          },
+          "enabled": false,
+          "reason": "Pendiente de validación por crecidas y reproducción operativa con datos disponibles al emitir."
+        },
+        "11.25:21": {
+          "sample_size": 100,
+          "event_count": 9,
+          "non_event_count": 91,
+          "event_count_definition": "fechas cuyo horizonte contiene una superación; no crecidas independientes",
+          "nonoverlapping_positive_windows": 3,
+          "independent_flood_count": null,
+          "calibration_sample_size": 96,
+          "calibration_event_count": 16,
+          "calibration_parameters": {
+            "intercept": -0.117704,
+            "slope": 1.295153
+          },
+          "reference": "frecuencia del evento en el bloque de calibración",
+          "reference_probability": 0.1701,
+          "scored_estimate_basis": "raw_analog_frequency",
+          "brier_score": 0.0379,
+          "reference_brier_score": 0.0883,
+          "brier_skill_score": 0.571,
+          "reliability_error": 0.014,
+          "candidate_calibrated_metrics": {
+            "brier_score": 0.039544120660552254,
+            "brier_skill_score": 0.5522454104298156,
+            "reliability_error": 0.0320584721225504,
+            "diagnostic_controls_pass": false
+          },
+          "enabled": false,
+          "reason": "Pendiente de validación por crecidas y reproducción operativa con datos disponibles al emitir."
+        },
+        "11.25:28": {
+          "sample_size": 100,
+          "event_count": 11,
+          "non_event_count": 89,
+          "event_count_definition": "fechas cuyo horizonte contiene una superación; no crecidas independientes",
+          "nonoverlapping_positive_windows": 3,
+          "independent_flood_count": null,
+          "calibration_sample_size": 96,
+          "calibration_event_count": 18,
+          "calibration_parameters": {
+            "intercept": -0.153837,
+            "slope": 0.921865
+          },
+          "reference": "frecuencia del evento en el bloque de calibración",
+          "reference_probability": 0.1907,
+          "scored_estimate_basis": "raw_analog_frequency",
+          "brier_score": 0.0483,
+          "reference_brier_score": 0.1044,
+          "brier_skill_score": 0.538,
+          "reliability_error": 0.027,
+          "candidate_calibrated_metrics": {
+            "brier_score": 0.048996049963200096,
+            "brier_skill_score": 0.5307610218293555,
+            "reliability_error": 0.02909469277215172,
+            "diagnostic_controls_pass": true
+          },
+          "enabled": false,
+          "reason": "Pendiente de validación por crecidas y reproducción operativa con datos disponibles al emitir."
+        },
+        "11.50:7": {
+          "sample_size": 100,
+          "event_count": 3,
+          "non_event_count": 97,
+          "event_count_definition": "fechas cuyo horizonte contiene una superación; no crecidas independientes",
+          "nonoverlapping_positive_windows": 2,
+          "independent_flood_count": null,
+          "calibration_sample_size": 96,
+          "calibration_event_count": 12,
+          "calibration_parameters": {
+            "intercept": -0.024008,
+            "slope": 0.991953
+          },
+          "reference": "frecuencia del evento en el bloque de calibración",
+          "reference_probability": 0.1289,
+          "scored_estimate_basis": "raw_analog_frequency",
+          "brier_score": 0.0049,
+          "reference_brier_score": 0.0389,
+          "brier_skill_score": 0.874,
+          "reliability_error": 0.016,
+          "candidate_calibrated_metrics": {
+            "brier_score": 0.004872080422873027,
+            "brier_skill_score": 0.8746715020400462,
+            "reliability_error": 0.016161206968697415,
+            "diagnostic_controls_pass": false
+          },
+          "enabled": false,
+          "reason": "Pendiente de validación por crecidas y reproducción operativa con datos disponibles al emitir."
+        },
+        "11.50:14": {
+          "sample_size": 100,
+          "event_count": 4,
+          "non_event_count": 96,
+          "event_count_definition": "fechas cuyo horizonte contiene una superación; no crecidas independientes",
+          "nonoverlapping_positive_windows": 2,
+          "independent_flood_count": null,
+          "calibration_sample_size": 96,
+          "calibration_event_count": 14,
+          "calibration_parameters": {
+            "intercept": 0.882232,
+            "slope": 1.768161
+          },
+          "reference": "frecuencia del evento en el bloque de calibración",
+          "reference_probability": 0.1495,
+          "scored_estimate_basis": "raw_analog_frequency",
+          "brier_score": 0.015,
+          "reference_brier_score": 0.0504,
+          "brier_skill_score": 0.702,
+          "reliability_error": 0.018,
+          "candidate_calibrated_metrics": {
+            "brier_score": 0.01911055667316628,
+            "brier_skill_score": 0.6207234328127116,
+            "reliability_error": 0.02022607025937393,
+            "diagnostic_controls_pass": false
+          },
+          "enabled": false,
+          "reason": "Pendiente de validación por crecidas y reproducción operativa con datos disponibles al emitir."
+        },
+        "11.50:21": {
+          "sample_size": 100,
+          "event_count": 5,
+          "non_event_count": 95,
+          "event_count_definition": "fechas cuyo horizonte contiene una superación; no crecidas independientes",
+          "nonoverlapping_positive_windows": 2,
+          "independent_flood_count": null,
+          "calibration_sample_size": 96,
+          "calibration_event_count": 16,
+          "calibration_parameters": {
+            "intercept": 0.209499,
+            "slope": 1.260658
+          },
+          "reference": "frecuencia del evento en el bloque de calibración",
+          "reference_probability": 0.1701,
+          "scored_estimate_basis": "raw_analog_frequency",
+          "brier_score": 0.0243,
+          "reference_brier_score": 0.0619,
+          "brier_skill_score": 0.607,
+          "reliability_error": 0.03,
+          "candidate_calibrated_metrics": {
+            "brier_score": 0.02592124502344887,
+            "brier_skill_score": 0.5814073724781079,
+            "reliability_error": 0.0260186134284325,
+            "diagnostic_controls_pass": false
+          },
+          "enabled": false,
+          "reason": "Pendiente de validación por crecidas y reproducción operativa con datos disponibles al emitir."
+        },
+        "11.50:28": {
+          "sample_size": 100,
+          "event_count": 6,
+          "non_event_count": 94,
+          "event_count_definition": "fechas cuyo horizonte contiene una superación; no crecidas independientes",
+          "nonoverlapping_positive_windows": 2,
+          "independent_flood_count": null,
+          "calibration_sample_size": 96,
+          "calibration_event_count": 18,
+          "calibration_parameters": {
+            "intercept": 0.10213,
+            "slope": 0.959097
+          },
+          "reference": "frecuencia del evento en el bloque de calibración",
+          "reference_probability": 0.1907,
+          "scored_estimate_basis": "raw_analog_frequency",
+          "brier_score": 0.0291,
+          "reference_brier_score": 0.0735,
+          "brier_skill_score": 0.604,
+          "reliability_error": 0.05,
+          "candidate_calibrated_metrics": {
+            "brier_score": 0.029639027112908684,
+            "brier_skill_score": 0.5966829038898578,
+            "reliability_error": 0.05228498451961065,
+            "diagnostic_controls_pass": false
+          },
+          "enabled": false,
+          "reason": "Pendiente de validación por crecidas y reproducción operativa con datos disponibles al emitir."
+        },
+        "11.75:7": {
+          "sample_size": 100,
+          "event_count": 3,
+          "non_event_count": 97,
+          "event_count_definition": "fechas cuyo horizonte contiene una superación; no crecidas independientes",
+          "nonoverlapping_positive_windows": 2,
+          "independent_flood_count": null,
+          "calibration_sample_size": 96,
+          "calibration_event_count": 12,
+          "calibration_parameters": {
+            "intercept": 0.011477,
+            "slope": 0.856502
+          },
+          "reference": "frecuencia del evento en el bloque de calibración",
+          "reference_probability": 0.1289,
+          "scored_estimate_basis": "raw_analog_frequency",
+          "brier_score": 0.0044,
+          "reference_brier_score": 0.0389,
+          "brier_skill_score": 0.888,
+          "reliability_error": 0.014,
+          "candidate_calibrated_metrics": {
+            "brier_score": 0.004778765901312248,
+            "brier_skill_score": 0.877071907577311,
+            "reliability_error": 0.016542967081575263,
+            "diagnostic_controls_pass": false
+          },
+          "enabled": false,
+          "reason": "Pendiente de validación por crecidas y reproducción operativa con datos disponibles al emitir."
+        },
+        "11.75:14": {
+          "sample_size": 100,
+          "event_count": 4,
+          "non_event_count": 96,
+          "event_count_definition": "fechas cuyo horizonte contiene una superación; no crecidas independientes",
+          "nonoverlapping_positive_windows": 2,
+          "independent_flood_count": null,
+          "calibration_sample_size": 96,
+          "calibration_event_count": 14,
+          "calibration_parameters": {
+            "intercept": 0.977646,
+            "slope": 1.579754
+          },
+          "reference": "frecuencia del evento en el bloque de calibración",
+          "reference_probability": 0.1495,
+          "scored_estimate_basis": "raw_analog_frequency",
+          "brier_score": 0.0134,
+          "reference_brier_score": 0.0504,
+          "brier_skill_score": 0.734,
+          "reliability_error": 0.015,
+          "candidate_calibrated_metrics": {
+            "brier_score": 0.015249355280215144,
+            "brier_skill_score": 0.6973545448510952,
+            "reliability_error": 0.016340115677963875,
+            "diagnostic_controls_pass": false
+          },
+          "enabled": false,
+          "reason": "Pendiente de validación por crecidas y reproducción operativa con datos disponibles al emitir."
+        },
+        "11.75:21": {
+          "sample_size": 100,
+          "event_count": 5,
+          "non_event_count": 95,
+          "event_count_definition": "fechas cuyo horizonte contiene una superación; no crecidas independientes",
+          "nonoverlapping_positive_windows": 2,
+          "independent_flood_count": null,
+          "calibration_sample_size": 96,
+          "calibration_event_count": 16,
+          "calibration_parameters": {
+            "intercept": 0.250633,
+            "slope": 1.072861
+          },
+          "reference": "frecuencia del evento en el bloque de calibración",
+          "reference_probability": 0.1701,
+          "scored_estimate_basis": "raw_analog_frequency",
+          "brier_score": 0.0225,
+          "reference_brier_score": 0.0619,
+          "brier_skill_score": 0.637,
+          "reliability_error": 0.02,
+          "candidate_calibrated_metrics": {
+            "brier_score": 0.023401308924398546,
+            "brier_skill_score": 0.6221008913246959,
+            "reliability_error": 0.019453965030289688,
+            "diagnostic_controls_pass": false
+          },
+          "enabled": false,
+          "reason": "Pendiente de validación por crecidas y reproducción operativa con datos disponibles al emitir."
+        },
+        "11.75:28": {
+          "sample_size": 100,
+          "event_count": 6,
+          "non_event_count": 94,
+          "event_count_definition": "fechas cuyo horizonte contiene una superación; no crecidas independientes",
+          "nonoverlapping_positive_windows": 2,
+          "independent_flood_count": null,
+          "calibration_sample_size": 96,
+          "calibration_event_count": 18,
+          "calibration_parameters": {
+            "intercept": 0.189448,
+            "slope": 0.895319
+          },
+          "reference": "frecuencia del evento en el bloque de calibración",
+          "reference_probability": 0.1907,
+          "scored_estimate_basis": "raw_analog_frequency",
+          "brier_score": 0.0269,
+          "reference_brier_score": 0.0735,
+          "brier_skill_score": 0.634,
+          "reliability_error": 0.023,
+          "candidate_calibrated_metrics": {
+            "brier_score": 0.02799523129022135,
+            "brier_skill_score": 0.6190510793120361,
+            "reliability_error": 0.04884399976581926,
+            "diagnostic_controls_pass": false
+          },
+          "enabled": false,
+          "reason": "Pendiente de validación por crecidas y reproducción operativa con datos disponibles al emitir."
+        },
+        "12.00:7": {
+          "sample_size": 100,
+          "event_count": 2,
+          "non_event_count": 98,
+          "event_count_definition": "fechas cuyo horizonte contiene una superación; no crecidas independientes",
+          "nonoverlapping_positive_windows": 1,
+          "independent_flood_count": null,
+          "calibration_sample_size": 96,
+          "calibration_event_count": 11,
+          "calibration_parameters": {
+            "intercept": -0.102554,
+            "slope": 0.784386
+          },
+          "reference": "frecuencia del evento en el bloque de calibración",
+          "reference_probability": 0.1186,
+          "scored_estimate_basis": "raw_analog_frequency",
+          "brier_score": 0.0075,
+          "reference_brier_score": 0.0293,
+          "brier_skill_score": 0.744,
+          "reliability_error": 0.005,
+          "candidate_calibrated_metrics": {
+            "brier_score": 0.007733644304084758,
+            "brier_skill_score": 0.7361739630284128,
+            "reliability_error": 0.007749810718693465,
+            "diagnostic_controls_pass": false
+          },
+          "enabled": false,
+          "reason": "Pendiente de validación por crecidas y reproducción operativa con datos disponibles al emitir."
+        },
+        "12.00:14": {
+          "sample_size": 100,
+          "event_count": 3,
+          "non_event_count": 97,
+          "event_count_definition": "fechas cuyo horizonte contiene una superación; no crecidas independientes",
+          "nonoverlapping_positive_windows": 1,
+          "independent_flood_count": null,
+          "calibration_sample_size": 96,
+          "calibration_event_count": 13,
+          "calibration_parameters": {
+            "intercept": 0.34099,
+            "slope": 1.135204
+          },
+          "reference": "frecuencia del evento en el bloque de calibración",
+          "reference_probability": 0.1392,
+          "scored_estimate_basis": "raw_analog_frequency",
+          "brier_score": 0.0161,
+          "reference_brier_score": 0.041,
+          "brier_skill_score": 0.606,
+          "reliability_error": 0.009,
+          "candidate_calibrated_metrics": {
+            "brier_score": 0.016954097290670062,
+            "brier_skill_score": 0.5866793589638176,
+            "reliability_error": 0.010535576738998083,
+            "diagnostic_controls_pass": false
+          },
+          "enabled": false,
+          "reason": "Pendiente de validación por crecidas y reproducción operativa con datos disponibles al emitir."
+        },
+        "12.00:21": {
+          "sample_size": 100,
+          "event_count": 4,
+          "non_event_count": 96,
+          "event_count_definition": "fechas cuyo horizonte contiene una superación; no crecidas independientes",
+          "nonoverlapping_positive_windows": 1,
+          "independent_flood_count": null,
+          "calibration_sample_size": 96,
+          "calibration_event_count": 15,
+          "calibration_parameters": {
+            "intercept": 0.033025,
+            "slope": 0.882999
+          },
+          "reference": "frecuencia del evento en el bloque de calibración",
+          "reference_probability": 0.1598,
+          "scored_estimate_basis": "raw_analog_frequency",
+          "brier_score": 0.025,
+          "reference_brier_score": 0.0528,
+          "brier_skill_score": 0.526,
+          "reliability_error": 0.017,
+          "candidate_calibrated_metrics": {
+            "brier_score": 0.02549837912742099,
+            "brier_skill_score": 0.5166235182038077,
+            "reliability_error": 0.017145465438674207,
+            "diagnostic_controls_pass": false
+          },
+          "enabled": false,
+          "reason": "Pendiente de validación por crecidas y reproducción operativa con datos disponibles al emitir."
+        },
+        "12.00:28": {
+          "sample_size": 100,
+          "event_count": 5,
+          "non_event_count": 95,
+          "event_count_definition": "fechas cuyo horizonte contiene una superación; no crecidas independientes",
+          "nonoverlapping_positive_windows": 1,
+          "independent_flood_count": null,
+          "calibration_sample_size": 96,
+          "calibration_event_count": 17,
+          "calibration_parameters": {
+            "intercept": 0.114286,
+            "slope": 0.795265
+          },
+          "reference": "frecuencia del evento en el bloque de calibración",
+          "reference_probability": 0.1804,
+          "scored_estimate_basis": "raw_analog_frequency",
+          "brier_score": 0.0304,
+          "reference_brier_score": 0.0645,
+          "brier_skill_score": 0.529,
+          "reliability_error": 0.037,
+          "candidate_calibrated_metrics": {
+            "brier_score": 0.031561500423550964,
+            "brier_skill_score": 0.5107304432240036,
+            "reliability_error": 0.05831633357928418,
+            "diagnostic_controls_pass": false
+          },
+          "enabled": false,
+          "reason": "Pendiente de validación por crecidas y reproducción operativa con datos disponibles al emitir."
+        },
+        "12.25:7": {
+          "sample_size": 100,
+          "event_count": 1,
+          "non_event_count": 99,
+          "event_count_definition": "fechas cuyo horizonte contiene una superación; no crecidas independientes",
+          "nonoverlapping_positive_windows": 1,
+          "independent_flood_count": null,
+          "calibration_sample_size": 96,
+          "calibration_event_count": 10,
+          "calibration_parameters": {
+            "intercept": 0.244569,
+            "slope": 1.209397
+          },
+          "reference": "frecuencia del evento en el bloque de calibración",
+          "reference_probability": 0.1082,
+          "scored_estimate_basis": "raw_analog_frequency",
+          "brier_score": 0.0035,
+          "reference_brier_score": 0.0196,
+          "brier_skill_score": 0.823,
+          "reliability_error": 0.014,
+          "candidate_calibrated_metrics": {
+            "brier_score": 0.0028107590866589434,
+            "brier_skill_score": 0.8562459518053269,
+            "reliability_error": 0.011913266969250783,
+            "diagnostic_controls_pass": false
+          },
+          "enabled": false,
+          "reason": "Pendiente de validación por crecidas y reproducción operativa con datos disponibles al emitir."
+        },
+        "12.25:14": {
+          "sample_size": 100,
+          "event_count": 2,
+          "non_event_count": 98,
+          "event_count_definition": "fechas cuyo horizonte contiene una superación; no crecidas independientes",
+          "nonoverlapping_positive_windows": 1,
+          "independent_flood_count": null,
+          "calibration_sample_size": 96,
+          "calibration_event_count": 12,
+          "calibration_parameters": {
+            "intercept": 0.141455,
+            "slope": 1.062692
+          },
+          "reference": "frecuencia del evento en el bloque de calibración",
+          "reference_probability": 0.1289,
+          "scored_estimate_basis": "raw_analog_frequency",
+          "brier_score": 0.0096,
+          "reference_brier_score": 0.0315,
+          "brier_skill_score": 0.693,
+          "reliability_error": 0.017,
+          "candidate_calibrated_metrics": {
+            "brier_score": 0.009418005786636837,
+            "brier_skill_score": 0.700557508713324,
+            "reliability_error": 0.01734354239351198,
+            "diagnostic_controls_pass": false
+          },
+          "enabled": false,
+          "reason": "Pendiente de validación por crecidas y reproducción operativa con datos disponibles al emitir."
+        },
+        "12.25:21": {
+          "sample_size": 100,
+          "event_count": 3,
+          "non_event_count": 97,
+          "event_count_definition": "fechas cuyo horizonte contiene una superación; no crecidas independientes",
+          "nonoverlapping_positive_windows": 1,
+          "independent_flood_count": null,
+          "calibration_sample_size": 96,
+          "calibration_event_count": 14,
+          "calibration_parameters": {
+            "intercept": 0.294805,
+            "slope": 1.101138
+          },
+          "reference": "frecuencia del evento en el bloque de calibración",
+          "reference_probability": 0.1495,
+          "scored_estimate_basis": "raw_analog_frequency",
+          "brier_score": 0.0172,
+          "reference_brier_score": 0.0434,
+          "brier_skill_score": 0.604,
+          "reliability_error": 0.029,
+          "candidate_calibrated_metrics": {
+            "brier_score": 0.017414458089504443,
+            "brier_skill_score": 0.5985283214560377,
+            "reliability_error": 0.020374525946702613,
+            "diagnostic_controls_pass": false
+          },
+          "enabled": false,
+          "reason": "Pendiente de validación por crecidas y reproducción operativa con datos disponibles al emitir."
+        },
+        "12.25:28": {
+          "sample_size": 100,
+          "event_count": 4,
+          "non_event_count": 96,
+          "event_count_definition": "fechas cuyo horizonte contiene una superación; no crecidas independientes",
+          "nonoverlapping_positive_windows": 1,
+          "independent_flood_count": null,
+          "calibration_sample_size": 96,
+          "calibration_event_count": 16,
+          "calibration_parameters": {
+            "intercept": 0.525418,
+            "slope": 1.109886
+          },
+          "reference": "frecuencia del evento en el bloque de calibración",
+          "reference_probability": 0.1701,
+          "scored_estimate_basis": "raw_analog_frequency",
+          "brier_score": 0.0261,
+          "reference_brier_score": 0.0553,
+          "brier_skill_score": 0.529,
+          "reliability_error": 0.019,
+          "candidate_calibrated_metrics": {
+            "brier_score": 0.02849289810379893,
+            "brier_skill_score": 0.48500743750380515,
+            "reliability_error": 0.037887848018115816,
+            "diagnostic_controls_pass": false
+          },
+          "enabled": false,
+          "reason": "Pendiente de validación por crecidas y reproducción operativa con datos disponibles al emitir."
+        }
+      }
+    },
+    "limitations": [
+      "La evaluación retrospectiva diaria no equivale a validación de emisiones intradiarias.",
+      "Los análogos y las ventanas semanales pueden pertenecer a la misma crecida; no son ensayos independientes.",
+      "El intervalo de Wilson usa tamaño efectivo por pesos, sin corregir dependencia ni incertidumbre del modelo; no garantiza cobertura probabilística.",
+      "La selección de mediana o persistencia y el reajuste operativo requieren una evaluación externa congelada.",
+      "No anticipa decisiones futuras de operación de la represa.",
+      "La probabilidad se muestra como exploratoria cuando el bloque final no reúne evidencia suficiente para considerarla validada.",
+      "GEOGLOWS se conserva como señal de caudal separada hasta acumular re-pronósticos locales para validarla."
+    ]
+  },
+  "report": {
+    "id": "2026-09-07T07:30:43-03:00",
+    "generated_at": "2026-09-07T07:30:43-03:00",
+    "station": "Puerto Concordia",
+    "method": {
+      "method_id": "ctm-analog-ensemble-v1.2-audit",
+      "calibrated": false,
+      "validated": false,
+      "label": "Ensamble local de análogos hidrométricos",
+      "note": "El porcentaje exploratorio es la frecuencia ponderada de superación en 60 trayectorias análogas, utilizando máximos diarios futuros. En esta versión la calibración se conserva como candidata y no se aplica: falta evaluación por crecidas y reproducción operativa. Las estimaciones siguen visibles como exploratorias."
+    },
+    "data_status": "partial",
+    "snapshot": {
+      "concordia_m": 7.51,
+      "released_flow_m3s": 9596,
+      "rainfall_7d_mm": 9
+    },
+    "thresholds": [
+      {
+        "threshold_m": 11.0,
+        "condition": "alcanzar o superar 11,00 m al menos una vez dentro de cada período",
+        "rows": [
+          {
+            "horizon_days": 7,
+            "classification": "BAJO",
+            "central_estimate_pct": 0,
+            "plausible_interval_pct": [
+              0,
+              6
+            ],
+            "estimate_basis": "raw_analog_frequency",
+            "estimate_status": "exploratory",
+            "evidence_confidence": "Baja",
+            "confidence_reason": "Estimación exploratoria: sin recuento validado de crecidas independientes ni reproducción operativa; 6 fechas con superación; mínimo diagnóstico 10.",
+            "raw_ensemble_probability_pct": 0,
+            "classification_uncertainty": "Moderada",
+            "scenario_min_m": 5.42,
+            "scenario_central_m": 6.73,
+            "scenario_max_m": 8.4,
+            "validation": {
+              "sample_size": 100,
+              "event_count": 6,
+              "non_event_count": 94,
+              "event_count_definition": "fechas cuyo horizonte contiene una superación; no crecidas independientes",
+              "nonoverlapping_positive_windows": 3,
+              "independent_flood_count": null,
+              "calibration_sample_size": 96,
+              "calibration_event_count": 12,
+              "calibration_parameters": {
+                "intercept": -0.773291,
+                "slope": 1.265206
+              },
+              "reference": "frecuencia del evento en el bloque de calibración",
+              "reference_probability": 0.1289,
+              "scored_estimate_basis": "raw_analog_frequency",
+              "brier_score": 0.0133,
+              "reference_brier_score": 0.0611,
+              "brier_skill_score": 0.782,
+              "reliability_error": 0.008,
+              "candidate_calibrated_metrics": {
+                "brier_score": 0.016736311926103295,
+                "brier_skill_score": 0.7262737768556625,
+                "reliability_error": 0.016070763249413263,
+                "diagnostic_controls_pass": false
+              },
+              "enabled": false,
+              "reason": "Pendiente de validación por crecidas y reproducción operativa con datos disponibles al emitir."
+            }
+          },
+          {
+            "horizon_days": 14,
+            "classification": "BAJO",
+            "central_estimate_pct": 0,
+            "plausible_interval_pct": [
+              0,
+              6
+            ],
+            "estimate_basis": "raw_analog_frequency",
+            "estimate_status": "exploratory",
+            "evidence_confidence": "Baja",
+            "confidence_reason": "Estimación exploratoria: sin recuento validado de crecidas independientes ni reproducción operativa; 8 fechas con superación; mínimo diagnóstico 10.",
+            "raw_ensemble_probability_pct": 0,
+            "classification_uncertainty": "Alta",
+            "scenario_min_m": 3.25,
+            "scenario_central_m": 6.39,
+            "scenario_max_m": 9.7,
+            "validation": {
+              "sample_size": 100,
+              "event_count": 8,
+              "non_event_count": 92,
+              "event_count_definition": "fechas cuyo horizonte contiene una superación; no crecidas independientes",
+              "nonoverlapping_positive_windows": 3,
+              "independent_flood_count": null,
+              "calibration_sample_size": 96,
+              "calibration_event_count": 14,
+              "calibration_parameters": {
+                "intercept": -0.520635,
+                "slope": 1.763686
+              },
+              "reference": "frecuencia del evento en el bloque de calibración",
+              "reference_probability": 0.1495,
+              "scored_estimate_basis": "raw_analog_frequency",
+              "brier_score": 0.0301,
+              "reference_brier_score": 0.0784,
+              "brier_skill_score": 0.617,
+              "reliability_error": 0.011,
+              "candidate_calibrated_metrics": {
+                "brier_score": 0.03433582747037077,
+                "brier_skill_score": 0.5621999367572553,
+                "reliability_error": 0.03177234908683418,
+                "diagnostic_controls_pass": false
+              },
+              "enabled": false,
+              "reason": "Pendiente de validación por crecidas y reproducción operativa con datos disponibles al emitir."
+            }
+          },
+          {
+            "horizon_days": 21,
+            "classification": "BAJO",
+            "central_estimate_pct": 4,
+            "plausible_interval_pct": [
+              1,
+              12
+            ],
+            "estimate_basis": "raw_analog_frequency",
+            "estimate_status": "exploratory",
+            "evidence_confidence": "Baja",
+            "confidence_reason": "Estimación exploratoria: sin recuento validado de crecidas independientes ni reproducción operativa.",
+            "raw_ensemble_probability_pct": 4,
+            "classification_uncertainty": "Muy alta",
+            "scenario_min_m": 2.76,
+            "scenario_central_m": 7.51,
+            "scenario_max_m": 9.64,
+            "validation": {
+              "sample_size": 100,
+              "event_count": 10,
+              "non_event_count": 90,
+              "event_count_definition": "fechas cuyo horizonte contiene una superación; no crecidas independientes",
+              "nonoverlapping_positive_windows": 3,
+              "independent_flood_count": null,
+              "calibration_sample_size": 96,
+              "calibration_event_count": 16,
+              "calibration_parameters": {
+                "intercept": -0.590074,
+                "slope": 1.105436
+              },
+              "reference": "frecuencia del evento en el bloque de calibración",
+              "reference_probability": 0.1701,
+              "scored_estimate_basis": "raw_analog_frequency",
+              "brier_score": 0.0411,
+              "reference_brier_score": 0.0949,
+              "brier_skill_score": 0.567,
+              "reliability_error": 0.019,
+              "candidate_calibrated_metrics": {
+                "brier_score": 0.045944590376096654,
+                "brier_skill_score": 0.5159367887031034,
+                "reliability_error": 0.04409199358021086,
+                "diagnostic_controls_pass": true
+              },
+              "enabled": false,
+              "reason": "Pendiente de validación por crecidas y reproducción operativa con datos disponibles al emitir."
+            }
+          },
+          {
+            "horizon_days": 28,
+            "classification": "BAJO",
+            "central_estimate_pct": 6,
+            "plausible_interval_pct": [
+              2,
+              15
+            ],
+            "estimate_basis": "raw_analog_frequency",
+            "estimate_status": "exploratory",
+            "evidence_confidence": "Baja",
+            "confidence_reason": "Estimación exploratoria: sin recuento validado de crecidas independientes ni reproducción operativa.",
+            "raw_ensemble_probability_pct": 6,
+            "classification_uncertainty": "Muy alta",
+            "scenario_min_m": 3.55,
+            "scenario_central_m": 7.51,
+            "scenario_max_m": 10.68,
+            "validation": {
+              "sample_size": 100,
+              "event_count": 12,
+              "non_event_count": 88,
+              "event_count_definition": "fechas cuyo horizonte contiene una superación; no crecidas independientes",
+              "nonoverlapping_positive_windows": 3,
+              "independent_flood_count": null,
+              "calibration_sample_size": 96,
+              "calibration_event_count": 18,
+              "calibration_parameters": {
+                "intercept": -0.462371,
+                "slope": 0.86268
+              },
+              "reference": "frecuencia del evento en el bloque de calibración",
+              "reference_probability": 0.1907,
+              "scored_estimate_basis": "raw_analog_frequency",
+              "brier_score": 0.0554,
+              "reference_brier_score": 0.1106,
+              "brier_skill_score": 0.5,
+              "reliability_error": 0.025,
+              "candidate_calibrated_metrics": {
+                "brier_score": 0.05820310775665579,
+                "brier_skill_score": 0.4737586692140736,
+                "reliability_error": 0.03312389494066201,
+                "diagnostic_controls_pass": true
+              },
+              "enabled": false,
+              "reason": "Pendiente de validación por crecidas y reproducción operativa con datos disponibles al emitir."
+            }
+          }
+        ]
+      },
+      {
+        "threshold_m": 11.25,
+        "condition": "alcanzar o superar 11,25 m al menos una vez dentro de cada período",
+        "rows": [
+          {
+            "horizon_days": 7,
+            "classification": "BAJO",
+            "central_estimate_pct": 0,
+            "plausible_interval_pct": [
+              0,
+              6
+            ],
+            "estimate_basis": "raw_analog_frequency",
+            "estimate_status": "exploratory",
+            "evidence_confidence": "Baja",
+            "confidence_reason": "Estimación exploratoria: sin recuento validado de crecidas independientes ni reproducción operativa; 5 fechas con superación; mínimo diagnóstico 10.",
+            "raw_ensemble_probability_pct": 0,
+            "classification_uncertainty": "Moderada",
+            "scenario_min_m": 5.42,
+            "scenario_central_m": 6.73,
+            "scenario_max_m": 8.4,
+            "validation": {
+              "sample_size": 100,
+              "event_count": 5,
+              "non_event_count": 95,
+              "event_count_definition": "fechas cuyo horizonte contiene una superación; no crecidas independientes",
+              "nonoverlapping_positive_windows": 3,
+              "independent_flood_count": null,
+              "calibration_sample_size": 96,
+              "calibration_event_count": 12,
+              "calibration_parameters": {
+                "intercept": -0.380896,
+                "slope": 1.008818
+              },
+              "reference": "frecuencia del evento en el bloque de calibración",
+              "reference_probability": 0.1289,
+              "scored_estimate_basis": "raw_analog_frequency",
+              "brier_score": 0.0065,
+              "reference_brier_score": 0.0537,
+              "brier_skill_score": 0.879,
+              "reliability_error": 0.016,
+              "candidate_calibrated_metrics": {
+                "brier_score": 0.007382162212418425,
+                "brier_skill_score": 0.8625803457183797,
+                "reliability_error": 0.005354187770628811,
+                "diagnostic_controls_pass": false
+              },
+              "enabled": false,
+              "reason": "Pendiente de validación por crecidas y reproducción operativa con datos disponibles al emitir."
+            }
+          },
+          {
+            "horizon_days": 14,
+            "classification": "BAJO",
+            "central_estimate_pct": 0,
+            "plausible_interval_pct": [
+              0,
+              6
+            ],
+            "estimate_basis": "raw_analog_frequency",
+            "estimate_status": "exploratory",
+            "evidence_confidence": "Baja",
+            "confidence_reason": "Estimación exploratoria: sin recuento validado de crecidas independientes ni reproducción operativa; 7 fechas con superación; mínimo diagnóstico 10.",
+            "raw_ensemble_probability_pct": 0,
+            "classification_uncertainty": "Alta",
+            "scenario_min_m": 3.25,
+            "scenario_central_m": 6.39,
+            "scenario_max_m": 9.7,
+            "validation": {
+              "sample_size": 100,
+              "event_count": 7,
+              "non_event_count": 93,
+              "event_count_definition": "fechas cuyo horizonte contiene una superación; no crecidas independientes",
+              "nonoverlapping_positive_windows": 3,
+              "independent_flood_count": null,
+              "calibration_sample_size": 96,
+              "calibration_event_count": 14,
+              "calibration_parameters": {
+                "intercept": 0.359568,
+                "slope": 1.824643
+              },
+              "reference": "frecuencia del evento en el bloque de calibración",
+              "reference_probability": 0.1495,
+              "scored_estimate_basis": "raw_analog_frequency",
+              "brier_score": 0.0217,
+              "reference_brier_score": 0.0714,
+              "brier_skill_score": 0.696,
+              "reliability_error": 0.017,
+              "candidate_calibrated_metrics": {
+                "brier_score": 0.022817911514774226,
+                "brier_skill_score": 0.6805010202203808,
+                "reliability_error": 0.02472406424978844,
+                "diagnostic_controls_pass": false
+              },
+              "enabled": false,
+              "reason": "Pendiente de validación por crecidas y reproducción operativa con datos disponibles al emitir."
+            }
+          },
+          {
+            "horizon_days": 21,
+            "classification": "BAJO",
+            "central_estimate_pct": 4,
+            "plausible_interval_pct": [
+              1,
+              12
+            ],
+            "estimate_basis": "raw_analog_frequency",
+            "estimate_status": "exploratory",
+            "evidence_confidence": "Baja",
+            "confidence_reason": "Estimación exploratoria: sin recuento validado de crecidas independientes ni reproducción operativa; 9 fechas con superación; mínimo diagnóstico 10.",
+            "raw_ensemble_probability_pct": 4,
+            "classification_uncertainty": "Muy alta",
+            "scenario_min_m": 2.76,
+            "scenario_central_m": 7.51,
+            "scenario_max_m": 9.64,
+            "validation": {
+              "sample_size": 100,
+              "event_count": 9,
+              "non_event_count": 91,
+              "event_count_definition": "fechas cuyo horizonte contiene una superación; no crecidas independientes",
+              "nonoverlapping_positive_windows": 3,
+              "independent_flood_count": null,
+              "calibration_sample_size": 96,
+              "calibration_event_count": 16,
+              "calibration_parameters": {
+                "intercept": -0.117704,
+                "slope": 1.295153
+              },
+              "reference": "frecuencia del evento en el bloque de calibración",
+              "reference_probability": 0.1701,
+              "scored_estimate_basis": "raw_analog_frequency",
+              "brier_score": 0.0379,
+              "reference_brier_score": 0.0883,
+              "brier_skill_score": 0.571,
+              "reliability_error": 0.014,
+              "candidate_calibrated_metrics": {
+                "brier_score": 0.039544120660552254,
+                "brier_skill_score": 0.5522454104298156,
+                "reliability_error": 0.0320584721225504,
+                "diagnostic_controls_pass": false
+              },
+              "enabled": false,
+              "reason": "Pendiente de validación por crecidas y reproducción operativa con datos disponibles al emitir."
+            }
+          },
+          {
+            "horizon_days": 28,
+            "classification": "BAJO",
+            "central_estimate_pct": 4,
+            "plausible_interval_pct": [
+              1,
+              12
+            ],
+            "estimate_basis": "raw_analog_frequency",
+            "estimate_status": "exploratory",
+            "evidence_confidence": "Baja",
+            "confidence_reason": "Estimación exploratoria: sin recuento validado de crecidas independientes ni reproducción operativa.",
+            "raw_ensemble_probability_pct": 4,
+            "classification_uncertainty": "Muy alta",
+            "scenario_min_m": 3.55,
+            "scenario_central_m": 7.51,
+            "scenario_max_m": 10.68,
+            "validation": {
+              "sample_size": 100,
+              "event_count": 11,
+              "non_event_count": 89,
+              "event_count_definition": "fechas cuyo horizonte contiene una superación; no crecidas independientes",
+              "nonoverlapping_positive_windows": 3,
+              "independent_flood_count": null,
+              "calibration_sample_size": 96,
+              "calibration_event_count": 18,
+              "calibration_parameters": {
+                "intercept": -0.153837,
+                "slope": 0.921865
+              },
+              "reference": "frecuencia del evento en el bloque de calibración",
+              "reference_probability": 0.1907,
+              "scored_estimate_basis": "raw_analog_frequency",
+              "brier_score": 0.0483,
+              "reference_brier_score": 0.1044,
+              "brier_skill_score": 0.538,
+              "reliability_error": 0.027,
+              "candidate_calibrated_metrics": {
+                "brier_score": 0.048996049963200096,
+                "brier_skill_score": 0.5307610218293555,
+                "reliability_error": 0.02909469277215172,
+                "diagnostic_controls_pass": true
+              },
+              "enabled": false,
+              "reason": "Pendiente de validación por crecidas y reproducción operativa con datos disponibles al emitir."
+            }
+          }
+        ]
+      },
+      {
+        "threshold_m": 11.5,
+        "condition": "alcanzar o superar 11,50 m al menos una vez dentro de cada período",
+        "rows": [
+          {
+            "horizon_days": 7,
+            "classification": "BAJO",
+            "central_estimate_pct": 0,
+            "plausible_interval_pct": [
+              0,
+              6
+            ],
+            "estimate_basis": "raw_analog_frequency",
+            "estimate_status": "exploratory",
+            "evidence_confidence": "Muy baja",
+            "confidence_reason": "Estimación exploratoria: sin recuento validado de crecidas independientes ni reproducción operativa; 3 fechas con superación; mínimo diagnóstico 10.",
+            "raw_ensemble_probability_pct": 0,
+            "classification_uncertainty": "Moderada",
+            "scenario_min_m": 5.42,
+            "scenario_central_m": 6.73,
+            "scenario_max_m": 8.4,
+            "validation": {
+              "sample_size": 100,
+              "event_count": 3,
+              "non_event_count": 97,
+              "event_count_definition": "fechas cuyo horizonte contiene una superación; no crecidas independientes",
+              "nonoverlapping_positive_windows": 2,
+              "independent_flood_count": null,
+              "calibration_sample_size": 96,
+              "calibration_event_count": 12,
+              "calibration_parameters": {
+                "intercept": -0.024008,
+                "slope": 0.991953
+              },
+              "reference": "frecuencia del evento en el bloque de calibración",
+              "reference_probability": 0.1289,
+              "scored_estimate_basis": "raw_analog_frequency",
+              "brier_score": 0.0049,
+              "reference_brier_score": 0.0389,
+              "brier_skill_score": 0.874,
+              "reliability_error": 0.016,
+              "candidate_calibrated_metrics": {
+                "brier_score": 0.004872080422873027,
+                "brier_skill_score": 0.8746715020400462,
+                "reliability_error": 0.016161206968697415,
+                "diagnostic_controls_pass": false
+              },
+              "enabled": false,
+              "reason": "Pendiente de validación por crecidas y reproducción operativa con datos disponibles al emitir."
+            }
+          },
+          {
+            "horizon_days": 14,
+            "classification": "BAJO",
+            "central_estimate_pct": 0,
+            "plausible_interval_pct": [
+              0,
+              6
+            ],
+            "estimate_basis": "raw_analog_frequency",
+            "estimate_status": "exploratory",
+            "evidence_confidence": "Muy baja",
+            "confidence_reason": "Estimación exploratoria: sin recuento validado de crecidas independientes ni reproducción operativa; 4 fechas con superación; mínimo diagnóstico 10.",
+            "raw_ensemble_probability_pct": 0,
+            "classification_uncertainty": "Alta",
+            "scenario_min_m": 3.25,
+            "scenario_central_m": 6.39,
+            "scenario_max_m": 9.7,
+            "validation": {
+              "sample_size": 100,
+              "event_count": 4,
+              "non_event_count": 96,
+              "event_count_definition": "fechas cuyo horizonte contiene una superación; no crecidas independientes",
+              "nonoverlapping_positive_windows": 2,
+              "independent_flood_count": null,
+              "calibration_sample_size": 96,
+              "calibration_event_count": 14,
+              "calibration_parameters": {
+                "intercept": 0.882232,
+                "slope": 1.768161
+              },
+              "reference": "frecuencia del evento en el bloque de calibración",
+              "reference_probability": 0.1495,
+              "scored_estimate_basis": "raw_analog_frequency",
+              "brier_score": 0.015,
+              "reference_brier_score": 0.0504,
+              "brier_skill_score": 0.702,
+              "reliability_error": 0.018,
+              "candidate_calibrated_metrics": {
+                "brier_score": 0.01911055667316628,
+                "brier_skill_score": 0.6207234328127116,
+                "reliability_error": 0.02022607025937393,
+                "diagnostic_controls_pass": false
+              },
+              "enabled": false,
+              "reason": "Pendiente de validación por crecidas y reproducción operativa con datos disponibles al emitir."
+            }
+          },
+          {
+            "horizon_days": 21,
+            "classification": "BAJO",
+            "central_estimate_pct": 4,
+            "plausible_interval_pct": [
+              1,
+              12
+            ],
+            "estimate_basis": "raw_analog_frequency",
+            "estimate_status": "exploratory",
+            "evidence_confidence": "Baja",
+            "confidence_reason": "Estimación exploratoria: sin recuento validado de crecidas independientes ni reproducción operativa; 5 fechas con superación; mínimo diagnóstico 10.",
+            "raw_ensemble_probability_pct": 4,
+            "classification_uncertainty": "Muy alta",
+            "scenario_min_m": 2.76,
+            "scenario_central_m": 7.51,
+            "scenario_max_m": 9.64,
+            "validation": {
+              "sample_size": 100,
+              "event_count": 5,
+              "non_event_count": 95,
+              "event_count_definition": "fechas cuyo horizonte contiene una superación; no crecidas independientes",
+              "nonoverlapping_positive_windows": 2,
+              "independent_flood_count": null,
+              "calibration_sample_size": 96,
+              "calibration_event_count": 16,
+              "calibration_parameters": {
+                "intercept": 0.209499,
+                "slope": 1.260658
+              },
+              "reference": "frecuencia del evento en el bloque de calibración",
+              "reference_probability": 0.1701,
+              "scored_estimate_basis": "raw_analog_frequency",
+              "brier_score": 0.0243,
+              "reference_brier_score": 0.0619,
+              "brier_skill_score": 0.607,
+              "reliability_error": 0.03,
+              "candidate_calibrated_metrics": {
+                "brier_score": 0.02592124502344887,
+                "brier_skill_score": 0.5814073724781079,
+                "reliability_error": 0.0260186134284325,
+                "diagnostic_controls_pass": false
+              },
+              "enabled": false,
+              "reason": "Pendiente de validación por crecidas y reproducción operativa con datos disponibles al emitir."
+            }
+          },
+          {
+            "horizon_days": 28,
+            "classification": "BAJO",
+            "central_estimate_pct": 4,
+            "plausible_interval_pct": [
+              1,
+              12
+            ],
+            "estimate_basis": "raw_analog_frequency",
+            "estimate_status": "exploratory",
+            "evidence_confidence": "Baja",
+            "confidence_reason": "Estimación exploratoria: sin recuento validado de crecidas independientes ni reproducción operativa; 6 fechas con superación; mínimo diagnóstico 10.",
+            "raw_ensemble_probability_pct": 4,
+            "classification_uncertainty": "Muy alta",
+            "scenario_min_m": 3.55,
+            "scenario_central_m": 7.51,
+            "scenario_max_m": 10.68,
+            "validation": {
+              "sample_size": 100,
+              "event_count": 6,
+              "non_event_count": 94,
+              "event_count_definition": "fechas cuyo horizonte contiene una superación; no crecidas independientes",
+              "nonoverlapping_positive_windows": 2,
+              "independent_flood_count": null,
+              "calibration_sample_size": 96,
+              "calibration_event_count": 18,
+              "calibration_parameters": {
+                "intercept": 0.10213,
+                "slope": 0.959097
+              },
+              "reference": "frecuencia del evento en el bloque de calibración",
+              "reference_probability": 0.1907,
+              "scored_estimate_basis": "raw_analog_frequency",
+              "brier_score": 0.0291,
+              "reference_brier_score": 0.0735,
+              "brier_skill_score": 0.604,
+              "reliability_error": 0.05,
+              "candidate_calibrated_metrics": {
+                "brier_score": 0.029639027112908684,
+                "brier_skill_score": 0.5966829038898578,
+                "reliability_error": 0.05228498451961065,
+                "diagnostic_controls_pass": false
+              },
+              "enabled": false,
+              "reason": "Pendiente de validación por crecidas y reproducción operativa con datos disponibles al emitir."
+            }
+          }
+        ]
+      },
+      {
+        "threshold_m": 11.75,
+        "condition": "alcanzar o superar 11,75 m al menos una vez dentro de cada período",
+        "rows": [
+          {
+            "horizon_days": 7,
+            "classification": "BAJO",
+            "central_estimate_pct": 0,
+            "plausible_interval_pct": [
+              0,
+              6
+            ],
+            "estimate_basis": "raw_analog_frequency",
+            "estimate_status": "exploratory",
+            "evidence_confidence": "Muy baja",
+            "confidence_reason": "Estimación exploratoria: sin recuento validado de crecidas independientes ni reproducción operativa; 3 fechas con superación; mínimo diagnóstico 10.",
+            "raw_ensemble_probability_pct": 0,
+            "classification_uncertainty": "Moderada",
+            "scenario_min_m": 5.42,
+            "scenario_central_m": 6.73,
+            "scenario_max_m": 8.4,
+            "validation": {
+              "sample_size": 100,
+              "event_count": 3,
+              "non_event_count": 97,
+              "event_count_definition": "fechas cuyo horizonte contiene una superación; no crecidas independientes",
+              "nonoverlapping_positive_windows": 2,
+              "independent_flood_count": null,
+              "calibration_sample_size": 96,
+              "calibration_event_count": 12,
+              "calibration_parameters": {
+                "intercept": 0.011477,
+                "slope": 0.856502
+              },
+              "reference": "frecuencia del evento en el bloque de calibración",
+              "reference_probability": 0.1289,
+              "scored_estimate_basis": "raw_analog_frequency",
+              "brier_score": 0.0044,
+              "reference_brier_score": 0.0389,
+              "brier_skill_score": 0.888,
+              "reliability_error": 0.014,
+              "candidate_calibrated_metrics": {
+                "brier_score": 0.004778765901312248,
+                "brier_skill_score": 0.877071907577311,
+                "reliability_error": 0.016542967081575263,
+                "diagnostic_controls_pass": false
+              },
+              "enabled": false,
+              "reason": "Pendiente de validación por crecidas y reproducción operativa con datos disponibles al emitir."
+            }
+          },
+          {
+            "horizon_days": 14,
+            "classification": "BAJO",
+            "central_estimate_pct": 0,
+            "plausible_interval_pct": [
+              0,
+              6
+            ],
+            "estimate_basis": "raw_analog_frequency",
+            "estimate_status": "exploratory",
+            "evidence_confidence": "Muy baja",
+            "confidence_reason": "Estimación exploratoria: sin recuento validado de crecidas independientes ni reproducción operativa; 4 fechas con superación; mínimo diagnóstico 10.",
+            "raw_ensemble_probability_pct": 0,
+            "classification_uncertainty": "Alta",
+            "scenario_min_m": 3.25,
+            "scenario_central_m": 6.39,
+            "scenario_max_m": 9.7,
+            "validation": {
+              "sample_size": 100,
+              "event_count": 4,
+              "non_event_count": 96,
+              "event_count_definition": "fechas cuyo horizonte contiene una superación; no crecidas independientes",
+              "nonoverlapping_positive_windows": 2,
+              "independent_flood_count": null,
+              "calibration_sample_size": 96,
+              "calibration_event_count": 14,
+              "calibration_parameters": {
+                "intercept": 0.977646,
+                "slope": 1.579754
+              },
+              "reference": "frecuencia del evento en el bloque de calibración",
+              "reference_probability": 0.1495,
+              "scored_estimate_basis": "raw_analog_frequency",
+              "brier_score": 0.0134,
+              "reference_brier_score": 0.0504,
+              "brier_skill_score": 0.734,
+              "reliability_error": 0.015,
+              "candidate_calibrated_metrics": {
+                "brier_score": 0.015249355280215144,
+                "brier_skill_score": 0.6973545448510952,
+                "reliability_error": 0.016340115677963875,
+                "diagnostic_controls_pass": false
+              },
+              "enabled": false,
+              "reason": "Pendiente de validación por crecidas y reproducción operativa con datos disponibles al emitir."
+            }
+          },
+          {
+            "horizon_days": 21,
+            "classification": "BAJO",
+            "central_estimate_pct": 4,
+            "plausible_interval_pct": [
+              1,
+              12
+            ],
+            "estimate_basis": "raw_analog_frequency",
+            "estimate_status": "exploratory",
+            "evidence_confidence": "Baja",
+            "confidence_reason": "Estimación exploratoria: sin recuento validado de crecidas independientes ni reproducción operativa; 5 fechas con superación; mínimo diagnóstico 10.",
+            "raw_ensemble_probability_pct": 4,
+            "classification_uncertainty": "Muy alta",
+            "scenario_min_m": 2.76,
+            "scenario_central_m": 7.51,
+            "scenario_max_m": 9.64,
+            "validation": {
+              "sample_size": 100,
+              "event_count": 5,
+              "non_event_count": 95,
+              "event_count_definition": "fechas cuyo horizonte contiene una superación; no crecidas independientes",
+              "nonoverlapping_positive_windows": 2,
+              "independent_flood_count": null,
+              "calibration_sample_size": 96,
+              "calibration_event_count": 16,
+              "calibration_parameters": {
+                "intercept": 0.250633,
+                "slope": 1.072861
+              },
+              "reference": "frecuencia del evento en el bloque de calibración",
+              "reference_probability": 0.1701,
+              "scored_estimate_basis": "raw_analog_frequency",
+              "brier_score": 0.0225,
+              "reference_brier_score": 0.0619,
+              "brier_skill_score": 0.637,
+              "reliability_error": 0.02,
+              "candidate_calibrated_metrics": {
+                "brier_score": 0.023401308924398546,
+                "brier_skill_score": 0.6221008913246959,
+                "reliability_error": 0.019453965030289688,
+                "diagnostic_controls_pass": false
+              },
+              "enabled": false,
+              "reason": "Pendiente de validación por crecidas y reproducción operativa con datos disponibles al emitir."
+            }
+          },
+          {
+            "horizon_days": 28,
+            "classification": "BAJO",
+            "central_estimate_pct": 4,
+            "plausible_interval_pct": [
+              1,
+              12
+            ],
+            "estimate_basis": "raw_analog_frequency",
+            "estimate_status": "exploratory",
+            "evidence_confidence": "Baja",
+            "confidence_reason": "Estimación exploratoria: sin recuento validado de crecidas independientes ni reproducción operativa; 6 fechas con superación; mínimo diagnóstico 10.",
+            "raw_ensemble_probability_pct": 4,
+            "classification_uncertainty": "Muy alta",
+            "scenario_min_m": 3.55,
+            "scenario_central_m": 7.51,
+            "scenario_max_m": 10.68,
+            "validation": {
+              "sample_size": 100,
+              "event_count": 6,
+              "non_event_count": 94,
+              "event_count_definition": "fechas cuyo horizonte contiene una superación; no crecidas independientes",
+              "nonoverlapping_positive_windows": 2,
+              "independent_flood_count": null,
+              "calibration_sample_size": 96,
+              "calibration_event_count": 18,
+              "calibration_parameters": {
+                "intercept": 0.189448,
+                "slope": 0.895319
+              },
+              "reference": "frecuencia del evento en el bloque de calibración",
+              "reference_probability": 0.1907,
+              "scored_estimate_basis": "raw_analog_frequency",
+              "brier_score": 0.0269,
+              "reference_brier_score": 0.0735,
+              "brier_skill_score": 0.634,
+              "reliability_error": 0.023,
+              "candidate_calibrated_metrics": {
+                "brier_score": 0.02799523129022135,
+                "brier_skill_score": 0.6190510793120361,
+                "reliability_error": 0.04884399976581926,
+                "diagnostic_controls_pass": false
+              },
+              "enabled": false,
+              "reason": "Pendiente de validación por crecidas y reproducción operativa con datos disponibles al emitir."
+            }
+          }
+        ]
+      },
+      {
+        "threshold_m": 12.0,
+        "condition": "alcanzar o superar 12,00 m al menos una vez dentro de cada período",
+        "rows": [
+          {
+            "horizon_days": 7,
+            "classification": "BAJO",
+            "central_estimate_pct": 0,
+            "plausible_interval_pct": [
+              0,
+              6
+            ],
+            "estimate_basis": "raw_analog_frequency",
+            "estimate_status": "exploratory",
+            "evidence_confidence": "Muy baja",
+            "confidence_reason": "Estimación exploratoria: sin recuento validado de crecidas independientes ni reproducción operativa; 2 fechas con superación; mínimo diagnóstico 10.",
+            "raw_ensemble_probability_pct": 0,
+            "classification_uncertainty": "Moderada",
+            "scenario_min_m": 5.42,
+            "scenario_central_m": 6.73,
+            "scenario_max_m": 8.4,
+            "validation": {
+              "sample_size": 100,
+              "event_count": 2,
+              "non_event_count": 98,
+              "event_count_definition": "fechas cuyo horizonte contiene una superación; no crecidas independientes",
+              "nonoverlapping_positive_windows": 1,
+              "independent_flood_count": null,
+              "calibration_sample_size": 96,
+              "calibration_event_count": 11,
+              "calibration_parameters": {
+                "intercept": -0.102554,
+                "slope": 0.784386
+              },
+              "reference": "frecuencia del evento en el bloque de calibración",
+              "reference_probability": 0.1186,
+              "scored_estimate_basis": "raw_analog_frequency",
+              "brier_score": 0.0075,
+              "reference_brier_score": 0.0293,
+              "brier_skill_score": 0.744,
+              "reliability_error": 0.005,
+              "candidate_calibrated_metrics": {
+                "brier_score": 0.007733644304084758,
+                "brier_skill_score": 0.7361739630284128,
+                "reliability_error": 0.007749810718693465,
+                "diagnostic_controls_pass": false
+              },
+              "enabled": false,
+              "reason": "Pendiente de validación por crecidas y reproducción operativa con datos disponibles al emitir."
+            }
+          },
+          {
+            "horizon_days": 14,
+            "classification": "BAJO",
+            "central_estimate_pct": 0,
+            "plausible_interval_pct": [
+              0,
+              6
+            ],
+            "estimate_basis": "raw_analog_frequency",
+            "estimate_status": "exploratory",
+            "evidence_confidence": "Muy baja",
+            "confidence_reason": "Estimación exploratoria: sin recuento validado de crecidas independientes ni reproducción operativa; 3 fechas con superación; mínimo diagnóstico 10.",
+            "raw_ensemble_probability_pct": 0,
+            "classification_uncertainty": "Alta",
+            "scenario_min_m": 3.25,
+            "scenario_central_m": 6.39,
+            "scenario_max_m": 9.7,
+            "validation": {
+              "sample_size": 100,
+              "event_count": 3,
+              "non_event_count": 97,
+              "event_count_definition": "fechas cuyo horizonte contiene una superación; no crecidas independientes",
+              "nonoverlapping_positive_windows": 1,
+              "independent_flood_count": null,
+              "calibration_sample_size": 96,
+              "calibration_event_count": 13,
+              "calibration_parameters": {
+                "intercept": 0.34099,
+                "slope": 1.135204
+              },
+              "reference": "frecuencia del evento en el bloque de calibración",
+              "reference_probability": 0.1392,
+              "scored_estimate_basis": "raw_analog_frequency",
+              "brier_score": 0.0161,
+              "reference_brier_score": 0.041,
+              "brier_skill_score": 0.606,
+              "reliability_error": 0.009,
+              "candidate_calibrated_metrics": {
+                "brier_score": 0.016954097290670062,
+                "brier_skill_score": 0.5866793589638176,
+                "reliability_error": 0.010535576738998083,
+                "diagnostic_controls_pass": false
+              },
+              "enabled": false,
+              "reason": "Pendiente de validación por crecidas y reproducción operativa con datos disponibles al emitir."
+            }
+          },
+          {
+            "horizon_days": 21,
+            "classification": "BAJO",
+            "central_estimate_pct": 4,
+            "plausible_interval_pct": [
+              1,
+              12
+            ],
+            "estimate_basis": "raw_analog_frequency",
+            "estimate_status": "exploratory",
+            "evidence_confidence": "Muy baja",
+            "confidence_reason": "Estimación exploratoria: sin recuento validado de crecidas independientes ni reproducción operativa; 4 fechas con superación; mínimo diagnóstico 10.",
+            "raw_ensemble_probability_pct": 4,
+            "classification_uncertainty": "Muy alta",
+            "scenario_min_m": 2.76,
+            "scenario_central_m": 7.51,
+            "scenario_max_m": 9.64,
+            "validation": {
+              "sample_size": 100,
+              "event_count": 4,
+              "non_event_count": 96,
+              "event_count_definition": "fechas cuyo horizonte contiene una superación; no crecidas independientes",
+              "nonoverlapping_positive_windows": 1,
+              "independent_flood_count": null,
+              "calibration_sample_size": 96,
+              "calibration_event_count": 15,
+              "calibration_parameters": {
+                "intercept": 0.033025,
+                "slope": 0.882999
+              },
+              "reference": "frecuencia del evento en el bloque de calibración",
+              "reference_probability": 0.1598,
+              "scored_estimate_basis": "raw_analog_frequency",
+              "brier_score": 0.025,
+              "reference_brier_score": 0.0528,
+              "brier_skill_score": 0.526,
+              "reliability_error": 0.017,
+              "candidate_calibrated_metrics": {
+                "brier_score": 0.02549837912742099,
+                "brier_skill_score": 0.5166235182038077,
+                "reliability_error": 0.017145465438674207,
+                "diagnostic_controls_pass": false
+              },
+              "enabled": false,
+              "reason": "Pendiente de validación por crecidas y reproducción operativa con datos disponibles al emitir."
+            }
+          },
+          {
+            "horizon_days": 28,
+            "classification": "BAJO",
+            "central_estimate_pct": 4,
+            "plausible_interval_pct": [
+              1,
+              12
+            ],
+            "estimate_basis": "raw_analog_frequency",
+            "estimate_status": "exploratory",
+            "evidence_confidence": "Baja",
+            "confidence_reason": "Estimación exploratoria: sin recuento validado de crecidas independientes ni reproducción operativa; 5 fechas con superación; mínimo diagnóstico 10.",
+            "raw_ensemble_probability_pct": 4,
+            "classification_uncertainty": "Muy alta",
+            "scenario_min_m": 3.55,
+            "scenario_central_m": 7.51,
+            "scenario_max_m": 10.68,
+            "validation": {
+              "sample_size": 100,
+              "event_count": 5,
+              "non_event_count": 95,
+              "event_count_definition": "fechas cuyo horizonte contiene una superación; no crecidas independientes",
+              "nonoverlapping_positive_windows": 1,
+              "independent_flood_count": null,
+              "calibration_sample_size": 96,
+              "calibration_event_count": 17,
+              "calibration_parameters": {
+                "intercept": 0.114286,
+                "slope": 0.795265
+              },
+              "reference": "frecuencia del evento en el bloque de calibración",
+              "reference_probability": 0.1804,
+              "scored_estimate_basis": "raw_analog_frequency",
+              "brier_score": 0.0304,
+              "reference_brier_score": 0.0645,
+              "brier_skill_score": 0.529,
+              "reliability_error": 0.037,
+              "candidate_calibrated_metrics": {
+                "brier_score": 0.031561500423550964,
+                "brier_skill_score": 0.5107304432240036,
+                "reliability_error": 0.05831633357928418,
+                "diagnostic_controls_pass": false
+              },
+              "enabled": false,
+              "reason": "Pendiente de validación por crecidas y reproducción operativa con datos disponibles al emitir."
+            }
+          }
+        ]
+      },
+      {
+        "threshold_m": 12.25,
+        "condition": "alcanzar o superar 12,25 m al menos una vez dentro de cada período",
+        "rows": [
+          {
+            "horizon_days": 7,
+            "classification": "BAJO",
+            "central_estimate_pct": 0,
+            "plausible_interval_pct": [
+              0,
+              6
+            ],
+            "estimate_basis": "raw_analog_frequency",
+            "estimate_status": "exploratory",
+            "evidence_confidence": "Muy baja",
+            "confidence_reason": "Estimación exploratoria: sin recuento validado de crecidas independientes ni reproducción operativa; 1 fechas con superación; mínimo diagnóstico 10.",
+            "raw_ensemble_probability_pct": 0,
+            "classification_uncertainty": "Moderada",
+            "scenario_min_m": 5.42,
+            "scenario_central_m": 6.73,
+            "scenario_max_m": 8.4,
+            "validation": {
+              "sample_size": 100,
+              "event_count": 1,
+              "non_event_count": 99,
+              "event_count_definition": "fechas cuyo horizonte contiene una superación; no crecidas independientes",
+              "nonoverlapping_positive_windows": 1,
+              "independent_flood_count": null,
+              "calibration_sample_size": 96,
+              "calibration_event_count": 10,
+              "calibration_parameters": {
+                "intercept": 0.244569,
+                "slope": 1.209397
+              },
+              "reference": "frecuencia del evento en el bloque de calibración",
+              "reference_probability": 0.1082,
+              "scored_estimate_basis": "raw_analog_frequency",
+              "brier_score": 0.0035,
+              "reference_brier_score": 0.0196,
+              "brier_skill_score": 0.823,
+              "reliability_error": 0.014,
+              "candidate_calibrated_metrics": {
+                "brier_score": 0.0028107590866589434,
+                "brier_skill_score": 0.8562459518053269,
+                "reliability_error": 0.011913266969250783,
+                "diagnostic_controls_pass": false
+              },
+              "enabled": false,
+              "reason": "Pendiente de validación por crecidas y reproducción operativa con datos disponibles al emitir."
+            }
+          },
+          {
+            "horizon_days": 14,
+            "classification": "BAJO",
+            "central_estimate_pct": 0,
+            "plausible_interval_pct": [
+              0,
+              6
+            ],
+            "estimate_basis": "raw_analog_frequency",
+            "estimate_status": "exploratory",
+            "evidence_confidence": "Muy baja",
+            "confidence_reason": "Estimación exploratoria: sin recuento validado de crecidas independientes ni reproducción operativa; 2 fechas con superación; mínimo diagnóstico 10.",
+            "raw_ensemble_probability_pct": 0,
+            "classification_uncertainty": "Alta",
+            "scenario_min_m": 3.25,
+            "scenario_central_m": 6.39,
+            "scenario_max_m": 9.7,
+            "validation": {
+              "sample_size": 100,
+              "event_count": 2,
+              "non_event_count": 98,
+              "event_count_definition": "fechas cuyo horizonte contiene una superación; no crecidas independientes",
+              "nonoverlapping_positive_windows": 1,
+              "independent_flood_count": null,
+              "calibration_sample_size": 96,
+              "calibration_event_count": 12,
+              "calibration_parameters": {
+                "intercept": 0.141455,
+                "slope": 1.062692
+              },
+              "reference": "frecuencia del evento en el bloque de calibración",
+              "reference_probability": 0.1289,
+              "scored_estimate_basis": "raw_analog_frequency",
+              "brier_score": 0.0096,
+              "reference_brier_score": 0.0315,
+              "brier_skill_score": 0.693,
+              "reliability_error": 0.017,
+              "candidate_calibrated_metrics": {
+                "brier_score": 0.009418005786636837,
+                "brier_skill_score": 0.700557508713324,
+                "reliability_error": 0.01734354239351198,
+                "diagnostic_controls_pass": false
+              },
+              "enabled": false,
+              "reason": "Pendiente de validación por crecidas y reproducción operativa con datos disponibles al emitir."
+            }
+          },
+          {
+            "horizon_days": 21,
+            "classification": "BAJO",
+            "central_estimate_pct": 2,
+            "plausible_interval_pct": [
+              0,
+              10
+            ],
+            "estimate_basis": "raw_analog_frequency",
+            "estimate_status": "exploratory",
+            "evidence_confidence": "Muy baja",
+            "confidence_reason": "Estimación exploratoria: sin recuento validado de crecidas independientes ni reproducción operativa; 3 fechas con superación; mínimo diagnóstico 10.",
+            "raw_ensemble_probability_pct": 2,
+            "classification_uncertainty": "Muy alta",
+            "scenario_min_m": 2.76,
+            "scenario_central_m": 7.51,
+            "scenario_max_m": 9.64,
+            "validation": {
+              "sample_size": 100,
+              "event_count": 3,
+              "non_event_count": 97,
+              "event_count_definition": "fechas cuyo horizonte contiene una superación; no crecidas independientes",
+              "nonoverlapping_positive_windows": 1,
+              "independent_flood_count": null,
+              "calibration_sample_size": 96,
+              "calibration_event_count": 14,
+              "calibration_parameters": {
+                "intercept": 0.294805,
+                "slope": 1.101138
+              },
+              "reference": "frecuencia del evento en el bloque de calibración",
+              "reference_probability": 0.1495,
+              "scored_estimate_basis": "raw_analog_frequency",
+              "brier_score": 0.0172,
+              "reference_brier_score": 0.0434,
+              "brier_skill_score": 0.604,
+              "reliability_error": 0.029,
+              "candidate_calibrated_metrics": {
+                "brier_score": 0.017414458089504443,
+                "brier_skill_score": 0.5985283214560377,
+                "reliability_error": 0.020374525946702613,
+                "diagnostic_controls_pass": false
+              },
+              "enabled": false,
+              "reason": "Pendiente de validación por crecidas y reproducción operativa con datos disponibles al emitir."
+            }
+          },
+          {
+            "horizon_days": 28,
+            "classification": "BAJO",
+            "central_estimate_pct": 2,
+            "plausible_interval_pct": [
+              0,
+              10
+            ],
+            "estimate_basis": "raw_analog_frequency",
+            "estimate_status": "exploratory",
+            "evidence_confidence": "Muy baja",
+            "confidence_reason": "Estimación exploratoria: sin recuento validado de crecidas independientes ni reproducción operativa; 4 fechas con superación; mínimo diagnóstico 10.",
+            "raw_ensemble_probability_pct": 2,
+            "classification_uncertainty": "Muy alta",
+            "scenario_min_m": 3.55,
+            "scenario_central_m": 7.51,
+            "scenario_max_m": 10.68,
+            "validation": {
+              "sample_size": 100,
+              "event_count": 4,
+              "non_event_count": 96,
+              "event_count_definition": "fechas cuyo horizonte contiene una superación; no crecidas independientes",
+              "nonoverlapping_positive_windows": 1,
+              "independent_flood_count": null,
+              "calibration_sample_size": 96,
+              "calibration_event_count": 16,
+              "calibration_parameters": {
+                "intercept": 0.525418,
+                "slope": 1.109886
+              },
+              "reference": "frecuencia del evento en el bloque de calibración",
+              "reference_probability": 0.1701,
+              "scored_estimate_basis": "raw_analog_frequency",
+              "brier_score": 0.0261,
+              "reference_brier_score": 0.0553,
+              "brier_skill_score": 0.529,
+              "reliability_error": 0.019,
+              "candidate_calibrated_metrics": {
+                "brier_score": 0.02849289810379893,
+                "brier_skill_score": 0.48500743750380515,
+                "reliability_error": 0.037887848018115816,
+                "diagnostic_controls_pass": false
+              },
+              "enabled": false,
+              "reason": "Pendiente de validación por crecidas y reproducción operativa con datos disponibles al emitir."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "projection": [
+    {
+      "day": 0,
+      "date": "2026-09-07T07:30:43-03:00",
+      "min": 7.51,
+      "central": 7.51,
+      "max": 7.51,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Moderada",
+      "risk": "Bajo",
+      "basis": "ctm_analog_ensemble",
+      "validation": null
+    },
+    {
+      "day": 1,
+      "date": "2026-09-08T07:30:43-03:00",
+      "min": 7.38,
+      "central": 7.59,
+      "max": 7.88,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Moderada",
+      "risk": "Bajo",
+      "basis": "ctm_analog_ensemble",
+      "validation": {
+        "sample_size": 100,
+        "mae_m": 0.379,
+        "persistence_mae_m": 0.401,
+        "mae_skill_vs_persistence": 0.055,
+        "interval_80_coverage": 0.77,
+        "median_interval_width_m": 1.29,
+        "conformal_correction_m": 0.0,
+        "preferred_central": "analog_median"
+      }
+    },
+    {
+      "day": 2,
+      "date": "2026-09-09T07:30:43-03:00",
+      "min": 7.12,
+      "central": 7.58,
+      "max": 8.08,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Moderada",
+      "risk": "Bajo",
+      "basis": "ctm_analog_ensemble",
+      "validation": null
+    },
+    {
+      "day": 3,
+      "date": "2026-09-10T07:30:43-03:00",
+      "min": 6.7,
+      "central": 7.58,
+      "max": 8.22,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Moderada",
+      "risk": "Bajo",
+      "basis": "ctm_analog_ensemble",
+      "validation": {
+        "sample_size": 100,
+        "mae_m": 0.582,
+        "persistence_mae_m": 0.681,
+        "mae_skill_vs_persistence": 0.145,
+        "interval_80_coverage": 0.9,
+        "median_interval_width_m": 2.36,
+        "conformal_correction_m": 0.04,
+        "preferred_central": "analog_median"
+      }
+    },
+    {
+      "day": 4,
+      "date": "2026-09-11T07:30:43-03:00",
+      "min": 6.36,
+      "central": 7.36,
+      "max": 8.34,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Alta",
+      "risk": "Bajo",
+      "basis": "ctm_analog_ensemble",
+      "validation": null
+    },
+    {
+      "day": 5,
+      "date": "2026-09-12T07:30:43-03:00",
+      "min": 5.63,
+      "central": 7.15,
+      "max": 8.2,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Alta",
+      "risk": "Bajo",
+      "basis": "ctm_analog_ensemble",
+      "validation": null
+    },
+    {
+      "day": 6,
+      "date": "2026-09-13T07:30:43-03:00",
+      "min": 5.64,
+      "central": 6.94,
+      "max": 8.33,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Alta",
+      "risk": "Bajo",
+      "basis": "ctm_analog_ensemble",
+      "validation": null
+    },
+    {
+      "day": 7,
+      "date": "2026-09-14T07:30:43-03:00",
+      "min": 5.42,
+      "central": 6.73,
+      "max": 8.4,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Alta",
+      "risk": "Bajo",
+      "basis": "ctm_analog_ensemble",
+      "validation": {
+        "sample_size": 100,
+        "mae_m": 1.031,
+        "persistence_mae_m": 1.118,
+        "mae_skill_vs_persistence": 0.078,
+        "interval_80_coverage": 0.74,
+        "median_interval_width_m": 3.152,
+        "conformal_correction_m": 0.0,
+        "preferred_central": "analog_median"
+      }
+    },
+    {
+      "day": 8,
+      "date": "2026-09-15T07:30:43-03:00",
+      "min": 5.05,
+      "central": 6.68,
+      "max": 8.59,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Muy alta",
+      "risk": "Bajo",
+      "basis": "ctm_analog_ensemble",
+      "validation": null
+    },
+    {
+      "day": 9,
+      "date": "2026-09-16T07:30:43-03:00",
+      "min": 4.37,
+      "central": 6.63,
+      "max": 8.55,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Muy alta",
+      "risk": "Bajo",
+      "basis": "ctm_analog_ensemble",
+      "validation": null
+    },
+    {
+      "day": 10,
+      "date": "2026-09-17T07:30:43-03:00",
+      "min": 3.67,
+      "central": 6.58,
+      "max": 8.9,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Muy alta",
+      "risk": "Bajo",
+      "basis": "ctm_analog_ensemble",
+      "validation": null
+    },
+    {
+      "day": 11,
+      "date": "2026-09-18T07:30:43-03:00",
+      "min": 3.73,
+      "central": 6.54,
+      "max": 9.0,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Muy alta",
+      "risk": "Bajo",
+      "basis": "ctm_analog_ensemble",
+      "validation": null
+    },
+    {
+      "day": 12,
+      "date": "2026-09-19T07:30:43-03:00",
+      "min": 3.6,
+      "central": 6.49,
+      "max": 9.25,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Muy alta",
+      "risk": "Bajo",
+      "basis": "ctm_analog_ensemble",
+      "validation": null
+    },
+    {
+      "day": 13,
+      "date": "2026-09-20T07:30:43-03:00",
+      "min": 3.55,
+      "central": 6.44,
+      "max": 9.47,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Muy alta",
+      "risk": "Bajo",
+      "basis": "ctm_analog_ensemble",
+      "validation": null
+    },
+    {
+      "day": 14,
+      "date": "2026-09-21T07:30:43-03:00",
+      "min": 3.25,
+      "central": 6.39,
+      "max": 9.7,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Muy alta",
+      "risk": "Bajo",
+      "basis": "ctm_analog_ensemble",
+      "validation": {
+        "sample_size": 100,
+        "mae_m": 1.671,
+        "persistence_mae_m": 1.727,
+        "mae_skill_vs_persistence": 0.032,
+        "interval_80_coverage": 0.9,
+        "median_interval_width_m": 6.322,
+        "conformal_correction_m": 0.79,
+        "preferred_central": "analog_median"
+      }
+    },
+    {
+      "day": 15,
+      "date": "2026-09-22T07:30:43-03:00",
+      "min": 3.12,
+      "central": 6.55,
+      "max": 9.97,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Muy alta",
+      "risk": "Bajo",
+      "basis": "ctm_analog_ensemble",
+      "validation": null
+    },
+    {
+      "day": 16,
+      "date": "2026-09-23T07:30:43-03:00",
+      "min": 2.55,
+      "central": 6.71,
+      "max": 10.07,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Muy alta",
+      "risk": "Bajo",
+      "basis": "ctm_analog_ensemble",
+      "validation": null
+    },
+    {
+      "day": 17,
+      "date": "2026-09-24T07:30:43-03:00",
+      "min": 2.4,
+      "central": 6.87,
+      "max": 10.2,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Muy alta",
+      "risk": "Bajo",
+      "basis": "ctm_analog_ensemble",
+      "validation": null
+    },
+    {
+      "day": 18,
+      "date": "2026-09-25T07:30:43-03:00",
+      "min": 2.68,
+      "central": 7.03,
+      "max": 10.03,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Muy alta",
+      "risk": "Bajo",
+      "basis": "ctm_analog_ensemble",
+      "validation": null
+    },
+    {
+      "day": 19,
+      "date": "2026-09-26T07:30:43-03:00",
+      "min": 2.49,
+      "central": 7.19,
+      "max": 9.74,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Muy alta",
+      "risk": "Bajo",
+      "basis": "ctm_analog_ensemble",
+      "validation": null
+    },
+    {
+      "day": 20,
+      "date": "2026-09-27T07:30:43-03:00",
+      "min": 2.22,
+      "central": 7.35,
+      "max": 9.79,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Muy alta",
+      "risk": "Bajo",
+      "basis": "ctm_analog_ensemble",
+      "validation": null
+    },
+    {
+      "day": 21,
+      "date": "2026-09-28T07:30:43-03:00",
+      "min": 2.76,
+      "central": 7.51,
+      "max": 9.64,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Muy alta",
+      "risk": "Bajo",
+      "basis": "ctm_analog_ensemble",
+      "validation": {
+        "sample_size": 100,
+        "mae_m": 1.982,
+        "persistence_mae_m": 1.987,
+        "mae_skill_vs_persistence": 0.003,
+        "interval_80_coverage": 0.84,
+        "median_interval_width_m": 6.547,
+        "conformal_correction_m": 0.45,
+        "preferred_central": "persistence"
+      }
+    },
+    {
+      "day": 22,
+      "date": "2026-09-29T07:30:43-03:00",
+      "min": 2.92,
+      "central": 7.51,
+      "max": 10.21,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Muy alta",
+      "risk": "Bajo",
+      "basis": "ctm_analog_ensemble",
+      "validation": null
+    },
+    {
+      "day": 23,
+      "date": "2026-09-30T07:30:43-03:00",
+      "min": 2.85,
+      "central": 7.51,
+      "max": 10.22,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Muy alta",
+      "risk": "Bajo",
+      "basis": "ctm_analog_ensemble",
+      "validation": null
+    },
+    {
+      "day": 24,
+      "date": "2026-10-01T07:30:43-03:00",
+      "min": 2.63,
+      "central": 7.51,
+      "max": 10.47,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Muy alta",
+      "risk": "Bajo",
+      "basis": "ctm_analog_ensemble",
+      "validation": null
+    },
+    {
+      "day": 25,
+      "date": "2026-10-02T07:30:43-03:00",
+      "min": 2.55,
+      "central": 7.51,
+      "max": 10.55,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Muy alta",
+      "risk": "Bajo",
+      "basis": "ctm_analog_ensemble",
+      "validation": null
+    },
+    {
+      "day": 26,
+      "date": "2026-10-03T07:30:43-03:00",
+      "min": 2.7,
+      "central": 7.51,
+      "max": 10.53,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Muy alta",
+      "risk": "Bajo",
+      "basis": "ctm_analog_ensemble",
+      "validation": null
+    },
+    {
+      "day": 27,
+      "date": "2026-10-04T07:30:43-03:00",
+      "min": 2.78,
+      "central": 7.51,
+      "max": 10.41,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Muy alta",
+      "risk": "Bajo",
+      "basis": "ctm_analog_ensemble",
+      "validation": null
+    },
+    {
+      "day": 28,
+      "date": "2026-10-05T07:30:43-03:00",
+      "min": 3.55,
+      "central": 7.51,
+      "max": 10.68,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Muy alta",
+      "risk": "Bajo",
+      "basis": "ctm_analog_ensemble",
+      "validation": {
+        "sample_size": 100,
+        "mae_m": 2.207,
+        "persistence_mae_m": 2.251,
+        "mae_skill_vs_persistence": 0.02,
+        "interval_80_coverage": 0.77,
+        "median_interval_width_m": 6.223,
+        "conformal_correction_m": 0.075,
+        "preferred_central": "persistence"
+      }
+    },
+    {
+      "day": 29,
+      "date": "2026-10-06T07:30:43-03:00",
+      "min": 3.14,
+      "central": 7.07,
+      "max": 10.9,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Muy alta",
+      "risk": "Bajo",
+      "basis": "ctm_analog_ensemble",
+      "validation": null
+    },
+    {
+      "day": 30,
+      "date": "2026-10-07T07:30:43-03:00",
+      "min": 2.89,
+      "central": 6.63,
+      "max": 10.89,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Muy alta",
+      "risk": "Bajo",
+      "basis": "ctm_analog_ensemble",
+      "validation": {
+        "sample_size": 100,
+        "mae_m": 2.184,
+        "persistence_mae_m": 2.369,
+        "mae_skill_vs_persistence": 0.078,
+        "interval_80_coverage": 0.79,
+        "median_interval_width_m": 6.385,
+        "conformal_correction_m": 0.115,
+        "preferred_central": "analog_median"
+      }
+    }
+  ],
+  "provenance": {
+    "repository_head_at_run": "48402c32a31a2189123b57d0187ff85ff1f8e69a",
+    "state_sha256": "067014787a443aaf22d82810068c301ee4d85c2f9970b906a69fc44ae7a133b1",
+    "history_sha256": "4eb5fd54d5b247d22b8b1703dd20e42205293424d8a551eea2e3c9f691fe5d8a",
+    "code_sha256": {
+      "scripts/forecast_model.py": "4b06c7623e31db397fa0246a4f97e7853016006945c16c036f5163a79248bf6f",
+      "scripts/replay_municipal_audit.py": "94bd77884c473f29df5e8d91379f5da1a9be75f0da9d52c61f03419c20822d18"
+    }
+  }
+}
