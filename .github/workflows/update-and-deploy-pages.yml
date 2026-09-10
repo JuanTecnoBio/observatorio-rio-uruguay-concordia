@@ -50,12 +50,12 @@ jobs:
 
       - name: Guardar el nuevo corte
         run: |
-          if git diff --quiet -- public/data/current_state.json public/data/risk_reports.json public/data/hydrometric_history.json public/data/flow_forecast_archive.json; then
+          if [[ -z "$(git status --porcelain -- public/data/current_state.json public/data/risk_reports.json public/data/hydrometric_history.json public/data/flow_forecast_archive.json public/data/forecast_issuance_index.json public/data/forecast_issuances)" ]]; then
             exit 0
           fi
           git config user.name "observatorio-data-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add public/data/current_state.json public/data/risk_reports.json public/data/hydrometric_history.json public/data/flow_forecast_archive.json
+          git add public/data/current_state.json public/data/risk_reports.json public/data/hydrometric_history.json public/data/flow_forecast_archive.json public/data/forecast_issuance_index.json public/data/forecast_issuances
           git commit -m "datos: actualizar corte automático"
           git push
 

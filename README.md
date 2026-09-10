@@ -45,6 +45,12 @@ El adaptador `scripts/update_data.py` conserva el último dato conocido cuando u
 fuente falla, pero lo marca como copia desactualizada y publica el error. Nunca
 presenta silenciosamente un valor viejo como actual.
 
+Cada escenario recalculado se registra en un archivo mensual JSONL encadenado
+con SHA-256. La interfaz calcula la antigüedad contra el reloj del usuario, por lo
+que un archivo congelado deja de verse como vigente aunque su último proceso haya
+terminado correctamente. Este archivo transparente es la base del piloto; una
+operación municipal debe replicarlo en almacenamiento administrado.
+
 Para probar el adaptador:
 
 ```bash

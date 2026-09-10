@@ -95,4 +95,12 @@ El mapa usa cartografía de [OpenStreetMap](https://www.openstreetmap.org/copyri
 
 GitHub Actions intenta consultar las fuentes cada hora. GitHub puede demorar una ejecución programada, por lo que la frecuencia es un objetivo y no una garantía al minuto. Cada corte conserva hora de observación, hora de recuperación, estado de la fuente, versión del modelo y métricas usadas para habilitar o rechazar cada probabilidad.
 
+Desde `v1.2-audit`, cada escenario efectivamente recalculado se agrega a un
+archivo mensual JSONL y se encadena con SHA-256 al anterior. El registro contiene
+la observación usada, estado de fuentes, miembros análogos, proyección y
+probabilidades publicadas. Un intento fallido no recibe una hora nueva de emisión.
+La interfaz vuelve a calcular cada minuto la antigüedad respecto del reloj actual;
+el éxito histórico de una consulta no puede mantener indefinidamente la etiqueta
+«vigente».
+
 Los informes sólo comparan cortes producidos por la misma versión metodológica. No se mezclan en la tendencia los porcentajes exploratorios de versiones anteriores.

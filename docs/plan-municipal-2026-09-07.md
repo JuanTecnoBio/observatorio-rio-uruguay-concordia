@@ -196,3 +196,13 @@ separar emisión histórica de reconstrucción y no cambiar el método para mejo
 una métrica ya observada. Entregar diff, casos reproducibles y limitaciones.
 Después implementar evaluación temporal por crecidas con selección interna.
 No hay una sesión de Claude Code ejecutándose desde este entorno.
+
+## Avance del 10 de septiembre de 2026
+
+La primera tarea fue implementada en la misma rama: registro mensual JSONL de
+emisiones encadenadas con SHA-256, índice verificable y rechazo de reescritura de
+una emisión existente. El sitio usa ahora el reloj actual y distingue la edad de
+la observación de la edad del escenario. Se agregaron pruebas de idempotencia,
+alteración, fuente congelada y escenario demorado. Para producción municipal
+sigue pendiente replicar el archivo en almacenamiento administrado, monitorear
+externamente su continuidad y ensayar restauración.
