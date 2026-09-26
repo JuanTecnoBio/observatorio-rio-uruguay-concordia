@@ -12,7 +12,7 @@ El tercer producto no reemplaza al parte oficial. La interfaz muestra la estimac
 
 ## Datos usados por el modelo local
 
-El proceso conserva la serie de 15 minutos de la [Comisión Técnica Mixta de Salto Grande](https://www.saltogrande.org/datos_estacion.php) y la agrega por día. Usa cinco estaciones:
+El proceso consulta la serie de 15 minutos de la [Comisión Técnica Mixta de Salto Grande](https://www.saltogrande.org/datos_estacion.php) y conserva agregados diarios. El archivo bruto intradiario aún debe incorporarse al almacenamiento permanente. Usa cinco estaciones:
 
 - Puerto Concordia;
 - Paso de los Libres;
@@ -52,18 +52,20 @@ Los límites no significan “máximo y mínimo posible”. Son una banda predic
 
 Para 11,00; 11,25; 11,50; 11,75; 12,00 y 12,25 m se evalúa el evento “alcanzar o superar el nivel al menos una vez dentro de 7, 14, 21 o 28 días”.
 
-La frecuencia inicial es la suma de los pesos de los análogos cuyo máximo dentro del horizonte supera el nivel. El intervalo mostrado es un intervalo muestral de Wilson aplicado al tamaño efectivo del ensamble; no representa toda la incertidumbre del modelo.
+Desde `v1.2-audit`, la frecuencia inicial suma los pesos de los análogos cuyos máximos diarios futuros alcanzan el umbral, o cuyo nivel inicial ya lo alcanza. Las medianas diarias se reservan para la curva de nivel. Se excluye el máximo del día de origen, que podría haber ocurrido antes de emitir. Esta discretización diaria no resuelve la hora exacta del cruce: requiere posterior validación intradiaria.
+
+El intervalo de Wilson usa tamaño efectivo por pesos, pero no corrige dependencia entre trayectorias ni error estructural del modelo. Es una aproximación exploratoria; no debe interpretarse como intervalo de confianza con cobertura garantizada del 95%. Cero superaciones entre los análogos tampoco demuestra imposibilidad de crecida.
 
 Cuando una celda supera los controles de validación, la frecuencia y su intervalo se transforman mediante una regresión logística de Platt ajustada en un período separado. Cuando no los supera, se muestra la frecuencia ponderada original como **estimación exploratoria**: no se aplica una calibración que todavía no cuenta con evidencia suficiente. Esta decisión conserva el orden lógico entre niveles y horizontes y evita presentar como mejora una corrección inestable.
 
-Una celda se considera **validada** si el bloque final contiene:
+Los controles numéricos anteriores exigían:
 
 - al menos 80 orígenes semanales;
 - al menos 10 eventos y 10 no-eventos;
 - Brier Skill Score de 0,05 o más frente a la frecuencia del evento en el bloque de calibración;
 - error de confiabilidad de 0,12 o menos.
 
-Si falla cualquiera de estas condiciones, el porcentaje igualmente se muestra, pero se identifica de forma visible como **estimación exploratoria** y con confianza baja o muy baja. La tabla informa el tamaño de muestra, la cantidad de eventos y el Brier Skill Score. Mostrar el valor no implica afirmar que esté validado: permite seguir su evolución sin ocultar la limitación estadística.
+Estos controles no bastan para una validación municipal. En `v1.2-audit` todas las probabilidades permanecen visibles y exploratorias hasta contar con evaluación por crecidas, reproducción operativa y revisión de la calibración. «Fechas con superación» no significa crecidas independientes. Se informa también el número de ventanas positivas no solapadas, sin atribuirles independencia hidrológica. El Brier y la confiabilidad visibles corresponden a la frecuencia realmente publicada; las métricas de la calibración candidata quedan separadas.
 
 ## Validación temporal
 
@@ -73,7 +75,9 @@ Los orígenes históricos completos se dividen, sin mezclarlos aleatoriamente, e
 - 20% siguiente: calibración de probabilidades y corrección conformal;
 - 20% final: evaluación fuera de muestra.
 
-La evaluación usa un origen cada siete días para reducir la repetición de ventanas fuertemente solapadas. Se publican tamaño de muestra, MAE, MAE de persistencia, habilidad relativa, cobertura, ancho de banda, cantidad de eventos, Brier Score, Brier Skill Score y error de confiabilidad.
+Se purgan los orígenes cuya trayectoria de 30 días invade el bloque siguiente. Así, la última etiqueta de entrenamiento precede a la primera fecha de calibración y la última etiqueta de calibración precede a la primera fecha de evaluación. La evaluación usa un origen cada siete días; persiste dependencia entre ventanas y entre crecidas prolongadas.
+
+Quedan pendientes la selección de modelos en un bloque interno y una prueba externa congelada: actualmente la elección mediana/persistencia usa el bloque final, y el ajuste operativo incorpora más datos que la biblioteca fija evaluada. Por eso las métricas disponibles son diagnósticos retrospectivos, no desempeño certificado del sistema completo en producción. También debe reproducirse qué datos y revisiones estaban disponibles a cada hora de emisión.
 
 Esta es una validación empírica local, no una validación hidrodinámica. La serie aún es corta para demostrar desempeño en todos los niveles altos y no permite anticipar operaciones no anunciadas de Salto Grande.
 
@@ -90,5 +94,13 @@ El mapa usa cartografía de [OpenStreetMap](https://www.openstreetmap.org/copyri
 ## Actualización y archivo
 
 GitHub Actions intenta consultar las fuentes cada hora. GitHub puede demorar una ejecución programada, por lo que la frecuencia es un objetivo y no una garantía al minuto. Cada corte conserva hora de observación, hora de recuperación, estado de la fuente, versión del modelo y métricas usadas para habilitar o rechazar cada probabilidad.
+
+Desde `v1.2-audit`, cada escenario efectivamente recalculado se agrega a un
+archivo mensual JSONL y se encadena con SHA-256 al anterior. El registro contiene
+la observación usada, estado de fuentes, miembros análogos, proyección y
+probabilidades publicadas. Un intento fallido no recibe una hora nueva de emisión.
+La interfaz vuelve a calcular cada minuto la antigüedad respecto del reloj actual;
+el éxito histórico de una consulta no puede mantener indefinidamente la etiqueta
+«vigente».
 
 Los informes sólo comparan cortes producidos por la misma versión metodológica. No se mezclan en la tendencia los porcentajes exploratorios de versiones anteriores.
