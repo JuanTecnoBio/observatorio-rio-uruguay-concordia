@@ -22,6 +22,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { CircleMarker, Map as LeafletMap } from "leaflet";
 import initialState from "../public/data/current_state.json";
 import initialReportArchive from "../public/data/risk_reports.json";
+import { deriveOperationalFreshness } from "./freshness.mjs";
 
 type Uncertainty = "Moderada" | "Alta" | "Muy alta";
 type Risk = "Bajo" | "Medio" | "Alto";
@@ -184,6 +185,7 @@ type RiskReportArchive = {
 
 type RiverState = {
   generated_at: string;
+  forecast_issued_at?: string;
   timezone: string;
   update_status?: {
     state: "fresh" | "partial" | "stale";
@@ -254,6 +256,11 @@ type RiverState = {
     member_count?: number;
     effective_member_count?: number;
     interval_definition?: string;
+  };
+  forecast_archive?: {
+    status: "recorded";
+    record_hash: string;
+    path: string;
   };
   external_forecasts?: {
     geoglows?: {
@@ -488,7 +495,7 @@ function ReportTable({
                   </span>
                   {row.validation && (
                     <small className="validation-note">
-                      n={row.validation.sample_size} · eventos={row.validation.event_count}
+                      n={row.validation.sample_size} · fechas con superación={row.validation.event_count}
                       {row.validation.brier_skill_score === null
                         ? " · BSS no calculable"
                         : ` · BSS ${row.validation.brier_skill_score.toFixed(2)}`}
@@ -1295,6 +1302,14 @@ export default function Home() {
   const [horizon, setHorizon] = useState(7);
   const [menuOpen, setMenuOpen] = useState(false);
   const [selectedPlace, setSelectedPlace] = useState("puerto");
+  const [clockMs, setClockMs] = useState(() => Date.parse(FALLBACK_STATE.generated_at));
+
+  useEffect(() => {
+    const updateClock = () => setClockMs(Date.now());
+    updateClock();
+    const timer = window.setInterval(updateClock, 60_000);
+    return () => window.clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     const cacheBuster = Date.now();
@@ -1347,23 +1362,28 @@ export default function Home() {
     state.observations.find((item) => item.variable === "reservoir_level")?.value ?? 33.17;
   const totalRelease = state.signals?.released_flow_m3s ?? turbinated + spilled;
   const officialForecastIsCurrent =
-    Date.parse(state.official_forecast.valid_until_local) >= Date.parse(state.generated_at);
+    Date.parse(state.official_forecast.valid_until_local) >= clockMs;
   const officialForecastHasRange = state.official_forecast.concordia_min_m !== null;
-  const modelReady = state.forecast_method?.model_id === "ctm-analog-ensemble-v1.1";
-  const stageAgeHours = concordiaObservation
-    ? Math.max(
-        0,
-        (Date.parse(state.generated_at) -
-          Date.parse(concordiaObservation.observed_at_local)) /
-          3_600_000,
-      )
-    : Number.POSITIVE_INFINITY;
+  const modelReady = ["ctm-analog-ensemble-v1.1", "ctm-analog-ensemble-v1.2-audit"].includes(
+    state.forecast_method?.model_id ?? "",
+  );
+  const forecastIssuedAt =
+    state.forecast_issued_at ?? state.risk_report_bundle?.generated_at ?? state.generated_at;
+  const operationalFreshness = deriveOperationalFreshness({
+    nowMs: clockMs,
+    observedAt: concordiaObservation?.observed_at_local,
+    forecastIssuedAt,
+    sourceState: state.update_status?.state,
+  });
+  const { stageAgeHours, forecastAgeHours } = operationalFreshness;
   const stageFreshness =
     concordiaObservation?.quality_flag === "official_stale_copy" || stageAgeHours > 18
       ? { label: "Dato viejo", className: "stage-stale" }
       : stageAgeHours > 6
         ? { label: "Con demora", className: "stage-delayed" }
         : { label: "Dato vigente", className: "stage-current" };
+  const runtimeUpdateState = operationalFreshness.state;
+  const runtimeUpdateMessage = operationalFreshness.message ?? state.update_status?.message;
   const concordiaSource =
     concordiaObservation?.source_id === "ctm_concordia_stage" ? "CTM" : "PNA";
   const publicBasePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
@@ -1493,13 +1513,13 @@ export default function Home() {
                 <h1>Nivel del río y escenario a 30 días</h1>
               </div>
               <div
-                className={`update-state update-${state.update_status?.state ?? "fresh"}`}
-                title={state.update_status?.message}
+                className={`update-state update-${runtimeUpdateState}`}
+                title={runtimeUpdateMessage}
               >
                 <RefreshCw size={14} />
-                {state.update_status?.state === "fresh"
+                {runtimeUpdateState === "fresh"
                   ? "Fuentes al día"
-                  : state.update_status?.state === "partial"
+                  : runtimeUpdateState === "partial"
                     ? "Corte parcial"
                     : "Datos con demora"}
               </div>
@@ -1513,10 +1533,10 @@ export default function Home() {
                 ? " El parte oficial de corto plazo permanece separado y se informa en la franja superior."
                 : " El último parte de corto plazo está vencido."}
             </p>
-            {state.update_status?.state !== "fresh" && (
+            {runtimeUpdateState !== "fresh" && (
               <p className="source-warning" role="status">
                 <AlertTriangle size={15} />
-                {state.update_status?.message}
+                {runtimeUpdateMessage}
               </p>
             )}
 
@@ -1551,12 +1571,13 @@ export default function Home() {
             <div className="interpretation-note">
               <Info size={17} />
               <p>
-                <strong>{modelReady ? "Ensamble local validado con límites." : "Sin pronóstico habilitado."}</strong>{" "}
+                <strong>{modelReady ? "Ensamble local experimental; evaluación retrospectiva." : "Sin pronóstico habilitado."}</strong>{" "}
                 Los límites parten de P10 y P90 y luego incorporan la corrección
                 conformal; no son máximos ni mínimos físicamente posibles.
                 {selected.validation
                   ? ` En el holdout temporal este horizonte tuvo una cobertura de ${Math.round((selected.validation.interval_80_coverage ?? 0) * 100)}% y habilidad MAE frente a persistencia de ${selected.validation.mae_skill_vs_persistence === null ? "no calculable" : `${Math.round(selected.validation.mae_skill_vs_persistence * 100)}%`}.`
                   : " La probabilidad de superar cada nivel se calcula aparte y se presenta con su grado de confianza y sus límites de validación."}
+                {` Escenario emitido ${formatReportDateTime(forecastIssuedAt)}; antigüedad actual ${Number.isFinite(forecastAgeHours) ? `${Math.floor(forecastAgeHours)} h` : "no verificable"}.`}
               </p>
             </div>
           </div>
@@ -1759,7 +1780,7 @@ export default function Home() {
             </div>
             <div>
               <b>4</b>
-              <span><strong>Probabilidad condicionada</strong><small>La frecuencia ponderada de superación se calibra en un bloque separado. Sólo se publica con suficientes eventos, BSS ≥ 0,05 y error de confiabilidad ≤ 0,12 en el bloque final.</small></span>
+              <span><strong>Probabilidad condicionada</strong><small>La frecuencia ponderada de superación se muestra como exploratoria. Sólo se rotula validada si reúne suficientes eventos, BSS ≥ 0,05, confiabilidad aceptable y evaluación por crecidas.</small></span>
             </div>
           </div>
           <div className="method-warning">
@@ -1804,6 +1825,11 @@ export default function Home() {
             <a href={`${publicBasePath}/documentos/metodologia.md`}><FileText size={16} /> Metodología</a>
             <a href={`${publicBasePath}/documentos/registro-decisiones.md`}><Clock3 size={16} /> Registro de decisiones</a>
             <a href={`${publicBasePath}/documentos/gobernanza.md`}><Users size={16} /> Equipo y gobernanza</a>
+            {state.forecast_archive ? (
+              <a href={`${LIVE_DATA_BASE}/forecast_issuance_index.json`}>
+                <Database size={16} /> Emisiones verificables
+              </a>
+            ) : null}
           </div>
         </div>
       </section>
