@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """Pronóstico probabilístico local basado en ensamble de análogos observados.
 
-El modelo usa únicamente información disponible antes de cada origen. La
-evaluación temporal tiene tres bloques consecutivos: entrenamiento (60 %),
+Diagnóstico retrospectivo diario; aún no reproduce las latencias y revisiones
+de la información realmente disponible a cada emisión. La evaluación temporal
+tiene tres bloques consecutivos con purga de etiquetas: entrenamiento (60 %),
 calibración (20 %) y validación final (20 %). El bloque intermedio ajusta por
 conformalización la banda y calibra las probabilidades con regresión logística
 de Platt; el bloque final no interviene en ninguno de esos ajustes. Todas las
-estimaciones se muestran, pero las que no superan los requisitos mínimos de
-casos, eventos, Brier Skill y confiabilidad se rotulan como exploratorias.
+estimaciones se muestran como exploratorias hasta validar por crecidas el
+procedimiento operativo completo, incluyendo selección y reajuste del modelo.
 """
 
 from __future__ import annotations
@@ -75,6 +76,7 @@ class AnalogMember:
     distance: float
     weight: float
     path: list[float]
+    maximum_path: list[float]
 
 
 def quantile(values: Iterable[float], probability: float) -> float:
@@ -317,10 +319,11 @@ def feature_vector(
 
 
 def complete_path(
-    network: dict[str, dict[date, dict[str, float]]], origin: date
+    network: dict[str, dict[date, dict[str, float]]], origin: date,
+    field: str = "level_m",
 ) -> list[float] | None:
     path = [
-        value(network, "concordia", origin + timedelta(days=lead))
+        value(network, "concordia", origin + timedelta(days=lead), field)
         for lead in range(MAX_HORIZON + 1)
     ]
     if any(point is None for point in path):
@@ -339,6 +342,7 @@ def feasible_origins(
         for day in dates
         if day - timedelta(days=14) in network["concordia"]
         and complete_path(network, day) is not None
+        and complete_path(network, day, "level_max_m") is not None
     ]
 
 
@@ -389,16 +393,21 @@ def select_analogs(
     current_level: float,
     count: int = ANALOG_COUNT,
 ) -> list[AnalogMember]:
-    candidates: list[tuple[float, date, list[float]]] = []
+    candidates: list[tuple[float, date, list[float], list[float]]] = []
     for origin in candidate_origins:
         distance = feature_distance(target_features, feature_cache[origin], scales)
         if distance is None:
             continue
         path = complete_path(network, origin)
-        if path is None:
+        maxima = complete_path(network, origin, "level_max_m")
+        if path is None or maxima is None:
             continue
         shifted = [round(current_level + point - path[0], 4) for point in path]
-        candidates.append((distance, origin, shifted))
+        # At issuance only the current level counts, not an earlier peak on day 0.
+        shifted_maxima = [current_level] + [
+            round(current_level + point - path[0], 4) for point in maxima[1:]
+        ]
+        candidates.append((distance, origin, shifted, shifted_maxima))
     candidates.sort(key=lambda item: item[0])
     selected = candidates[: min(count, len(candidates))]
     if len(selected) < 15:
@@ -412,8 +421,9 @@ def select_analogs(
             distance=distance,
             weight=raw_weight / total,
             path=path,
+            maximum_path=maxima,
         )
-        for (distance, origin, path), raw_weight in zip(selected, raw_weights)
+        for (distance, origin, path, maxima), raw_weight in zip(selected, raw_weights)
     ]
 
 
@@ -421,7 +431,7 @@ def ensemble_probability(members: list[AnalogMember], threshold: float, horizon:
     return sum(
         member.weight
         for member in members
-        if max(member.path[: horizon + 1]) >= threshold
+        if max(member.maximum_path[: horizon + 1]) >= threshold
     )
 
 
@@ -475,6 +485,8 @@ def probability_evidence(validation: dict[str, Any]) -> dict[str, str]:
     reliability = validation.get("reliability_error")
     parameters = validation.get("calibration_parameters")
     failures: list[str] = []
+    if validation.get("independent_flood_count", "legacy") is None:
+        failures.append("sin recuento validado de crecidas independientes ni reproducción operativa")
     if not parameters:
         failures.append("calibración logística no disponible")
     if sample_size < MIN_PROBABILITY_CASES:
@@ -483,11 +495,11 @@ def probability_evidence(validation: dict[str, Any]) -> dict[str, str]:
         )
     if event_count < MIN_PROBABILITY_EVENTS:
         failures.append(
-            f"{event_count} eventos; se requieren {MIN_PROBABILITY_EVENTS}"
+            f"{event_count} fechas con superación; mínimo diagnóstico {MIN_PROBABILITY_EVENTS}"
         )
     if non_event_count < MIN_PROBABILITY_EVENTS:
         failures.append(
-            f"{non_event_count} no-eventos; se requieren {MIN_PROBABILITY_EVENTS}"
+            f"{non_event_count} fechas sin superación; mínimo diagnóstico {MIN_PROBABILITY_EVENTS}"
         )
     if brier_skill is None or brier_skill < MIN_BRIER_SKILL:
         failures.append("habilidad de Brier insuficiente o no calculable")
@@ -606,6 +618,39 @@ def upgrade_risk_report_probabilities(
     return report
 
 
+def purged_temporal_blocks(origins: list[date]) -> tuple[list[date], list[date], list[date]]:
+    """Keep all 30-day outcomes strictly before the next block's first origin.
+
+    This prevents label overlap; it does not establish independence of floods
+    within each block or reproduce historical data-publication latencies.
+    """
+    ordered = sorted(set(origins))
+    if len(ordered) < 1_000:
+        raise ValueError("se requieren al menos 1.000 orígenes históricos completos")
+    calibration_start = ordered[int(len(ordered) * 0.60)]
+    validation_start = ordered[int(len(ordered) * 0.80)]
+    training = [d for d in ordered if d + timedelta(days=MAX_HORIZON) < calibration_start]
+    calibration = [
+        d for d in ordered
+        if calibration_start <= d and d + timedelta(days=MAX_HORIZON) < validation_start
+    ]
+    validation = [d for d in ordered if d >= validation_start]
+    if not training or not calibration or not validation:
+        raise ValueError("bloques insuficientes después de purgar trayectorias")
+    return training, calibration, validation
+
+
+def nonoverlapping_window_count(origins: list[date], horizon: int) -> int:
+    """Conservative temporal diagnostic, NOT a count of independent floods."""
+    previous_end: date | None = None
+    count = 0
+    for origin in sorted(set(origins)):
+        if previous_end is None or origin > previous_end:
+            count += 1
+            previous_end = origin + timedelta(days=horizon)
+    return count
+
+
 def validate(
     network: dict[str, dict[date, dict[str, float]]],
     origins: list[date],
@@ -614,18 +659,14 @@ def validate(
     if len(origins) < 1_000:
         raise ValueError("se requieren al menos 1.000 orígenes históricos completos")
 
-    training_end = int(len(origins) * 0.60)
-    calibration_end = int(len(origins) * 0.80)
-    training = origins[:training_end]
-    calibration_all = origins[training_end:calibration_end]
-    validation_all = origins[calibration_end:]
+    training, calibration_all, validation_all = purged_temporal_blocks(origins)
     calibration_origins = calibration_all[::VALIDATION_STRIDE_DAYS]
     validation_origins = validation_all[::VALIDATION_STRIDE_DAYS]
     scales = robust_scales(feature_cache, training)
 
     def empty_cases() -> dict[tuple[float, int], dict[str, list[Any]]]:
         return {
-            (threshold, horizon): {"probabilities": [], "outcomes": []}
+            (threshold, horizon): {"probabilities": [], "outcomes": [], "origins": []}
             for threshold in THRESHOLDS
             for horizon in HORIZONS
         }
@@ -646,7 +687,8 @@ def validate(
         for origin in block:
             current_level = value(network, "concordia", origin)
             actual_path = complete_path(network, origin)
-            if current_level is None or actual_path is None:
+            actual_maxima = complete_path(network, origin, "level_max_m")
+            if current_level is None or actual_path is None or actual_maxima is None:
                 continue
             try:
                 members = select_analogs(
@@ -680,8 +722,9 @@ def validate(
                         ensemble_probability(members, threshold, horizon)
                     )
                     case["outcomes"].append(
-                        int(max(actual_path[: horizon + 1]) >= threshold)
+                        int(max([current_level, *actual_maxima[1:horizon + 1]]) >= threshold)
                     )
+                    case["origins"].append(origin)
         return {"point": point, "probabilities": probability_cases, "usable": usable}
 
     calibration = evaluate_block(calibration_origins)
@@ -767,9 +810,16 @@ def validate(
                 else None
             )
             reliability = reliability_error(probabilities, outcomes)
+            raw_brier = brier(validation_case["probabilities"], outcomes)
+            raw_brier_skill = (
+                1 - raw_brier / reference_brier
+                if raw_brier is not None and reference_brier not in (None, 0)
+                else None
+            )
+            raw_reliability = reliability_error(validation_case["probabilities"], outcomes)
             event_count = sum(outcomes)
             sample_size = len(outcomes)
-            enabled = bool(
+            diagnostic_controls_pass = bool(
                 parameters
                 and sample_size >= MIN_PROBABILITY_CASES
                 and event_count >= MIN_PROBABILITY_EVENTS
@@ -783,36 +833,46 @@ def validate(
                 "sample_size": sample_size,
                 "event_count": event_count,
                 "non_event_count": sample_size - event_count,
+                "event_count_definition": "fechas cuyo horizonte contiene una superación; no crecidas independientes",
+                "nonoverlapping_positive_windows": nonoverlapping_window_count(
+                    [d for d, outcome in zip(validation_case["origins"], outcomes) if outcome], horizon
+                ),
+                "independent_flood_count": None,
                 "calibration_sample_size": len(calibration_case["outcomes"]),
                 "calibration_event_count": sum(calibration_case["outcomes"]),
                 "calibration_parameters": parameters,
                 "reference": "frecuencia del evento en el bloque de calibración",
                 "reference_probability": round(calibration_rate, 4),
-                "brier_score": round(model_brier, 4) if model_brier is not None else None,
+                "scored_estimate_basis": "raw_analog_frequency",
+                "brier_score": round(raw_brier, 4) if raw_brier is not None else None,
                 "reference_brier_score": (
                     round(reference_brier, 4) if reference_brier is not None else None
                 ),
-                "brier_skill_score": round(brier_skill, 3)
-                if brier_skill is not None
+                "brier_skill_score": round(raw_brier_skill, 3)
+                if raw_brier_skill is not None
                 else None,
-                "reliability_error": round(reliability, 3)
-                if reliability is not None
+                "reliability_error": round(raw_reliability, 3)
+                if raw_reliability is not None
                 else None,
-                "enabled": enabled,
-                "reason": (
-                    "estimación con validación temporal suficiente"
-                    if enabled
-                    else (
-                        "estimación calculada pero con evidencia insuficiente para "
-                        "considerarla validada"
-                    )
-                ),
+                "candidate_calibrated_metrics": {
+                    "brier_score": model_brier,
+                    "brier_skill_score": brier_skill,
+                    "reliability_error": reliability,
+                    "diagnostic_controls_pass": diagnostic_controls_pass,
+                },
+                "enabled": False,
+                "reason": "Pendiente de validación por crecidas y reproducción operativa con datos disponibles al emitir.",
             }
 
     return {
         "strategy": (
-            "bloques temporales 60/20/20: entrenamiento, calibración y validación final"
+            "bloques temporales 60/20/20 con purga de trayectorias de 30 días"
         ),
+        "label_purge_days": MAX_HORIZON,
+        "training_label_end": (training[-1] + timedelta(days=MAX_HORIZON)).isoformat(),
+        "calibration_label_end": (calibration_all[-1] + timedelta(days=MAX_HORIZON)).isoformat(),
+        "event_target": "nivel actual o máximo diario observado en días futuros dentro del horizonte",
+        "operational_replay_validated": False,
         "training_start": training[0].isoformat(),
         "training_end": training[-1].isoformat(),
         "calibration_start": calibration_all[0].isoformat(),
@@ -825,6 +885,8 @@ def validate(
         "interval_target_coverage": 0.80,
         "conformal_corrections_m": conformal_corrections,
         "probability_gate": {
+            "independent_flood_validation_required": True,
+            "operational_replay_required": True,
             "minimum_cases": MIN_PROBABILITY_CASES,
             "minimum_events_and_non_events": MIN_PROBABILITY_EVENTS,
             "minimum_brier_skill_score": MIN_BRIER_SKILL,
@@ -918,9 +980,9 @@ def build_forecast(
         )
 
     model = {
-        "model_id": "ctm-analog-ensemble-v1.1",
+        "model_id": "ctm-analog-ensemble-v1.2-audit",
         "label": "Ensamble local de análogos hidrométricos",
-        "status": "validated_with_limits",
+        "status": "experimental_under_review",
         "generated_at": generated.isoformat(),
         "training_source": "CTM Salto Grande · red de estaciones de 15 minutos agregada por día",
         "training_start": min(network["concordia"]).isoformat(),
@@ -938,6 +1000,10 @@ def build_forecast(
         ),
         "validation": validation,
         "limitations": [
+            "La evaluación retrospectiva diaria no equivale a validación de emisiones intradiarias.",
+            "Los análogos y las ventanas semanales pueden pertenecer a la misma crecida; no son ensayos independientes.",
+            "El intervalo de Wilson usa tamaño efectivo por pesos, sin corregir dependencia ni incertidumbre del modelo; no garantiza cobertura probabilística.",
+            "La selección de mediana o persistencia y el reajuste operativo requieren una evaluación externa congelada.",
             "No anticipa decisiones futuras de operación de la represa.",
             "La probabilidad se muestra como exploratoria cuando el bloque final no reúne evidencia suficiente para considerarla validada.",
             "GEOGLOWS se conserva como señal de caudal separada hasta acumular re-pronósticos locales para validarla.",
@@ -1002,14 +1068,21 @@ def build_risk_report(
         "station": "Puerto Concordia",
         "method": {
             "method_id": model["model_id"],
-            "calibrated": True,
-            "validated": True,
+            "calibrated": all(
+                row["estimate_basis"] == "platt_calibrated"
+                for report in reports for row in report["rows"]
+            ),
+            "validated": all(
+                row["estimate_status"] == "validated"
+                for report in reports for row in report["rows"]
+            ),
             "label": model["label"],
             "note": (
                 "El porcentaje exploratorio es la frecuencia ponderada de superación en 60 "
-                "trayectorias análogas. Sólo se aplica la calibración de Platt cuando el bloque "
-                "final supera los controles de eventos, Brier Skill y confiabilidad; la etiqueta "
-                "y la confianza hacen visible esa diferencia."
+                "trayectorias análogas, utilizando máximos diarios futuros. "
+                "En esta versión la calibración se conserva como candidata y no se aplica: "
+                "falta evaluación por crecidas y reproducción operativa. Las estimaciones "
+                "siguen visibles como exploratorias."
             ),
         },
         "data_status": state.get("update_status", {}).get("state", "stale"),

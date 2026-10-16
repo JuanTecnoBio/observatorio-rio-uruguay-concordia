@@ -35,6 +35,7 @@ from forecast_model import (
     quantile,
     upgrade_risk_report_probabilities,
 )
+from issuance_archive import append_forecast_issuance
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -311,6 +312,7 @@ def update_river_stage(
 
 def update_pna(state: dict[str, Any], attempt: datetime) -> AdapterResult:
     retrieved = iso_local(attempt)
+    forecast_recalculated = False
     try:
         try:
             text = pdf_text(PNA_PDF)
@@ -1245,6 +1247,8 @@ def main() -> None:
         )
         state["projection"] = projection
         state["forecast_method"] = model
+        state["forecast_issued_at"] = iso_local(attempt)
+        forecast_recalculated = True
         state["source_status"]["local_forecast_model"] = {
             "ok": True,
             "message": "Ensamble local recalculado y validación temporal disponible",
@@ -1266,6 +1270,9 @@ def main() -> None:
         }
         if not current_report:
             raise
+        state["forecast_issued_at"] = state.get(
+            "forecast_issued_at", current_report.get("generated_at")
+        )
     state["risk_report_bundle"] = current_report
     state["risk_report"] = legacy_report_from_cut(current_report)
     state["probabilities"] = {
@@ -1286,12 +1293,27 @@ def main() -> None:
             None,
         ),
         "reason": (
-            "Se muestra la estimación calibrada para cada combinación de nivel y horizonte. "
+            "Se muestra la frecuencia de superación del ensamble para cada nivel y horizonte. "
             "La etiqueta validada o exploratoria y la confianza indican si el bloque temporal "
             "final supera el tamaño mínimo de eventos, Brier Skill Score ≥ 0,05 y el control "
             "de confiabilidad."
         ),
     }
+
+    if forecast_recalculated:
+        archive_result = append_forecast_issuance(
+            state, current_report, projection, model, members
+        )
+        state["forecast_archive"] = {
+            "status": "recorded",
+            "record_hash": archive_result["record_hash"],
+            "path": archive_result["path"],
+        }
+        state["source_status"]["forecast_issuance_archive"] = {
+            "ok": True,
+            "message": "Emisión registrada en cadena verificable",
+            "attempted_at": iso_local(attempt),
+        }
 
     STATE_PATH.write_text(
         json.dumps(state, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"

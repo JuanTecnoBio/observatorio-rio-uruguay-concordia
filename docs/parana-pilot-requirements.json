@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "status": "discovery_required",
+  "prepared_at": "2026-09-10",
+  "municipality": "Paraná",
+  "province": "Entre Ríos",
+  "river": "Paraná",
+  "commercial_reference": {
+    "delivery_period": "6 meses",
+    "parallel_operation_period": "90 días",
+    "price_usd": 27500,
+    "status": "subject_to_discovery_and_final_scope"
+  },
+  "reference_station": {
+    "name": "Paraná",
+    "official_source": "INA - Alerta Hidrológico Cuenca del Plata",
+    "source_url": "https://alerta.ina.gob.ar/a5/diario/reporte_diario",
+    "reference_values_m": {
+      "alert": 4.7,
+      "evacuation": 5.0,
+      "status": "municipal_confirmation_required",
+      "observed_in_source_on": "2026-09-10"
+    }
+  },
+  "decisions_to_confirm": [
+    "sectores y activos que se deben proteger",
+    "anticipación mínima útil para cada acción",
+    "responsables y suplentes por turno",
+    "reglas de aprobación y canales de comunicación",
+    "criterios de apertura, escalamiento y cierre de incidentes"
+  ],
+  "existing_system_discovery": [
+    "nombre y proveedor",
+    "fuentes y estaciones",
+    "API y formatos de exportación",
+    "mapas y sensores",
+    "reglas de alerta",
+    "licencias y controles de acceso",
+    "responsable operativo"
+  ],
+  "acceptance_gates": [
+    "trazabilidad de observación a emisión",
+    "archivo de emisiones verificable",
+    "frescura calculada contra reloj externo",
+    "prueba de fuente caída y dato congelado",
+    "evaluación temporal por episodio frente a referencias",
+    "revisión hidrológica independiente",
+    "simulacro municipal con registro de decisiones"
+  ],
+  "explicit_exclusions_until_validated": [
+    "órdenes automáticas de evacuación",
+    "probabilidades transferidas desde Concordia",
+    "mapas de inundación derivados sólo del nivel del puerto",
+    "conversión directa de El Niño en metros o probabilidad local",
+    "uso de LLM en la ruta de cálculo o autorización"
+  ]
+}
