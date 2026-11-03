@@ -1,6 +1,6 @@
 {
   "schema_version": "0.2.0",
-  "generated_at": "2026-11-03T14:55:32-03:00",
+  "generated_at": "2026-11-03T20:30:17-03:00",
   "timezone": "America/Argentina/Cordoba",
   "update_status": {
     "state": "partial",
@@ -23,10 +23,10 @@
       "station_name": "CONCORDIA",
       "latitude": -31.4,
       "longitude": -58.017,
-      "observed_at_utc": "2026-11-03T17:30:00Z",
-      "observed_at_local": "2026-11-03T14:30:00-03:00",
-      "retrieved_at": "2026-11-03T14:55:32-03:00",
-      "value": 8.71,
+      "observed_at_utc": "2026-11-03T23:00:00Z",
+      "observed_at_local": "2026-11-03T20:00:00-03:00",
+      "retrieved_at": "2026-11-03T20:30:17-03:00",
+      "value": 8.49,
       "unit": "m",
       "vertical_datum": "cero local no documentado en la ficha consultada",
       "temporal_aggregation": "instantánea",
@@ -41,10 +41,10 @@
       "variable": "turbined_discharge",
       "station_id": "SALTO_GRANDE",
       "station_name": "Salto Grande",
-      "observed_at_utc": "2026-11-03T17:00:00Z",
-      "observed_at_local": "2026-11-03T14:00:00-03:00",
-      "retrieved_at": "2026-11-03T14:55:32-03:00",
-      "value": 7872,
+      "observed_at_utc": "2026-11-03T23:00:00Z",
+      "observed_at_local": "2026-11-03T20:00:00-03:00",
+      "retrieved_at": "2026-11-03T20:30:17-03:00",
+      "value": 7997,
       "unit": "m3/s",
       "quality_flag": "official_preliminary",
       "is_official": true,
@@ -57,10 +57,10 @@
       "variable": "spilled_discharge",
       "station_id": "SALTO_GRANDE",
       "station_name": "Salto Grande",
-      "observed_at_utc": "2026-11-03T17:00:00Z",
-      "observed_at_local": "2026-11-03T14:00:00-03:00",
-      "retrieved_at": "2026-11-03T14:55:32-03:00",
-      "value": 3336,
+      "observed_at_utc": "2026-11-03T23:00:00Z",
+      "observed_at_local": "2026-11-03T20:00:00-03:00",
+      "retrieved_at": "2026-11-03T20:30:17-03:00",
+      "value": 2503,
       "unit": "m3/s",
       "quality_flag": "official_preliminary",
       "is_official": true,
@@ -73,10 +73,10 @@
       "variable": "reservoir_level",
       "station_id": "SALTO_GRANDE",
       "station_name": "Embalse de Salto Grande",
-      "observed_at_utc": "2026-11-03T17:00:00Z",
-      "observed_at_local": "2026-11-03T14:00:00-03:00",
-      "retrieved_at": "2026-11-03T14:55:32-03:00",
-      "value": 34.97,
+      "observed_at_utc": "2026-11-03T23:00:00Z",
+      "observed_at_local": "2026-11-03T20:00:00-03:00",
+      "retrieved_at": "2026-11-03T20:30:17-03:00",
+      "value": 34.98,
       "unit": "m",
       "vertical_datum": "cota CTM; datum no explicitado en la página horaria",
       "temporal_aggregation": "promedio horario",
@@ -105,7 +105,7 @@
     "mean_daily_released_flow_max_m3s": 11000,
     "source_reference": "https://www.saltogrande.org/docs/hidrologia/Comunicado.pdf",
     "quality_flag": "official_preliminary",
-    "retrieved_at": "2026-11-03T14:55:32-03:00"
+    "retrieved_at": "2026-11-03T20:30:17-03:00"
   },
   "history": [
     {
@@ -285,7 +285,7 @@
     {
       "date": "2026-11-03",
       "label": "03 nov",
-      "value": 8.71,
+      "value": 8.49,
       "source": "CTM Salto Grande"
     }
   ],
@@ -370,30 +370,30 @@
     {
       "name": "Concordia",
       "group": "downstream",
-      "value_m": 8.71,
-      "variation_m": -0.26,
+      "value_m": 8.49,
+      "variation_m": -0.36,
       "variation_period_h": 12,
       "trend": "baja",
       "status": "Seguimiento",
-      "observed_at_local": "2026-11-03T14:30:00-03:00",
+      "observed_at_local": "2026-11-03T20:00:00-03:00",
       "source": "CTM"
     }
   ],
   "signals": {
     "upstream": "5.38 m · seguimiento · crece · 26/09 04:51",
     "rainfall_7d_mm": 11,
-    "released_flow_m3s": 11208
+    "released_flow_m3s": 10500
   },
   "forecast_method": {
     "model_id": "ctm-analog-ensemble-v1.1",
     "label": "Ensamble local de análogos hidrométricos",
     "status": "validated_with_limits",
-    "generated_at": "2026-11-03T14:55:32-03:00",
+    "generated_at": "2026-11-03T20:30:17-03:00",
     "training_source": "CTM Salto Grande · red de estaciones de 15 minutos agregada por día",
     "training_start": "2017-01-01",
     "training_end": "2026-11-03",
     "member_count": 60,
-    "effective_member_count": 59.2,
+    "effective_member_count": 59.3,
     "predictors": [
       "local_level",
       "local_d1",
@@ -994,59 +994,59 @@
     ]
   },
   "probabilities": {
-    "alert_exceedance": 0,
+    "alert_exceedance": 1,
     "evacuation_exceedance": null,
     "reason": "Se muestra la estimación calibrada para cada combinación de nivel y horizonte. La etiqueta validada o exploratoria y la confianza indican si el bloque temporal final supera el tamaño mínimo de eventos, Brier Skill Score ≥ 0,05 y el control de confiabilidad."
   },
   "source_status": {
     "pna_alturas": {
       "ok": false,
-      "message": "PNA no disponible: ConnectTimeout: HTTPSConnectionPool(host='contenidosweb.prefecturanaval.gob.ar', port=443): Max retries exceeded with url: /alturas/ (Caused by ConnectTimeoutError(<HTTPSConnection(host='contenidosweb.prefecturanaval.gob.ar', port=443) at 0x7dfdf32746e0>, 'Connection to contenidosweb.prefecturanaval.gob.ar timed out. (connect timeout=15)'))",
-      "attempted_at": "2026-11-03T14:55:32-03:00"
+      "message": "PNA no disponible: ConnectTimeout: HTTPSConnectionPool(host='contenidosweb.prefecturanaval.gob.ar', port=443): Max retries exceeded with url: /alturas/ (Caused by ConnectTimeoutError(<HTTPSConnection(host='contenidosweb.prefecturanaval.gob.ar', port=443) at 0x7ff160688620>, 'Connection to contenidosweb.prefecturanaval.gob.ar timed out. (connect timeout=15)'))",
+      "attempted_at": "2026-11-03T20:30:17-03:00"
     },
     "ctm_concordia_stage": {
       "ok": true,
       "message": "CTM Puerto Concordia actualizada",
-      "attempted_at": "2026-11-03T14:55:32-03:00"
+      "attempted_at": "2026-11-03T20:30:17-03:00"
     },
     "ctm_historical_network": {
       "ok": true,
       "message": "Red histórica CTM actualizada (5/5 estaciones)",
-      "attempted_at": "2026-11-03T14:55:32-03:00"
+      "attempted_at": "2026-11-03T20:30:17-03:00"
     },
     "ctm_hourly": {
       "ok": true,
       "message": "CTM horaria actualizada",
-      "attempted_at": "2026-11-03T14:55:32-03:00"
+      "attempted_at": "2026-11-03T20:30:17-03:00"
     },
     "ctm_communicado": {
       "ok": true,
       "message": "Comunicado CTM actualizado",
-      "attempted_at": "2026-11-03T14:55:32-03:00"
+      "attempted_at": "2026-11-03T20:30:17-03:00"
     },
     "ctm_precip_forecast": {
       "ok": true,
       "message": "Lluvia CTM actualizada",
-      "attempted_at": "2026-11-03T14:55:32-03:00"
+      "attempted_at": "2026-11-03T20:30:17-03:00"
     },
     "geoglows_ecmwf": {
       "ok": true,
       "message": "GEOGLOWS actualizado; ensamble de caudal archivado",
-      "attempted_at": "2026-11-03T14:55:32-03:00"
+      "attempted_at": "2026-11-03T20:30:17-03:00"
     },
     "local_forecast_model": {
       "ok": true,
       "message": "Ensamble local recalculado y validación temporal disponible",
-      "attempted_at": "2026-11-03T14:55:32-03:00"
+      "attempted_at": "2026-11-03T20:30:17-03:00"
     }
   },
   "projection": [
     {
       "day": 0,
-      "date": "2026-11-03T14:55:32-03:00",
-      "min": 8.71,
-      "central": 8.71,
-      "max": 8.71,
+      "date": "2026-11-03T20:30:17-03:00",
+      "min": 8.49,
+      "central": 8.49,
+      "max": 8.49,
       "interval": "P10–P90 conformalizado",
       "uncertainty": "Moderada",
       "risk": "Bajo",
@@ -1055,10 +1055,10 @@
     },
     {
       "day": 1,
-      "date": "2026-11-04T14:55:32-03:00",
-      "min": 7.88,
-      "central": 8.25,
-      "max": 8.67,
+      "date": "2026-11-04T20:30:17-03:00",
+      "min": 7.5,
+      "central": 8.03,
+      "max": 8.49,
       "interval": "P10–P90 conformalizado",
       "uncertainty": "Moderada",
       "risk": "Bajo",
@@ -1076,10 +1076,10 @@
     },
     {
       "day": 2,
-      "date": "2026-11-05T14:55:32-03:00",
-      "min": 7.14,
-      "central": 7.98,
-      "max": 8.66,
+      "date": "2026-11-05T20:30:17-03:00",
+      "min": 6.89,
+      "central": 7.71,
+      "max": 8.44,
       "interval": "P10–P90 conformalizado",
       "uncertainty": "Moderada",
       "risk": "Bajo",
@@ -1088,10 +1088,10 @@
     },
     {
       "day": 3,
-      "date": "2026-11-06T14:55:32-03:00",
-      "min": 6.83,
-      "central": 7.71,
-      "max": 8.65,
+      "date": "2026-11-06T20:30:17-03:00",
+      "min": 6.45,
+      "central": 7.4,
+      "max": 8.34,
       "interval": "P10–P90 conformalizado",
       "uncertainty": "Moderada",
       "risk": "Bajo",
@@ -1109,10 +1109,10 @@
     },
     {
       "day": 4,
-      "date": "2026-11-07T14:55:32-03:00",
-      "min": 6.21,
-      "central": 7.44,
-      "max": 8.9,
+      "date": "2026-11-07T20:30:17-03:00",
+      "min": 5.8,
+      "central": 7.18,
+      "max": 8.54,
       "interval": "P10–P90 conformalizado",
       "uncertainty": "Alta",
       "risk": "Bajo",
@@ -1121,10 +1121,10 @@
     },
     {
       "day": 5,
-      "date": "2026-11-08T14:55:32-03:00",
-      "min": 5.71,
-      "central": 7.17,
-      "max": 9.0,
+      "date": "2026-11-08T20:30:17-03:00",
+      "min": 5.35,
+      "central": 6.95,
+      "max": 8.5,
       "interval": "P10–P90 conformalizado",
       "uncertainty": "Alta",
       "risk": "Bajo",
@@ -1133,10 +1133,10 @@
     },
     {
       "day": 6,
-      "date": "2026-11-09T14:55:32-03:00",
-      "min": 4.95,
-      "central": 6.89,
-      "max": 8.83,
+      "date": "2026-11-09T20:30:17-03:00",
+      "min": 4.73,
+      "central": 6.72,
+      "max": 8.66,
       "interval": "P10–P90 conformalizado",
       "uncertainty": "Alta",
       "risk": "Bajo",
@@ -1145,10 +1145,10 @@
     },
     {
       "day": 7,
-      "date": "2026-11-10T14:55:32-03:00",
-      "min": 4.75,
-      "central": 6.62,
-      "max": 8.91,
+      "date": "2026-11-10T20:30:17-03:00",
+      "min": 4.52,
+      "central": 6.5,
+      "max": 8.9,
       "interval": "P10–P90 conformalizado",
       "uncertainty": "Alta",
       "risk": "Bajo",
@@ -1166,10 +1166,10 @@
     },
     {
       "day": 8,
-      "date": "2026-11-11T14:55:32-03:00",
-      "min": 4.22,
-      "central": 6.66,
-      "max": 9.7,
+      "date": "2026-11-11T20:30:17-03:00",
+      "min": 3.74,
+      "central": 6.55,
+      "max": 9.85,
       "interval": "P10–P90 conformalizado",
       "uncertainty": "Muy alta",
       "risk": "Bajo",
@@ -1178,10 +1178,10 @@
     },
     {
       "day": 9,
-      "date": "2026-11-12T14:55:32-03:00",
-      "min": 4.56,
-      "central": 6.69,
-      "max": 9.95,
+      "date": "2026-11-12T20:30:17-03:00",
+      "min": 3.15,
+      "central": 6.6,
+      "max": 10.4,
       "interval": "P10–P90 conformalizado",
       "uncertainty": "Muy alta",
       "risk": "Bajo",
@@ -1190,10 +1190,10 @@
     },
     {
       "day": 10,
-      "date": "2026-11-13T14:55:32-03:00",
-      "min": 4.23,
-      "central": 6.73,
-      "max": 10.42,
+      "date": "2026-11-13T20:30:17-03:00",
+      "min": 3.56,
+      "central": 6.65,
+      "max": 10.51,
       "interval": "P10–P90 conformalizado",
       "uncertainty": "Muy alta",
       "risk": "Bajo",
@@ -1202,10 +1202,10 @@
     },
     {
       "day": 11,
-      "date": "2026-11-14T14:55:32-03:00",
-      "min": 3.75,
-      "central": 6.77,
-      "max": 10.72,
+      "date": "2026-11-14T20:30:17-03:00",
+      "min": 3.49,
+      "central": 6.71,
+      "max": 10.71,
       "interval": "P10–P90 conformalizado",
       "uncertainty": "Muy alta",
       "risk": "Bajo",
@@ -1214,10 +1214,10 @@
     },
     {
       "day": 12,
-      "date": "2026-11-15T14:55:32-03:00",
-      "min": 3.45,
-      "central": 6.8,
-      "max": 10.83,
+      "date": "2026-11-15T20:30:17-03:00",
+      "min": 3.23,
+      "central": 6.76,
+      "max": 10.99,
       "interval": "P10–P90 conformalizado",
       "uncertainty": "Muy alta",
       "risk": "Bajo",
@@ -1226,25 +1226,25 @@
     },
     {
       "day": 13,
-      "date": "2026-11-16T14:55:32-03:00",
-      "min": 3.35,
-      "central": 6.84,
-      "max": 10.84,
+      "date": "2026-11-16T20:30:17-03:00",
+      "min": 3.13,
+      "central": 6.81,
+      "max": 11.34,
       "interval": "P10–P90 conformalizado",
       "uncertainty": "Muy alta",
-      "risk": "Bajo",
+      "risk": "Medio",
       "basis": "ctm_analog_ensemble",
       "validation": null
     },
     {
       "day": 14,
-      "date": "2026-11-17T14:55:32-03:00",
-      "min": 3.0,
-      "central": 6.88,
-      "max": 10.96,
+      "date": "2026-11-17T20:30:17-03:00",
+      "min": 2.77,
+      "central": 6.86,
+      "max": 11.19,
       "interval": "P10–P90 conformalizado",
       "uncertainty": "Muy alta",
-      "risk": "Bajo",
+      "risk": "Medio",
       "basis": "ctm_analog_ensemble",
       "validation": {
         "sample_size": 102,
@@ -1259,70 +1259,70 @@
     },
     {
       "day": 15,
-      "date": "2026-11-18T14:55:32-03:00",
-      "min": 3.75,
-      "central": 7.14,
-      "max": 10.86,
+      "date": "2026-11-18T20:30:17-03:00",
+      "min": 3.32,
+      "central": 7.09,
+      "max": 11.29,
       "interval": "P10–P90 conformalizado",
       "uncertainty": "Muy alta",
-      "risk": "Bajo",
+      "risk": "Medio",
       "basis": "ctm_analog_ensemble",
       "validation": null
     },
     {
       "day": 16,
-      "date": "2026-11-19T14:55:32-03:00",
-      "min": 3.43,
-      "central": 7.4,
-      "max": 10.87,
+      "date": "2026-11-19T20:30:17-03:00",
+      "min": 3.0,
+      "central": 7.33,
+      "max": 11.33,
       "interval": "P10–P90 conformalizado",
       "uncertainty": "Muy alta",
-      "risk": "Bajo",
+      "risk": "Medio",
       "basis": "ctm_analog_ensemble",
       "validation": null
     },
     {
       "day": 17,
-      "date": "2026-11-20T14:55:32-03:00",
-      "min": 2.97,
-      "central": 7.66,
-      "max": 10.91,
+      "date": "2026-11-20T20:30:17-03:00",
+      "min": 2.75,
+      "central": 7.56,
+      "max": 11.31,
       "interval": "P10–P90 conformalizado",
       "uncertainty": "Muy alta",
-      "risk": "Bajo",
+      "risk": "Medio",
       "basis": "ctm_analog_ensemble",
       "validation": null
     },
     {
       "day": 18,
-      "date": "2026-11-21T14:55:32-03:00",
-      "min": 3.45,
-      "central": 7.92,
-      "max": 10.89,
+      "date": "2026-11-21T20:30:17-03:00",
+      "min": 3.23,
+      "central": 7.79,
+      "max": 11.08,
       "interval": "P10–P90 conformalizado",
       "uncertainty": "Muy alta",
-      "risk": "Bajo",
+      "risk": "Medio",
       "basis": "ctm_analog_ensemble",
       "validation": null
     },
     {
       "day": 19,
-      "date": "2026-11-22T14:55:32-03:00",
-      "min": 3.65,
-      "central": 8.19,
-      "max": 10.94,
+      "date": "2026-11-22T20:30:17-03:00",
+      "min": 3.43,
+      "central": 8.02,
+      "max": 11.34,
       "interval": "P10–P90 conformalizado",
       "uncertainty": "Muy alta",
-      "risk": "Bajo",
+      "risk": "Medio",
       "basis": "ctm_analog_ensemble",
       "validation": null
     },
     {
       "day": 20,
-      "date": "2026-11-23T14:55:32-03:00",
-      "min": 4.35,
-      "central": 8.45,
-      "max": 11.36,
+      "date": "2026-11-23T20:30:17-03:00",
+      "min": 3.89,
+      "central": 8.26,
+      "max": 11.6,
       "interval": "P10–P90 conformalizado",
       "uncertainty": "Muy alta",
       "risk": "Medio",
@@ -1331,10 +1331,10 @@
     },
     {
       "day": 21,
-      "date": "2026-11-24T14:55:32-03:00",
-      "min": 4.22,
-      "central": 8.71,
-      "max": 11.37,
+      "date": "2026-11-24T20:30:17-03:00",
+      "min": 3.54,
+      "central": 8.49,
+      "max": 11.85,
       "interval": "P10–P90 conformalizado",
       "uncertainty": "Muy alta",
       "risk": "Medio",
@@ -1352,10 +1352,10 @@
     },
     {
       "day": 22,
-      "date": "2026-11-25T14:55:32-03:00",
-      "min": 4.1,
-      "central": 8.71,
-      "max": 11.7,
+      "date": "2026-11-25T20:30:17-03:00",
+      "min": 3.65,
+      "central": 8.49,
+      "max": 11.96,
       "interval": "P10–P90 conformalizado",
       "uncertainty": "Muy alta",
       "risk": "Medio",
@@ -1364,10 +1364,10 @@
     },
     {
       "day": 23,
-      "date": "2026-11-26T14:55:32-03:00",
-      "min": 4.09,
-      "central": 8.71,
-      "max": 11.74,
+      "date": "2026-11-26T20:30:17-03:00",
+      "min": 3.65,
+      "central": 8.49,
+      "max": 12.09,
       "interval": "P10–P90 conformalizado",
       "uncertainty": "Muy alta",
       "risk": "Medio",
@@ -1376,10 +1376,10 @@
     },
     {
       "day": 24,
-      "date": "2026-11-27T14:55:32-03:00",
-      "min": 4.04,
-      "central": 8.71,
-      "max": 11.79,
+      "date": "2026-11-27T20:30:17-03:00",
+      "min": 3.76,
+      "central": 8.49,
+      "max": 12.23,
       "interval": "P10–P90 conformalizado",
       "uncertainty": "Muy alta",
       "risk": "Medio",
@@ -1388,33 +1388,9 @@
     },
     {
       "day": 25,
-      "date": "2026-11-28T14:55:32-03:00",
-      "min": 4.27,
-      "central": 8.71,
-      "max": 12.41,
-      "interval": "P10–P90 conformalizado",
-      "uncertainty": "Muy alta",
-      "risk": "Medio",
-      "basis": "ctm_analog_ensemble",
-      "validation": null
-    },
-    {
-      "day": 26,
-      "date": "2026-11-29T14:55:32-03:00",
+      "date": "2026-11-28T20:30:17-03:00",
       "min": 4.05,
-      "central": 8.71,
-      "max": 12.47,
-      "interval": "P10–P90 conformalizado",
-      "uncertainty": "Muy alta",
-      "risk": "Medio",
-      "basis": "ctm_analog_ensemble",
-      "validation": null
-    },
-    {
-      "day": 27,
-      "date": "2026-11-30T14:55:32-03:00",
-      "min": 4.48,
-      "central": 8.71,
+      "central": 8.49,
       "max": 12.5,
       "interval": "P10–P90 conformalizado",
       "uncertainty": "Muy alta",
@@ -1423,14 +1399,38 @@
       "validation": null
     },
     {
-      "day": 28,
-      "date": "2026-12-01T14:55:32-03:00",
-      "min": 4.02,
-      "central": 8.71,
-      "max": 12.62,
+      "day": 26,
+      "date": "2026-11-29T20:30:17-03:00",
+      "min": 3.81,
+      "central": 8.49,
+      "max": 12.58,
       "interval": "P10–P90 conformalizado",
       "uncertainty": "Muy alta",
       "risk": "Alto",
+      "basis": "ctm_analog_ensemble",
+      "validation": null
+    },
+    {
+      "day": 27,
+      "date": "2026-11-30T20:30:17-03:00",
+      "min": 3.96,
+      "central": 8.49,
+      "max": 12.5,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Muy alta",
+      "risk": "Medio",
+      "basis": "ctm_analog_ensemble",
+      "validation": null
+    },
+    {
+      "day": 28,
+      "date": "2026-12-01T20:30:17-03:00",
+      "min": 3.8,
+      "central": 8.49,
+      "max": 12.46,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Muy alta",
+      "risk": "Medio",
       "basis": "ctm_analog_ensemble",
       "validation": {
         "sample_size": 102,
@@ -1445,10 +1445,10 @@
     },
     {
       "day": 29,
-      "date": "2026-12-02T14:55:32-03:00",
-      "min": 3.84,
-      "central": 8.71,
-      "max": 12.58,
+      "date": "2026-12-02T20:30:17-03:00",
+      "min": 3.73,
+      "central": 8.49,
+      "max": 12.87,
       "interval": "P10–P90 conformalizado",
       "uncertainty": "Muy alta",
       "risk": "Alto",
@@ -1457,10 +1457,10 @@
     },
     {
       "day": 30,
-      "date": "2026-12-03T14:55:32-03:00",
-      "min": 3.97,
-      "central": 8.71,
-      "max": 12.87,
+      "date": "2026-12-03T20:30:17-03:00",
+      "min": 3.75,
+      "central": 8.49,
+      "max": 13.01,
       "interval": "P10–P90 conformalizado",
       "uncertainty": "Muy alta",
       "risk": "Alto",
@@ -1478,8 +1478,8 @@
     }
   ],
   "risk_report": {
-    "id": "2026-11-03T14:55:32-03:00",
-    "generated_at": "2026-11-03T14:55:32-03:00",
+    "id": "2026-11-03T20:30:17-03:00",
+    "generated_at": "2026-11-03T20:30:17-03:00",
     "event": {
       "station": "Puerto Concordia",
       "threshold_m": 11.5,
@@ -1494,8 +1494,8 @@
     },
     "data_status": "partial",
     "snapshot": {
-      "concordia_m": 8.71,
-      "released_flow_m3s": 11208,
+      "concordia_m": 8.49,
+      "released_flow_m3s": 10500,
       "rainfall_7d_mm": 11
     },
     "rows": [
@@ -1513,9 +1513,9 @@
         "confidence_reason": "Estimación exploratoria: 4 eventos; se requieren 10.",
         "raw_ensemble_probability_pct": 0,
         "classification_uncertainty": "Moderada",
-        "scenario_min_m": 4.75,
-        "scenario_central_m": 6.62,
-        "scenario_max_m": 8.91,
+        "scenario_min_m": 4.52,
+        "scenario_central_m": 6.5,
+        "scenario_max_m": 8.9,
         "validation": {
           "sample_size": 102,
           "event_count": 4,
@@ -1550,9 +1550,9 @@
         "confidence_reason": "Estimación exploratoria: 6 eventos; se requieren 10.",
         "raw_ensemble_probability_pct": 6,
         "classification_uncertainty": "Alta",
-        "scenario_min_m": 3.0,
-        "scenario_central_m": 6.88,
-        "scenario_max_m": 10.96,
+        "scenario_min_m": 2.77,
+        "scenario_central_m": 6.86,
+        "scenario_max_m": 11.19,
         "validation": {
           "sample_size": 102,
           "event_count": 6,
@@ -1576,20 +1576,20 @@
       {
         "horizon_days": 21,
         "classification": "BAJO",
-        "central_estimate_pct": 6,
+        "central_estimate_pct": 7,
         "plausible_interval_pct": [
-          4,
-          20
+          6,
+          22
         ],
         "estimate_basis": "raw_analog_frequency",
         "estimate_status": "exploratory",
         "evidence_confidence": "Baja",
         "confidence_reason": "Estimación exploratoria: 8 eventos; se requieren 10.",
-        "raw_ensemble_probability_pct": 9,
+        "raw_ensemble_probability_pct": 11,
         "classification_uncertainty": "Muy alta",
-        "scenario_min_m": 4.22,
-        "scenario_central_m": 8.71,
-        "scenario_max_m": 11.37,
+        "scenario_min_m": 3.54,
+        "scenario_central_m": 8.49,
+        "scenario_max_m": 11.85,
         "validation": {
           "sample_size": 102,
           "event_count": 8,
@@ -1613,20 +1613,20 @@
       {
         "horizon_days": 28,
         "classification": "BAJO",
-        "central_estimate_pct": 16,
+        "central_estimate_pct": 18,
         "plausible_interval_pct": [
-          11,
-          30
+          15,
+          35
         ],
         "estimate_basis": "platt_calibrated",
         "estimate_status": "validated",
         "evidence_confidence": "Moderada",
         "confidence_reason": "Supera los mínimos de casos, eventos, habilidad de Brier y confiabilidad definidos antes de la validación final.",
-        "raw_ensemble_probability_pct": 16,
+        "raw_ensemble_probability_pct": 20,
         "classification_uncertainty": "Muy alta",
-        "scenario_min_m": 4.02,
-        "scenario_central_m": 8.71,
-        "scenario_max_m": 12.62,
+        "scenario_min_m": 3.8,
+        "scenario_central_m": 8.49,
+        "scenario_max_m": 12.46,
         "validation": {
           "sample_size": 102,
           "event_count": 10,
@@ -1650,8 +1650,8 @@
     ]
   },
   "risk_report_bundle": {
-    "id": "2026-11-03T14:55:32-03:00",
-    "generated_at": "2026-11-03T14:55:32-03:00",
+    "id": "2026-11-03T20:30:17-03:00",
+    "generated_at": "2026-11-03T20:30:17-03:00",
     "station": "Puerto Concordia",
     "method": {
       "method_id": "ctm-analog-ensemble-v1.1",
@@ -1662,8 +1662,8 @@
     },
     "data_status": "partial",
     "snapshot": {
-      "concordia_m": 8.71,
-      "released_flow_m3s": 11208,
+      "concordia_m": 8.49,
+      "released_flow_m3s": 10500,
       "rainfall_7d_mm": 11
     },
     "thresholds": [
@@ -1674,20 +1674,20 @@
           {
             "horizon_days": 7,
             "classification": "BAJO",
-            "central_estimate_pct": 0,
+            "central_estimate_pct": 1,
             "plausible_interval_pct": [
               0,
-              6
+              9
             ],
             "estimate_basis": "raw_analog_frequency",
             "estimate_status": "exploratory",
             "evidence_confidence": "Baja",
             "confidence_reason": "Estimación exploratoria: 5 eventos; se requieren 10.",
-            "raw_ensemble_probability_pct": 0,
+            "raw_ensemble_probability_pct": 1,
             "classification_uncertainty": "Moderada",
-            "scenario_min_m": 4.75,
-            "scenario_central_m": 6.62,
-            "scenario_max_m": 8.91,
+            "scenario_min_m": 4.52,
+            "scenario_central_m": 6.5,
+            "scenario_max_m": 8.9,
             "validation": {
               "sample_size": 102,
               "event_count": 5,
@@ -1711,20 +1711,20 @@
           {
             "horizon_days": 14,
             "classification": "BAJO",
-            "central_estimate_pct": 6,
+            "central_estimate_pct": 9,
             "plausible_interval_pct": [
-              2,
-              15
+              4,
+              19
             ],
             "estimate_basis": "raw_analog_frequency",
             "estimate_status": "exploratory",
             "evidence_confidence": "Baja",
             "confidence_reason": "Estimación exploratoria: 8 eventos; se requieren 10.",
-            "raw_ensemble_probability_pct": 6,
+            "raw_ensemble_probability_pct": 9,
             "classification_uncertainty": "Alta",
-            "scenario_min_m": 3.0,
-            "scenario_central_m": 6.88,
-            "scenario_max_m": 10.96,
+            "scenario_min_m": 2.77,
+            "scenario_central_m": 6.86,
+            "scenario_max_m": 11.19,
             "validation": {
               "sample_size": 102,
               "event_count": 8,
@@ -1748,20 +1748,20 @@
           {
             "horizon_days": 21,
             "classification": "BAJO",
-            "central_estimate_pct": 7,
+            "central_estimate_pct": 9,
             "plausible_interval_pct": [
               3,
-              16
+              17
             ],
             "estimate_basis": "platt_calibrated",
             "estimate_status": "validated",
             "evidence_confidence": "Moderada",
             "confidence_reason": "Supera los mínimos de casos, eventos, habilidad de Brier y confiabilidad definidos antes de la validación final.",
-            "raw_ensemble_probability_pct": 14,
+            "raw_ensemble_probability_pct": 15,
             "classification_uncertainty": "Muy alta",
-            "scenario_min_m": 4.22,
-            "scenario_central_m": 8.71,
-            "scenario_max_m": 11.37,
+            "scenario_min_m": 3.54,
+            "scenario_central_m": 8.49,
+            "scenario_max_m": 11.85,
             "validation": {
               "sample_size": 102,
               "event_count": 11,
@@ -1785,20 +1785,20 @@
           {
             "horizon_days": 28,
             "classification": "BAJO",
-            "central_estimate_pct": 16,
+            "central_estimate_pct": 18,
             "plausible_interval_pct": [
-              9,
-              26
+              11,
+              28
             ],
             "estimate_basis": "platt_calibrated",
             "estimate_status": "validated",
             "evidence_confidence": "Moderada",
             "confidence_reason": "Supera los mínimos de casos, eventos, habilidad de Brier y confiabilidad definidos antes de la validación final.",
-            "raw_ensemble_probability_pct": 19,
+            "raw_ensemble_probability_pct": 21,
             "classification_uncertainty": "Muy alta",
-            "scenario_min_m": 4.02,
-            "scenario_central_m": 8.71,
-            "scenario_max_m": 12.62,
+            "scenario_min_m": 3.8,
+            "scenario_central_m": 8.49,
+            "scenario_max_m": 12.46,
             "validation": {
               "sample_size": 102,
               "event_count": 14,
@@ -1828,20 +1828,20 @@
           {
             "horizon_days": 7,
             "classification": "BAJO",
-            "central_estimate_pct": 0,
+            "central_estimate_pct": 1,
             "plausible_interval_pct": [
               0,
-              6
+              9
             ],
             "estimate_basis": "raw_analog_frequency",
             "estimate_status": "exploratory",
             "evidence_confidence": "Baja",
             "confidence_reason": "Estimación exploratoria: 5 eventos; se requieren 10.",
-            "raw_ensemble_probability_pct": 0,
+            "raw_ensemble_probability_pct": 1,
             "classification_uncertainty": "Moderada",
-            "scenario_min_m": 4.75,
-            "scenario_central_m": 6.62,
-            "scenario_max_m": 8.91,
+            "scenario_min_m": 4.52,
+            "scenario_central_m": 6.5,
+            "scenario_max_m": 8.9,
             "validation": {
               "sample_size": 102,
               "event_count": 5,
@@ -1865,20 +1865,20 @@
           {
             "horizon_days": 14,
             "classification": "BAJO",
-            "central_estimate_pct": 6,
+            "central_estimate_pct": 8,
             "plausible_interval_pct": [
-              2,
-              15
+              3,
+              17
             ],
             "estimate_basis": "raw_analog_frequency",
             "estimate_status": "exploratory",
             "evidence_confidence": "Baja",
             "confidence_reason": "Estimación exploratoria: 8 eventos; se requieren 10.",
-            "raw_ensemble_probability_pct": 6,
+            "raw_ensemble_probability_pct": 8,
             "classification_uncertainty": "Alta",
-            "scenario_min_m": 3.0,
-            "scenario_central_m": 6.88,
-            "scenario_max_m": 10.96,
+            "scenario_min_m": 2.77,
+            "scenario_central_m": 6.86,
+            "scenario_max_m": 11.19,
             "validation": {
               "sample_size": 102,
               "event_count": 8,
@@ -1902,20 +1902,20 @@
           {
             "horizon_days": 21,
             "classification": "BAJO",
-            "central_estimate_pct": 6,
+            "central_estimate_pct": 8,
             "plausible_interval_pct": [
-              1,
-              16
+              4,
+              24
             ],
             "estimate_basis": "platt_calibrated",
             "estimate_status": "validated",
             "evidence_confidence": "Moderada",
             "confidence_reason": "Supera los mínimos de casos, eventos, habilidad de Brier y confiabilidad definidos antes de la validación final.",
-            "raw_ensemble_probability_pct": 9,
+            "raw_ensemble_probability_pct": 15,
             "classification_uncertainty": "Muy alta",
-            "scenario_min_m": 4.22,
-            "scenario_central_m": 8.71,
-            "scenario_max_m": 11.37,
+            "scenario_min_m": 3.54,
+            "scenario_central_m": 8.49,
+            "scenario_max_m": 11.85,
             "validation": {
               "sample_size": 102,
               "event_count": 11,
@@ -1939,20 +1939,20 @@
           {
             "horizon_days": 28,
             "classification": "BAJO",
-            "central_estimate_pct": 16,
+            "central_estimate_pct": 18,
             "plausible_interval_pct": [
-              10,
-              30
+              14,
+              34
             ],
             "estimate_basis": "platt_calibrated",
             "estimate_status": "validated",
             "evidence_confidence": "Moderada",
             "confidence_reason": "Supera los mínimos de casos, eventos, habilidad de Brier y confiabilidad definidos antes de la validación final.",
-            "raw_ensemble_probability_pct": 18,
+            "raw_ensemble_probability_pct": 21,
             "classification_uncertainty": "Muy alta",
-            "scenario_min_m": 4.02,
-            "scenario_central_m": 8.71,
-            "scenario_max_m": 12.62,
+            "scenario_min_m": 3.8,
+            "scenario_central_m": 8.49,
+            "scenario_max_m": 12.46,
             "validation": {
               "sample_size": 102,
               "event_count": 14,
@@ -1993,9 +1993,9 @@
             "confidence_reason": "Estimación exploratoria: 4 eventos; se requieren 10.",
             "raw_ensemble_probability_pct": 0,
             "classification_uncertainty": "Moderada",
-            "scenario_min_m": 4.75,
-            "scenario_central_m": 6.62,
-            "scenario_max_m": 8.91,
+            "scenario_min_m": 4.52,
+            "scenario_central_m": 6.5,
+            "scenario_max_m": 8.9,
             "validation": {
               "sample_size": 102,
               "event_count": 4,
@@ -2030,9 +2030,9 @@
             "confidence_reason": "Estimación exploratoria: 6 eventos; se requieren 10.",
             "raw_ensemble_probability_pct": 6,
             "classification_uncertainty": "Alta",
-            "scenario_min_m": 3.0,
-            "scenario_central_m": 6.88,
-            "scenario_max_m": 10.96,
+            "scenario_min_m": 2.77,
+            "scenario_central_m": 6.86,
+            "scenario_max_m": 11.19,
             "validation": {
               "sample_size": 102,
               "event_count": 6,
@@ -2056,20 +2056,20 @@
           {
             "horizon_days": 21,
             "classification": "BAJO",
-            "central_estimate_pct": 6,
+            "central_estimate_pct": 7,
             "plausible_interval_pct": [
-              4,
-              20
+              6,
+              22
             ],
             "estimate_basis": "raw_analog_frequency",
             "estimate_status": "exploratory",
             "evidence_confidence": "Baja",
             "confidence_reason": "Estimación exploratoria: 8 eventos; se requieren 10.",
-            "raw_ensemble_probability_pct": 9,
+            "raw_ensemble_probability_pct": 11,
             "classification_uncertainty": "Muy alta",
-            "scenario_min_m": 4.22,
-            "scenario_central_m": 8.71,
-            "scenario_max_m": 11.37,
+            "scenario_min_m": 3.54,
+            "scenario_central_m": 8.49,
+            "scenario_max_m": 11.85,
             "validation": {
               "sample_size": 102,
               "event_count": 8,
@@ -2093,20 +2093,20 @@
           {
             "horizon_days": 28,
             "classification": "BAJO",
-            "central_estimate_pct": 16,
+            "central_estimate_pct": 18,
             "plausible_interval_pct": [
-              11,
-              30
+              15,
+              35
             ],
             "estimate_basis": "platt_calibrated",
             "estimate_status": "validated",
             "evidence_confidence": "Moderada",
             "confidence_reason": "Supera los mínimos de casos, eventos, habilidad de Brier y confiabilidad definidos antes de la validación final.",
-            "raw_ensemble_probability_pct": 16,
+            "raw_ensemble_probability_pct": 20,
             "classification_uncertainty": "Muy alta",
-            "scenario_min_m": 4.02,
-            "scenario_central_m": 8.71,
-            "scenario_max_m": 12.62,
+            "scenario_min_m": 3.8,
+            "scenario_central_m": 8.49,
+            "scenario_max_m": 12.46,
             "validation": {
               "sample_size": 102,
               "event_count": 10,
@@ -2147,9 +2147,9 @@
             "confidence_reason": "Estimación exploratoria: 3 eventos; se requieren 10.",
             "raw_ensemble_probability_pct": 0,
             "classification_uncertainty": "Moderada",
-            "scenario_min_m": 4.75,
-            "scenario_central_m": 6.62,
-            "scenario_max_m": 8.91,
+            "scenario_min_m": 4.52,
+            "scenario_central_m": 6.5,
+            "scenario_max_m": 8.9,
             "validation": {
               "sample_size": 102,
               "event_count": 3,
@@ -2173,20 +2173,20 @@
           {
             "horizon_days": 14,
             "classification": "BAJO",
-            "central_estimate_pct": 5,
+            "central_estimate_pct": 6,
             "plausible_interval_pct": [
-              1,
-              13
+              2,
+              15
             ],
             "estimate_basis": "raw_analog_frequency",
             "estimate_status": "exploratory",
             "evidence_confidence": "Muy baja",
             "confidence_reason": "Estimación exploratoria: 4 eventos; se requieren 10.",
-            "raw_ensemble_probability_pct": 5,
+            "raw_ensemble_probability_pct": 6,
             "classification_uncertainty": "Alta",
-            "scenario_min_m": 3.0,
-            "scenario_central_m": 6.88,
-            "scenario_max_m": 10.96,
+            "scenario_min_m": 2.77,
+            "scenario_central_m": 6.86,
+            "scenario_max_m": 11.19,
             "validation": {
               "sample_size": 102,
               "event_count": 4,
@@ -2210,20 +2210,20 @@
           {
             "horizon_days": 21,
             "classification": "BAJO",
-            "central_estimate_pct": 5,
+            "central_estimate_pct": 7,
             "plausible_interval_pct": [
-              4,
-              20
+              3,
+              17
             ],
             "estimate_basis": "raw_analog_frequency",
             "estimate_status": "exploratory",
             "evidence_confidence": "Baja",
             "confidence_reason": "Estimación exploratoria: 5 eventos; se requieren 10.",
-            "raw_ensemble_probability_pct": 9,
+            "raw_ensemble_probability_pct": 8,
             "classification_uncertainty": "Muy alta",
-            "scenario_min_m": 4.22,
-            "scenario_central_m": 8.71,
-            "scenario_max_m": 11.37,
+            "scenario_min_m": 3.54,
+            "scenario_central_m": 8.49,
+            "scenario_max_m": 11.85,
             "validation": {
               "sample_size": 102,
               "event_count": 5,
@@ -2247,20 +2247,20 @@
           {
             "horizon_days": 28,
             "classification": "BAJO",
-            "central_estimate_pct": 16,
+            "central_estimate_pct": 18,
             "plausible_interval_pct": [
-              9,
-              27
+              12,
+              32
             ],
             "estimate_basis": "raw_analog_frequency",
             "estimate_status": "exploratory",
             "evidence_confidence": "Baja",
             "confidence_reason": "Estimación exploratoria: 6 eventos; se requieren 10.",
-            "raw_ensemble_probability_pct": 16,
+            "raw_ensemble_probability_pct": 20,
             "classification_uncertainty": "Muy alta",
-            "scenario_min_m": 4.02,
-            "scenario_central_m": 8.71,
-            "scenario_max_m": 12.62,
+            "scenario_min_m": 3.8,
+            "scenario_central_m": 8.49,
+            "scenario_max_m": 12.46,
             "validation": {
               "sample_size": 102,
               "event_count": 6,
@@ -2301,9 +2301,9 @@
             "confidence_reason": "Estimación exploratoria: 2 eventos; se requieren 10.",
             "raw_ensemble_probability_pct": 0,
             "classification_uncertainty": "Moderada",
-            "scenario_min_m": 4.75,
-            "scenario_central_m": 6.62,
-            "scenario_max_m": 8.91,
+            "scenario_min_m": 4.52,
+            "scenario_central_m": 6.5,
+            "scenario_max_m": 8.9,
             "validation": {
               "sample_size": 102,
               "event_count": 2,
@@ -2329,7 +2329,7 @@
             "classification": "BAJO",
             "central_estimate_pct": 5,
             "plausible_interval_pct": [
-              1,
+              2,
               13
             ],
             "estimate_basis": "raw_analog_frequency",
@@ -2338,9 +2338,9 @@
             "confidence_reason": "Estimación exploratoria: 3 eventos; se requieren 10.",
             "raw_ensemble_probability_pct": 5,
             "classification_uncertainty": "Alta",
-            "scenario_min_m": 3.0,
-            "scenario_central_m": 6.88,
-            "scenario_max_m": 10.96,
+            "scenario_min_m": 2.77,
+            "scenario_central_m": 6.86,
+            "scenario_max_m": 11.19,
             "validation": {
               "sample_size": 102,
               "event_count": 3,
@@ -2364,20 +2364,20 @@
           {
             "horizon_days": 21,
             "classification": "BAJO",
-            "central_estimate_pct": 5,
+            "central_estimate_pct": 7,
             "plausible_interval_pct": [
-              2,
-              15
+              3,
+              17
             ],
             "estimate_basis": "raw_analog_frequency",
             "estimate_status": "exploratory",
             "evidence_confidence": "Muy baja",
             "confidence_reason": "Estimación exploratoria: 4 eventos; se requieren 10.",
-            "raw_ensemble_probability_pct": 6,
+            "raw_ensemble_probability_pct": 8,
             "classification_uncertainty": "Muy alta",
-            "scenario_min_m": 4.22,
-            "scenario_central_m": 8.71,
-            "scenario_max_m": 11.37,
+            "scenario_min_m": 3.54,
+            "scenario_central_m": 8.49,
+            "scenario_max_m": 11.85,
             "validation": {
               "sample_size": 102,
               "event_count": 4,
@@ -2401,20 +2401,20 @@
           {
             "horizon_days": 28,
             "classification": "BAJO",
-            "central_estimate_pct": 16,
+            "central_estimate_pct": 18,
             "plausible_interval_pct": [
-              9,
-              27
+              10,
+              30
             ],
             "estimate_basis": "raw_analog_frequency",
             "estimate_status": "exploratory",
             "evidence_confidence": "Baja",
             "confidence_reason": "Estimación exploratoria: 5 eventos; se requieren 10.",
-            "raw_ensemble_probability_pct": 16,
+            "raw_ensemble_probability_pct": 18,
             "classification_uncertainty": "Muy alta",
-            "scenario_min_m": 4.02,
-            "scenario_central_m": 8.71,
-            "scenario_max_m": 12.62,
+            "scenario_min_m": 3.8,
+            "scenario_central_m": 8.49,
+            "scenario_max_m": 12.46,
             "validation": {
               "sample_size": 102,
               "event_count": 5,
@@ -2455,9 +2455,9 @@
             "confidence_reason": "Estimación exploratoria: 1 eventos; se requieren 10.",
             "raw_ensemble_probability_pct": 0,
             "classification_uncertainty": "Moderada",
-            "scenario_min_m": 4.75,
-            "scenario_central_m": 6.62,
-            "scenario_max_m": 8.91,
+            "scenario_min_m": 4.52,
+            "scenario_central_m": 6.5,
+            "scenario_max_m": 8.9,
             "validation": {
               "sample_size": 102,
               "event_count": 1,
@@ -2483,7 +2483,7 @@
             "classification": "BAJO",
             "central_estimate_pct": 5,
             "plausible_interval_pct": [
-              1,
+              2,
               13
             ],
             "estimate_basis": "raw_analog_frequency",
@@ -2492,9 +2492,9 @@
             "confidence_reason": "Estimación exploratoria: 2 eventos; se requieren 10.",
             "raw_ensemble_probability_pct": 5,
             "classification_uncertainty": "Alta",
-            "scenario_min_m": 3.0,
-            "scenario_central_m": 6.88,
-            "scenario_max_m": 10.96,
+            "scenario_min_m": 2.77,
+            "scenario_central_m": 6.86,
+            "scenario_max_m": 11.19,
             "validation": {
               "sample_size": 102,
               "event_count": 2,
@@ -2518,10 +2518,10 @@
           {
             "horizon_days": 21,
             "classification": "BAJO",
-            "central_estimate_pct": 5,
+            "central_estimate_pct": 6,
             "plausible_interval_pct": [
               2,
-              15
+              16
             ],
             "estimate_basis": "raw_analog_frequency",
             "estimate_status": "exploratory",
@@ -2529,9 +2529,9 @@
             "confidence_reason": "Estimación exploratoria: 3 eventos; se requieren 10.",
             "raw_ensemble_probability_pct": 6,
             "classification_uncertainty": "Muy alta",
-            "scenario_min_m": 4.22,
-            "scenario_central_m": 8.71,
-            "scenario_max_m": 11.37,
+            "scenario_min_m": 3.54,
+            "scenario_central_m": 8.49,
+            "scenario_max_m": 11.85,
             "validation": {
               "sample_size": 102,
               "event_count": 3,
@@ -2555,20 +2555,20 @@
           {
             "horizon_days": 28,
             "classification": "BAJO",
-            "central_estimate_pct": 14,
+            "central_estimate_pct": 18,
             "plausible_interval_pct": [
-              8,
-              26
+              10,
+              30
             ],
             "estimate_basis": "raw_analog_frequency",
             "estimate_status": "exploratory",
             "evidence_confidence": "Muy baja",
             "confidence_reason": "Estimación exploratoria: 4 eventos; se requieren 10.",
-            "raw_ensemble_probability_pct": 14,
+            "raw_ensemble_probability_pct": 18,
             "classification_uncertainty": "Muy alta",
-            "scenario_min_m": 4.02,
-            "scenario_central_m": 8.71,
-            "scenario_max_m": 12.62,
+            "scenario_min_m": 3.8,
+            "scenario_central_m": 8.49,
+            "scenario_max_m": 12.46,
             "validation": {
               "sample_size": 102,
               "event_count": 4,
@@ -2598,8 +2598,8 @@
       "source_id": "geoglows_ecmwf",
       "source_name": "GEOGLOWS ECMWF Streamflow Service",
       "river_id": 640460565,
-      "generated_at": "2026-11-03T17:57:43+00:00",
-      "retrieved_at": "2026-11-03T14:55:32-03:00",
+      "generated_at": "2026-11-03T23:32:22+00:00",
+      "retrieved_at": "2026-11-03T20:30:17-03:00",
       "valid_until": "2026-11-17",
       "unit": "m3/s",
       "daily": [
