@@ -1,6 +1,6 @@
 {
   "schema_version": "0.2.0",
-  "generated_at": "2026-11-08T03:20:52-03:00",
+  "generated_at": "2026-11-08T10:42:49-03:00",
   "timezone": "America/Argentina/Cordoba",
   "update_status": {
     "state": "partial",
@@ -23,10 +23,10 @@
       "station_name": "CONCORDIA",
       "latitude": -31.4,
       "longitude": -58.017,
-      "observed_at_utc": "2026-11-08T06:00:00Z",
-      "observed_at_local": "2026-11-08T03:00:00-03:00",
-      "retrieved_at": "2026-11-08T03:20:52-03:00",
-      "value": 7.02,
+      "observed_at_utc": "2026-11-08T13:15:00Z",
+      "observed_at_local": "2026-11-08T10:15:00-03:00",
+      "retrieved_at": "2026-11-08T10:42:49-03:00",
+      "value": 7.24,
       "unit": "m",
       "vertical_datum": "cero local no documentado en la ficha consultada",
       "temporal_aggregation": "instantánea",
@@ -41,10 +41,10 @@
       "variable": "turbined_discharge",
       "station_id": "SALTO_GRANDE",
       "station_name": "Salto Grande",
-      "observed_at_utc": "2026-11-08T05:00:00Z",
-      "observed_at_local": "2026-11-08T02:00:00-03:00",
-      "retrieved_at": "2026-11-08T03:20:52-03:00",
-      "value": 8205,
+      "observed_at_utc": "2026-11-08T13:00:00Z",
+      "observed_at_local": "2026-11-08T10:00:00-03:00",
+      "retrieved_at": "2026-11-08T10:42:49-03:00",
+      "value": 7383,
       "unit": "m3/s",
       "quality_flag": "official_preliminary",
       "is_official": true,
@@ -57,10 +57,10 @@
       "variable": "spilled_discharge",
       "station_id": "SALTO_GRANDE",
       "station_name": "Salto Grande",
-      "observed_at_utc": "2026-11-08T05:00:00Z",
-      "observed_at_local": "2026-11-08T02:00:00-03:00",
-      "retrieved_at": "2026-11-08T03:20:52-03:00",
-      "value": 516,
+      "observed_at_utc": "2026-11-08T13:00:00Z",
+      "observed_at_local": "2026-11-08T10:00:00-03:00",
+      "retrieved_at": "2026-11-08T10:42:49-03:00",
+      "value": 1843,
       "unit": "m3/s",
       "quality_flag": "official_preliminary",
       "is_official": true,
@@ -73,10 +73,10 @@
       "variable": "reservoir_level",
       "station_id": "SALTO_GRANDE",
       "station_name": "Embalse de Salto Grande",
-      "observed_at_utc": "2026-11-08T05:00:00Z",
-      "observed_at_local": "2026-11-08T02:00:00-03:00",
-      "retrieved_at": "2026-11-08T03:20:52-03:00",
-      "value": 34.6,
+      "observed_at_utc": "2026-11-08T13:00:00Z",
+      "observed_at_local": "2026-11-08T10:00:00-03:00",
+      "retrieved_at": "2026-11-08T10:42:49-03:00",
+      "value": 34.57,
       "unit": "m",
       "vertical_datum": "cota CTM; datum no explicitado en la página horaria",
       "temporal_aggregation": "promedio horario",
@@ -105,7 +105,7 @@
     "mean_daily_released_flow_max_m3s": 11000,
     "source_reference": "https://www.saltogrande.org/docs/hidrologia/Comunicado.pdf",
     "quality_flag": "official_preliminary",
-    "retrieved_at": "2026-11-08T03:20:52-03:00"
+    "retrieved_at": "2026-11-08T10:42:49-03:00"
   },
   "history": [
     {
@@ -285,7 +285,7 @@
     {
       "date": "2026-11-08",
       "label": "08 nov",
-      "value": 7.02,
+      "value": 7.24,
       "source": "CTM Salto Grande"
     }
   ],
@@ -370,30 +370,30 @@
     {
       "name": "Concordia",
       "group": "downstream",
-      "value_m": 7.02,
-      "variation_m": 0.12,
+      "value_m": 7.24,
+      "variation_m": 0.24,
       "variation_period_h": 12,
       "trend": "crece",
       "status": "Seguimiento",
-      "observed_at_local": "2026-11-08T03:00:00-03:00",
+      "observed_at_local": "2026-11-08T10:15:00-03:00",
       "source": "CTM"
     }
   ],
   "signals": {
     "upstream": "5.38 m · seguimiento · crece · 26/09 04:51",
     "rainfall_7d_mm": 11,
-    "released_flow_m3s": 8721
+    "released_flow_m3s": 9226
   },
   "forecast_method": {
     "model_id": "ctm-analog-ensemble-v1.1",
     "label": "Ensamble local de análogos hidrométricos",
     "status": "validated_with_limits",
-    "generated_at": "2026-11-08T03:20:52-03:00",
+    "generated_at": "2026-11-08T10:42:49-03:00",
     "training_source": "CTM Salto Grande · red de estaciones de 15 minutos agregada por día",
     "training_start": "2017-01-01",
-    "training_end": "2026-11-07",
+    "training_end": "2026-11-08",
     "member_count": 60,
-    "effective_member_count": 59.5,
+    "effective_member_count": 59.0,
     "predictors": [
       "local_level",
       "local_d1",
@@ -431,23 +431,23 @@
     "validation": {
       "strategy": "bloques temporales 60/20/20: entrenamiento, calibración y validación final",
       "training_start": "2017-01-15",
-      "training_end": "2022-11-16",
-      "calibration_start": "2022-11-17",
-      "calibration_end": "2024-10-27",
-      "validation_start": "2024-10-28",
-      "validation_end": "2026-10-08",
+      "training_end": "2022-11-17",
+      "calibration_start": "2022-11-18",
+      "calibration_end": "2024-10-28",
+      "validation_start": "2024-10-29",
+      "validation_end": "2026-10-09",
       "calibration_origins": 102,
       "validation_origins": 102,
       "validation_stride_days": 7,
       "interval_target_coverage": 0.8,
       "conformal_corrections_m": {
-        "1": 0.0,
-        "3": 0.09,
-        "7": 0.45,
-        "14": 0.575,
-        "21": 0.445,
-        "28": 0.17,
-        "30": 0.255
+        "1": 0.06,
+        "3": 0.11,
+        "7": 0.31,
+        "14": 0.61,
+        "21": 0.73,
+        "28": 0.35,
+        "30": 0.44
       },
       "probability_gate": {
         "minimum_cases": 80,
@@ -459,73 +459,73 @@
       "point_metrics": {
         "1": {
           "sample_size": 102,
-          "mae_m": 0.363,
-          "persistence_mae_m": 0.389,
-          "mae_skill_vs_persistence": 0.067,
-          "interval_80_coverage": 0.804,
-          "median_interval_width_m": 1.307,
-          "conformal_correction_m": 0.0,
+          "mae_m": 0.387,
+          "persistence_mae_m": 0.434,
+          "mae_skill_vs_persistence": 0.108,
+          "interval_80_coverage": 0.873,
+          "median_interval_width_m": 1.375,
+          "conformal_correction_m": 0.06,
           "preferred_central": "analog_median"
         },
         "3": {
           "sample_size": 102,
-          "mae_m": 0.599,
-          "persistence_mae_m": 0.702,
-          "mae_skill_vs_persistence": 0.147,
-          "interval_80_coverage": 0.882,
-          "median_interval_width_m": 2.485,
-          "conformal_correction_m": 0.09,
+          "mae_m": 0.616,
+          "persistence_mae_m": 0.801,
+          "mae_skill_vs_persistence": 0.231,
+          "interval_80_coverage": 0.873,
+          "median_interval_width_m": 2.5,
+          "conformal_correction_m": 0.11,
           "preferred_central": "analog_median"
         },
         "7": {
           "sample_size": 102,
-          "mae_m": 1.045,
-          "persistence_mae_m": 1.147,
-          "mae_skill_vs_persistence": 0.089,
-          "interval_80_coverage": 0.873,
-          "median_interval_width_m": 4.087,
-          "conformal_correction_m": 0.45,
+          "mae_m": 1.048,
+          "persistence_mae_m": 1.18,
+          "mae_skill_vs_persistence": 0.112,
+          "interval_80_coverage": 0.853,
+          "median_interval_width_m": 3.83,
+          "conformal_correction_m": 0.31,
           "preferred_central": "analog_median"
         },
         "14": {
           "sample_size": 102,
-          "mae_m": 1.705,
-          "persistence_mae_m": 1.749,
-          "mae_skill_vs_persistence": 0.025,
+          "mae_m": 1.596,
+          "persistence_mae_m": 1.718,
+          "mae_skill_vs_persistence": 0.071,
           "interval_80_coverage": 0.863,
-          "median_interval_width_m": 5.933,
-          "conformal_correction_m": 0.575,
-          "preferred_central": "persistence"
+          "median_interval_width_m": 6.135,
+          "conformal_correction_m": 0.61,
+          "preferred_central": "analog_median"
         },
         "21": {
           "sample_size": 102,
-          "mae_m": 1.977,
-          "persistence_mae_m": 1.998,
-          "mae_skill_vs_persistence": 0.011,
-          "interval_80_coverage": 0.833,
-          "median_interval_width_m": 6.6,
-          "conformal_correction_m": 0.445,
+          "mae_m": 1.985,
+          "persistence_mae_m": 1.994,
+          "mae_skill_vs_persistence": 0.005,
+          "interval_80_coverage": 0.863,
+          "median_interval_width_m": 7.23,
+          "conformal_correction_m": 0.73,
           "preferred_central": "persistence"
         },
         "28": {
           "sample_size": 102,
-          "mae_m": 2.256,
-          "persistence_mae_m": 2.239,
-          "mae_skill_vs_persistence": -0.008,
-          "interval_80_coverage": 0.775,
-          "median_interval_width_m": 6.395,
-          "conformal_correction_m": 0.17,
+          "mae_m": 2.258,
+          "persistence_mae_m": 2.286,
+          "mae_skill_vs_persistence": 0.012,
+          "interval_80_coverage": 0.843,
+          "median_interval_width_m": 6.653,
+          "conformal_correction_m": 0.35,
           "preferred_central": "persistence"
         },
         "30": {
           "sample_size": 102,
-          "mae_m": 2.273,
-          "persistence_mae_m": 2.405,
-          "mae_skill_vs_persistence": 0.055,
-          "interval_80_coverage": 0.794,
-          "median_interval_width_m": 6.675,
-          "conformal_correction_m": 0.255,
-          "preferred_central": "analog_median"
+          "mae_m": 2.395,
+          "persistence_mae_m": 2.431,
+          "mae_skill_vs_persistence": 0.015,
+          "interval_80_coverage": 0.833,
+          "median_interval_width_m": 7.085,
+          "conformal_correction_m": 0.44,
+          "preferred_central": "persistence"
         }
       },
       "probability_metrics": {
@@ -534,17 +534,17 @@
           "event_count": 7,
           "non_event_count": 95,
           "calibration_sample_size": 102,
-          "calibration_event_count": 13,
+          "calibration_event_count": 12,
           "calibration_parameters": {
-            "intercept": -0.444362,
-            "slope": 0.790723
+            "intercept": -0.936973,
+            "slope": 0.898321
           },
           "reference": "frecuencia del evento en el bloque de calibración",
-          "reference_probability": 0.1311,
-          "brier_score": 0.0194,
-          "reference_brier_score": 0.0678,
-          "brier_skill_score": 0.714,
-          "reliability_error": 0.016,
+          "reference_probability": 0.1214,
+          "brier_score": 0.0223,
+          "reference_brier_score": 0.0667,
+          "brier_skill_score": 0.666,
+          "reliability_error": 0.021,
           "enabled": false,
           "reason": "estimación calculada pero con evidencia insuficiente para considerarla validada"
         },
@@ -553,17 +553,17 @@
           "event_count": 10,
           "non_event_count": 92,
           "calibration_sample_size": 102,
-          "calibration_event_count": 15,
+          "calibration_event_count": 14,
           "calibration_parameters": {
-            "intercept": -0.593519,
-            "slope": 0.686824
+            "intercept": -0.811737,
+            "slope": 0.727441
           },
           "reference": "frecuencia del evento en el bloque de calibración",
-          "reference_probability": 0.1505,
-          "brier_score": 0.0418,
-          "reference_brier_score": 0.0912,
-          "brier_skill_score": 0.541,
-          "reliability_error": 0.023,
+          "reference_probability": 0.1408,
+          "brier_score": 0.0436,
+          "reference_brier_score": 0.0903,
+          "brier_skill_score": 0.517,
+          "reliability_error": 0.033,
           "enabled": true,
           "reason": "estimación con validación temporal suficiente"
         },
@@ -572,17 +572,17 @@
           "event_count": 13,
           "non_event_count": 89,
           "calibration_sample_size": 102,
-          "calibration_event_count": 17,
+          "calibration_event_count": 16,
           "calibration_parameters": {
-            "intercept": -0.341715,
-            "slope": 0.806307
+            "intercept": -0.69994,
+            "slope": 0.708608
           },
           "reference": "frecuencia del evento en el bloque de calibración",
-          "reference_probability": 0.1699,
-          "brier_score": 0.06,
-          "reference_brier_score": 0.113,
-          "brier_skill_score": 0.469,
-          "reliability_error": 0.038,
+          "reference_probability": 0.1602,
+          "brier_score": 0.0609,
+          "reference_brier_score": 0.1123,
+          "brier_skill_score": 0.458,
+          "reliability_error": 0.048,
           "enabled": true,
           "reason": "estimación con validación temporal suficiente"
         },
@@ -591,17 +591,17 @@
           "event_count": 16,
           "non_event_count": 86,
           "calibration_sample_size": 102,
-          "calibration_event_count": 19,
+          "calibration_event_count": 18,
           "calibration_parameters": {
-            "intercept": -0.2326,
-            "slope": 0.790555
+            "intercept": -0.573546,
+            "slope": 0.680603
           },
           "reference": "frecuencia del evento en el bloque de calibración",
-          "reference_probability": 0.1893,
-          "brier_score": 0.0815,
-          "reference_brier_score": 0.1333,
-          "brier_skill_score": 0.389,
-          "reliability_error": 0.049,
+          "reference_probability": 0.1796,
+          "brier_score": 0.0814,
+          "reference_brier_score": 0.1328,
+          "brier_skill_score": 0.387,
+          "reliability_error": 0.059,
           "enabled": true,
           "reason": "estimación con validación temporal suficiente"
         },
@@ -612,15 +612,15 @@
           "calibration_sample_size": 102,
           "calibration_event_count": 11,
           "calibration_parameters": {
-            "intercept": -0.44518,
-            "slope": 1.05629
+            "intercept": -0.704433,
+            "slope": 0.945046
           },
           "reference": "frecuencia del evento en el bloque de calibración",
           "reference_probability": 0.1117,
-          "brier_score": 0.0156,
+          "brier_score": 0.0141,
           "reference_brier_score": 0.0582,
-          "brier_skill_score": 0.731,
-          "reliability_error": 0.017,
+          "brier_skill_score": 0.758,
+          "reliability_error": 0.015,
           "enabled": false,
           "reason": "estimación calculada pero con evidencia insuficiente para considerarla validada"
         },
@@ -631,15 +631,15 @@
           "calibration_sample_size": 102,
           "calibration_event_count": 13,
           "calibration_parameters": {
-            "intercept": -0.18162,
-            "slope": 1.063874
+            "intercept": -0.678394,
+            "slope": 0.734015
           },
           "reference": "frecuencia del evento en el bloque de calibración",
           "reference_probability": 0.1311,
-          "brier_score": 0.0352,
+          "brier_score": 0.0357,
           "reference_brier_score": 0.0823,
-          "brier_skill_score": 0.572,
-          "reliability_error": 0.03,
+          "brier_skill_score": 0.567,
+          "reliability_error": 0.026,
           "enabled": false,
           "reason": "estimación calculada pero con evidencia insuficiente para considerarla validada"
         },
@@ -650,15 +650,15 @@
           "calibration_sample_size": 102,
           "calibration_event_count": 15,
           "calibration_parameters": {
-            "intercept": -0.370833,
-            "slope": 0.838619
+            "intercept": -0.653023,
+            "slope": 0.654322
           },
           "reference": "frecuencia del evento en el bloque de calibración",
           "reference_probability": 0.1505,
-          "brier_score": 0.0582,
+          "brier_score": 0.0578,
           "reference_brier_score": 0.1049,
-          "brier_skill_score": 0.445,
-          "reliability_error": 0.041,
+          "brier_skill_score": 0.449,
+          "reliability_error": 0.04,
           "enabled": true,
           "reason": "estimación con validación temporal suficiente"
         },
@@ -669,167 +669,167 @@
           "calibration_sample_size": 102,
           "calibration_event_count": 17,
           "calibration_parameters": {
-            "intercept": -0.348734,
-            "slope": 0.750176
+            "intercept": -0.553801,
+            "slope": 0.624031
           },
           "reference": "frecuencia del evento en el bloque de calibración",
           "reference_probability": 0.1699,
-          "brier_score": 0.0761,
+          "brier_score": 0.0757,
           "reference_brier_score": 0.126,
-          "brier_skill_score": 0.396,
-          "reliability_error": 0.05,
+          "brier_skill_score": 0.399,
+          "reliability_error": 0.052,
           "enabled": true,
           "reason": "estimación con validación temporal suficiente"
         },
         "11.50:7": {
           "sample_size": 102,
-          "event_count": 4,
-          "non_event_count": 98,
+          "event_count": 3,
+          "non_event_count": 99,
           "calibration_sample_size": 102,
           "calibration_event_count": 11,
           "calibration_parameters": {
-            "intercept": -0.182745,
-            "slope": 0.92765
+            "intercept": -0.324395,
+            "slope": 1.003997
           },
           "reference": "frecuencia del evento en el bloque de calibración",
           "reference_probability": 0.1117,
-          "brier_score": 0.0106,
-          "reference_brier_score": 0.0429,
-          "brier_skill_score": 0.754,
-          "reliability_error": 0.01,
+          "brier_score": 0.0091,
+          "reference_brier_score": 0.0353,
+          "brier_skill_score": 0.743,
+          "reliability_error": 0.009,
           "enabled": false,
           "reason": "estimación calculada pero con evidencia insuficiente para considerarla validada"
         },
         "11.50:14": {
           "sample_size": 102,
-          "event_count": 6,
-          "non_event_count": 96,
+          "event_count": 5,
+          "non_event_count": 97,
           "calibration_sample_size": 102,
           "calibration_event_count": 13,
           "calibration_parameters": {
-            "intercept": 0.221759,
-            "slope": 1.105852
+            "intercept": -0.445234,
+            "slope": 0.771363
           },
           "reference": "frecuencia del evento en el bloque de calibración",
           "reference_probability": 0.1311,
-          "brier_score": 0.0253,
-          "reference_brier_score": 0.0606,
-          "brier_skill_score": 0.583,
-          "reliability_error": 0.013,
+          "brier_score": 0.0265,
+          "reference_brier_score": 0.0533,
+          "brier_skill_score": 0.503,
+          "reliability_error": 0.006,
           "enabled": false,
           "reason": "estimación calculada pero con evidencia insuficiente para considerarla validada"
         },
         "11.50:21": {
           "sample_size": 102,
-          "event_count": 8,
-          "non_event_count": 94,
+          "event_count": 7,
+          "non_event_count": 95,
           "calibration_sample_size": 102,
           "calibration_event_count": 15,
           "calibration_parameters": {
-            "intercept": -0.075258,
-            "slope": 0.868879
+            "intercept": -0.502678,
+            "slope": 0.657469
           },
           "reference": "frecuencia del evento en el bloque de calibración",
           "reference_probability": 0.1505,
-          "brier_score": 0.0409,
-          "reference_brier_score": 0.0775,
-          "brier_skill_score": 0.472,
-          "reliability_error": 0.025,
+          "brier_score": 0.0435,
+          "reference_brier_score": 0.0706,
+          "brier_skill_score": 0.384,
+          "reliability_error": 0.007,
           "enabled": false,
           "reason": "estimación calculada pero con evidencia insuficiente para considerarla validada"
         },
         "11.50:28": {
           "sample_size": 102,
-          "event_count": 10,
-          "non_event_count": 92,
+          "event_count": 9,
+          "non_event_count": 93,
           "calibration_sample_size": 102,
           "calibration_event_count": 17,
           "calibration_parameters": {
-            "intercept": -0.115648,
-            "slope": 0.780337
+            "intercept": -0.433399,
+            "slope": 0.61857
           },
           "reference": "frecuencia del evento en el bloque de calibración",
           "reference_probability": 0.1699,
-          "brier_score": 0.0542,
-          "reference_brier_score": 0.0936,
-          "brier_skill_score": 0.421,
-          "reliability_error": 0.027,
-          "enabled": true,
-          "reason": "estimación con validación temporal suficiente"
+          "brier_score": 0.0556,
+          "reference_brier_score": 0.0871,
+          "brier_skill_score": 0.362,
+          "reliability_error": 0.014,
+          "enabled": false,
+          "reason": "estimación calculada pero con evidencia insuficiente para considerarla validada"
         },
         "11.75:7": {
           "sample_size": 102,
-          "event_count": 3,
-          "non_event_count": 99,
+          "event_count": 2,
+          "non_event_count": 100,
           "calibration_sample_size": 102,
           "calibration_event_count": 10,
           "calibration_parameters": {
-            "intercept": -0.027874,
-            "slope": 0.979421
+            "intercept": 1.180543,
+            "slope": 2.862143
           },
           "reference": "frecuencia del evento en el bloque de calibración",
           "reference_probability": 0.1019,
-          "brier_score": 0.0051,
-          "reference_brier_score": 0.0338,
-          "brier_skill_score": 0.849,
-          "reliability_error": 0.015,
+          "brier_score": 0.0005,
+          "reference_brier_score": 0.026,
+          "brier_skill_score": 0.982,
+          "reliability_error": 0.004,
           "enabled": false,
           "reason": "estimación calculada pero con evidencia insuficiente para considerarla validada"
         },
         "11.75:14": {
           "sample_size": 102,
-          "event_count": 4,
-          "non_event_count": 98,
+          "event_count": 3,
+          "non_event_count": 99,
           "calibration_sample_size": 102,
           "calibration_event_count": 12,
           "calibration_parameters": {
-            "intercept": -0.001238,
-            "slope": 0.941972
+            "intercept": 0.107156,
+            "slope": 1.20206
           },
           "reference": "frecuencia del evento en el bloque de calibración",
           "reference_probability": 0.1214,
-          "brier_score": 0.0144,
-          "reference_brier_score": 0.0444,
-          "brier_skill_score": 0.676,
-          "reliability_error": 0.021,
+          "brier_score": 0.0147,
+          "reference_brier_score": 0.037,
+          "brier_skill_score": 0.602,
+          "reliability_error": 0.015,
           "enabled": false,
           "reason": "estimación calculada pero con evidencia insuficiente para considerarla validada"
         },
         "11.75:21": {
           "sample_size": 102,
-          "event_count": 5,
-          "non_event_count": 97,
+          "event_count": 4,
+          "non_event_count": 98,
           "calibration_sample_size": 102,
           "calibration_event_count": 14,
           "calibration_parameters": {
-            "intercept": -0.15849,
-            "slope": 0.771346
+            "intercept": -0.023386,
+            "slope": 0.962877
           },
           "reference": "frecuencia del evento en el bloque de calibración",
           "reference_probability": 0.1408,
-          "brier_score": 0.0249,
-          "reference_brier_score": 0.055,
-          "brier_skill_score": 0.548,
-          "reliability_error": 0.024,
+          "brier_score": 0.0274,
+          "reference_brier_score": 0.048,
+          "brier_skill_score": 0.429,
+          "reliability_error": 0.029,
           "enabled": false,
           "reason": "estimación calculada pero con evidencia insuficiente para considerarla validada"
         },
         "11.75:28": {
           "sample_size": 102,
-          "event_count": 6,
-          "non_event_count": 96,
+          "event_count": 5,
+          "non_event_count": 97,
           "calibration_sample_size": 102,
           "calibration_event_count": 16,
           "calibration_parameters": {
-            "intercept": -0.280983,
-            "slope": 0.643157
+            "intercept": -0.336944,
+            "slope": 0.660824
           },
           "reference": "frecuencia del evento en el bloque de calibración",
           "reference_probability": 0.1602,
-          "brier_score": 0.0308,
-          "reference_brier_score": 0.0656,
-          "brier_skill_score": 0.531,
-          "reliability_error": 0.031,
+          "brier_score": 0.0319,
+          "reference_brier_score": 0.059,
+          "brier_skill_score": 0.458,
+          "reliability_error": 0.034,
           "enabled": false,
           "reason": "estimación calculada pero con evidencia insuficiente para considerarla validada"
         },
@@ -840,15 +840,15 @@
           "calibration_sample_size": 102,
           "calibration_event_count": 10,
           "calibration_parameters": {
-            "intercept": 0.301549,
-            "slope": 0.946423
+            "intercept": 2.634034,
+            "slope": 3.546738
           },
           "reference": "frecuencia del evento en el bloque de calibración",
           "reference_probability": 0.1019,
-          "brier_score": 0.0081,
+          "brier_score": 0.0049,
           "reference_brier_score": 0.026,
-          "brier_skill_score": 0.689,
-          "reliability_error": 0.006,
+          "brier_skill_score": 0.811,
+          "reliability_error": 0.008,
           "enabled": false,
           "reason": "estimación calculada pero con evidencia insuficiente para considerarla validada"
         },
@@ -859,15 +859,15 @@
           "calibration_sample_size": 102,
           "calibration_event_count": 12,
           "calibration_parameters": {
-            "intercept": 0.33556,
-            "slope": 0.989182
+            "intercept": 0.552843,
+            "slope": 1.334652
           },
           "reference": "frecuencia del evento en el bloque de calibración",
           "reference_probability": 0.1214,
-          "brier_score": 0.0179,
+          "brier_score": 0.0164,
           "reference_brier_score": 0.037,
-          "brier_skill_score": 0.516,
-          "reliability_error": 0.02,
+          "brier_skill_score": 0.556,
+          "reliability_error": 0.018,
           "enabled": false,
           "reason": "estimación calculada pero con evidencia insuficiente para considerarla validada"
         },
@@ -878,15 +878,15 @@
           "calibration_sample_size": 102,
           "calibration_event_count": 14,
           "calibration_parameters": {
-            "intercept": -0.011277,
-            "slope": 0.772918
+            "intercept": 0.19912,
+            "slope": 0.991967
           },
           "reference": "frecuencia del evento en el bloque de calibración",
           "reference_probability": 0.1408,
-          "brier_score": 0.0271,
+          "brier_score": 0.0283,
           "reference_brier_score": 0.048,
-          "brier_skill_score": 0.435,
-          "reliability_error": 0.027,
+          "brier_skill_score": 0.409,
+          "reliability_error": 0.023,
           "enabled": false,
           "reason": "estimación calculada pero con evidencia insuficiente para considerarla validada"
         },
@@ -897,15 +897,15 @@
           "calibration_sample_size": 102,
           "calibration_event_count": 16,
           "calibration_parameters": {
-            "intercept": -0.135835,
-            "slope": 0.65585
+            "intercept": -0.190113,
+            "slope": 0.668573
           },
           "reference": "frecuencia del evento en el bloque de calibración",
           "reference_probability": 0.1602,
-          "brier_score": 0.0339,
+          "brier_score": 0.0333,
           "reference_brier_score": 0.059,
-          "brier_skill_score": 0.425,
-          "reliability_error": 0.045,
+          "brier_skill_score": 0.435,
+          "reliability_error": 0.037,
           "enabled": false,
           "reason": "estimación calculada pero con evidencia insuficiente para considerarla validada"
         },
@@ -916,15 +916,15 @@
           "calibration_sample_size": 102,
           "calibration_event_count": 10,
           "calibration_parameters": {
-            "intercept": 1.747566,
-            "slope": 1.503138
+            "intercept": 2.591004,
+            "slope": 2.743271
           },
           "reference": "frecuencia del evento en el bloque de calibración",
           "reference_probability": 0.1019,
-          "brier_score": 0.007,
+          "brier_score": 0.0031,
           "reference_brier_score": 0.0182,
-          "brier_skill_score": 0.615,
-          "reliability_error": 0.02,
+          "brier_skill_score": 0.831,
+          "reliability_error": 0.009,
           "enabled": false,
           "reason": "estimación calculada pero con evidencia insuficiente para considerarla validada"
         },
@@ -935,15 +935,15 @@
           "calibration_sample_size": 102,
           "calibration_event_count": 12,
           "calibration_parameters": {
-            "intercept": 0.807991,
-            "slope": 1.147491
+            "intercept": 0.89353,
+            "slope": 1.372621
           },
           "reference": "frecuencia del evento en el bloque de calibración",
           "reference_probability": 0.1214,
-          "brier_score": 0.013,
+          "brier_score": 0.0099,
           "reference_brier_score": 0.0296,
-          "brier_skill_score": 0.561,
-          "reliability_error": 0.03,
+          "brier_skill_score": 0.665,
+          "reliability_error": 0.017,
           "enabled": false,
           "reason": "estimación calculada pero con evidencia insuficiente para considerarla validada"
         },
@@ -954,15 +954,15 @@
           "calibration_sample_size": 102,
           "calibration_event_count": 14,
           "calibration_parameters": {
-            "intercept": 0.240524,
-            "slope": 0.826494
+            "intercept": 0.416685,
+            "slope": 1.033509
           },
           "reference": "frecuencia del evento en el bloque de calibración",
           "reference_probability": 0.1408,
-          "brier_score": 0.022,
+          "brier_score": 0.0234,
           "reference_brier_score": 0.0409,
-          "brier_skill_score": 0.462,
-          "reliability_error": 0.033,
+          "brier_skill_score": 0.428,
+          "reliability_error": 0.029,
           "enabled": false,
           "reason": "estimación calculada pero con evidencia insuficiente para considerarla validada"
         },
@@ -973,15 +973,15 @@
           "calibration_sample_size": 102,
           "calibration_event_count": 16,
           "calibration_parameters": {
-            "intercept": 0.102005,
-            "slope": 0.704445
+            "intercept": -0.091915,
+            "slope": 0.655579
           },
           "reference": "frecuencia del evento en el bloque de calibración",
           "reference_probability": 0.1602,
-          "brier_score": 0.0317,
+          "brier_score": 0.0331,
           "reference_brier_score": 0.0523,
-          "brier_skill_score": 0.394,
-          "reliability_error": 0.041,
+          "brier_skill_score": 0.367,
+          "reliability_error": 0.045,
           "enabled": false,
           "reason": "estimación calculada pero con evidencia insuficiente para considerarla validada"
         }
@@ -994,59 +994,59 @@
     ]
   },
   "probabilities": {
-    "alert_exceedance": 0,
+    "alert_exceedance": 3,
     "evacuation_exceedance": null,
     "reason": "Se muestra la estimación calibrada para cada combinación de nivel y horizonte. La etiqueta validada o exploratoria y la confianza indican si el bloque temporal final supera el tamaño mínimo de eventos, Brier Skill Score ≥ 0,05 y el control de confiabilidad."
   },
   "source_status": {
     "pna_alturas": {
       "ok": false,
-      "message": "PNA no disponible: ConnectTimeout: HTTPSConnectionPool(host='contenidosweb.prefecturanaval.gob.ar', port=443): Max retries exceeded with url: /alturas/ (Caused by ConnectTimeoutError(<HTTPSConnection(host='contenidosweb.prefecturanaval.gob.ar', port=443) at 0x7649d5d18650>, 'Connection to contenidosweb.prefecturanaval.gob.ar timed out. (connect timeout=15)'))",
-      "attempted_at": "2026-11-08T03:20:52-03:00"
+      "message": "PNA no disponible: ConnectTimeout: HTTPSConnectionPool(host='contenidosweb.prefecturanaval.gob.ar', port=443): Max retries exceeded with url: /alturas/ (Caused by ConnectTimeoutError(<HTTPSConnection(host='contenidosweb.prefecturanaval.gob.ar', port=443) at 0x7ee6fd418710>, 'Connection to contenidosweb.prefecturanaval.gob.ar timed out. (connect timeout=15)'))",
+      "attempted_at": "2026-11-08T10:42:49-03:00"
     },
     "ctm_concordia_stage": {
       "ok": true,
       "message": "CTM Puerto Concordia actualizada",
-      "attempted_at": "2026-11-08T03:20:52-03:00"
+      "attempted_at": "2026-11-08T10:42:49-03:00"
     },
     "ctm_historical_network": {
       "ok": true,
       "message": "Red histórica CTM actualizada (5/5 estaciones)",
-      "attempted_at": "2026-11-08T03:20:52-03:00"
+      "attempted_at": "2026-11-08T10:42:49-03:00"
     },
     "ctm_hourly": {
       "ok": true,
       "message": "CTM horaria actualizada",
-      "attempted_at": "2026-11-08T03:20:52-03:00"
+      "attempted_at": "2026-11-08T10:42:49-03:00"
     },
     "ctm_communicado": {
       "ok": true,
       "message": "Comunicado CTM actualizado",
-      "attempted_at": "2026-11-08T03:20:52-03:00"
+      "attempted_at": "2026-11-08T10:42:49-03:00"
     },
     "ctm_precip_forecast": {
       "ok": true,
       "message": "Lluvia CTM actualizada",
-      "attempted_at": "2026-11-08T03:20:52-03:00"
+      "attempted_at": "2026-11-08T10:42:49-03:00"
     },
     "geoglows_ecmwf": {
       "ok": true,
       "message": "GEOGLOWS actualizado; ensamble de caudal archivado",
-      "attempted_at": "2026-11-08T03:20:52-03:00"
+      "attempted_at": "2026-11-08T10:42:49-03:00"
     },
     "local_forecast_model": {
       "ok": true,
       "message": "Ensamble local recalculado y validación temporal disponible",
-      "attempted_at": "2026-11-08T03:20:52-03:00"
+      "attempted_at": "2026-11-08T10:42:49-03:00"
     }
   },
   "projection": [
     {
       "day": 0,
-      "date": "2026-11-08T03:20:52-03:00",
-      "min": 7.02,
-      "central": 7.02,
-      "max": 7.02,
+      "date": "2026-11-08T10:42:49-03:00",
+      "min": 7.24,
+      "central": 7.24,
+      "max": 7.24,
       "interval": "P10–P90 conformalizado",
       "uncertainty": "Moderada",
       "risk": "Bajo",
@@ -1055,31 +1055,31 @@
     },
     {
       "day": 1,
-      "date": "2026-11-09T03:20:52-03:00",
-      "min": 6.43,
-      "central": 6.99,
-      "max": 7.62,
+      "date": "2026-11-09T10:42:49-03:00",
+      "min": 6.68,
+      "central": 7.42,
+      "max": 8.01,
       "interval": "P10–P90 conformalizado",
       "uncertainty": "Moderada",
       "risk": "Bajo",
       "basis": "ctm_analog_ensemble",
       "validation": {
         "sample_size": 102,
-        "mae_m": 0.363,
-        "persistence_mae_m": 0.389,
-        "mae_skill_vs_persistence": 0.067,
-        "interval_80_coverage": 0.804,
-        "median_interval_width_m": 1.307,
-        "conformal_correction_m": 0.0,
+        "mae_m": 0.387,
+        "persistence_mae_m": 0.434,
+        "mae_skill_vs_persistence": 0.108,
+        "interval_80_coverage": 0.873,
+        "median_interval_width_m": 1.375,
+        "conformal_correction_m": 0.06,
         "preferred_central": "analog_median"
       }
     },
     {
       "day": 2,
-      "date": "2026-11-10T03:20:52-03:00",
-      "min": 6.19,
-      "central": 7.1,
-      "max": 8.17,
+      "date": "2026-11-10T10:42:49-03:00",
+      "min": 6.66,
+      "central": 7.63,
+      "max": 8.62,
       "interval": "P10–P90 conformalizado",
       "uncertainty": "Moderada",
       "risk": "Bajo",
@@ -1088,31 +1088,31 @@
     },
     {
       "day": 3,
-      "date": "2026-11-11T03:20:52-03:00",
-      "min": 5.74,
-      "central": 7.21,
-      "max": 8.46,
+      "date": "2026-11-11T10:42:49-03:00",
+      "min": 6.79,
+      "central": 7.84,
+      "max": 8.88,
       "interval": "P10–P90 conformalizado",
       "uncertainty": "Moderada",
       "risk": "Bajo",
       "basis": "ctm_analog_ensemble",
       "validation": {
         "sample_size": 102,
-        "mae_m": 0.599,
-        "persistence_mae_m": 0.702,
-        "mae_skill_vs_persistence": 0.147,
-        "interval_80_coverage": 0.882,
-        "median_interval_width_m": 2.485,
-        "conformal_correction_m": 0.09,
+        "mae_m": 0.616,
+        "persistence_mae_m": 0.801,
+        "mae_skill_vs_persistence": 0.231,
+        "interval_80_coverage": 0.873,
+        "median_interval_width_m": 2.5,
+        "conformal_correction_m": 0.11,
         "preferred_central": "analog_median"
       }
     },
     {
       "day": 4,
-      "date": "2026-11-12T03:20:52-03:00",
-      "min": 5.61,
-      "central": 7.31,
-      "max": 8.96,
+      "date": "2026-11-12T10:42:49-03:00",
+      "min": 6.38,
+      "central": 7.83,
+      "max": 9.37,
       "interval": "P10–P90 conformalizado",
       "uncertainty": "Alta",
       "risk": "Bajo",
@@ -1121,9 +1121,9 @@
     },
     {
       "day": 5,
-      "date": "2026-11-13T03:20:52-03:00",
-      "min": 5.48,
-      "central": 7.4,
+      "date": "2026-11-13T10:42:49-03:00",
+      "min": 6.17,
+      "central": 7.81,
       "max": 9.68,
       "interval": "P10–P90 conformalizado",
       "uncertainty": "Alta",
@@ -1133,10 +1133,10 @@
     },
     {
       "day": 6,
-      "date": "2026-11-14T03:20:52-03:00",
-      "min": 5.73,
-      "central": 7.5,
-      "max": 10.07,
+      "date": "2026-11-14T10:42:49-03:00",
+      "min": 5.9,
+      "central": 7.79,
+      "max": 10.19,
       "interval": "P10–P90 conformalizado",
       "uncertainty": "Alta",
       "risk": "Bajo",
@@ -1145,31 +1145,31 @@
     },
     {
       "day": 7,
-      "date": "2026-11-15T03:20:52-03:00",
-      "min": 5.51,
-      "central": 7.59,
-      "max": 10.27,
+      "date": "2026-11-15T10:42:49-03:00",
+      "min": 5.48,
+      "central": 7.78,
+      "max": 10.36,
       "interval": "P10–P90 conformalizado",
       "uncertainty": "Alta",
       "risk": "Bajo",
       "basis": "ctm_analog_ensemble",
       "validation": {
         "sample_size": 102,
-        "mae_m": 1.045,
-        "persistence_mae_m": 1.147,
-        "mae_skill_vs_persistence": 0.089,
-        "interval_80_coverage": 0.873,
-        "median_interval_width_m": 4.087,
-        "conformal_correction_m": 0.45,
+        "mae_m": 1.048,
+        "persistence_mae_m": 1.18,
+        "mae_skill_vs_persistence": 0.112,
+        "interval_80_coverage": 0.853,
+        "median_interval_width_m": 3.83,
+        "conformal_correction_m": 0.31,
         "preferred_central": "analog_median"
       }
     },
     {
       "day": 8,
-      "date": "2026-11-16T03:20:52-03:00",
-      "min": 5.56,
-      "central": 7.51,
-      "max": 10.35,
+      "date": "2026-11-16T10:42:49-03:00",
+      "min": 5.51,
+      "central": 7.65,
+      "max": 10.59,
       "interval": "P10–P90 conformalizado",
       "uncertainty": "Muy alta",
       "risk": "Bajo",
@@ -1178,10 +1178,10 @@
     },
     {
       "day": 9,
-      "date": "2026-11-17T03:20:52-03:00",
-      "min": 5.12,
-      "central": 7.43,
-      "max": 10.49,
+      "date": "2026-11-17T10:42:49-03:00",
+      "min": 5.24,
+      "central": 7.51,
+      "max": 10.91,
       "interval": "P10–P90 conformalizado",
       "uncertainty": "Muy alta",
       "risk": "Bajo",
@@ -1190,264 +1190,9 @@
     },
     {
       "day": 10,
-      "date": "2026-11-18T03:20:52-03:00",
-      "min": 4.94,
-      "central": 7.35,
-      "max": 10.68,
-      "interval": "P10–P90 conformalizado",
-      "uncertainty": "Muy alta",
-      "risk": "Bajo",
-      "basis": "ctm_analog_ensemble",
-      "validation": null
-    },
-    {
-      "day": 11,
-      "date": "2026-11-19T03:20:52-03:00",
-      "min": 4.59,
-      "central": 7.26,
-      "max": 10.72,
-      "interval": "P10–P90 conformalizado",
-      "uncertainty": "Muy alta",
-      "risk": "Bajo",
-      "basis": "ctm_analog_ensemble",
-      "validation": null
-    },
-    {
-      "day": 12,
-      "date": "2026-11-20T03:20:52-03:00",
-      "min": 4.49,
-      "central": 7.18,
-      "max": 11.28,
-      "interval": "P10–P90 conformalizado",
-      "uncertainty": "Muy alta",
-      "risk": "Medio",
-      "basis": "ctm_analog_ensemble",
-      "validation": null
-    },
-    {
-      "day": 13,
-      "date": "2026-11-21T03:20:52-03:00",
-      "min": 4.49,
-      "central": 7.1,
-      "max": 11.65,
-      "interval": "P10–P90 conformalizado",
-      "uncertainty": "Muy alta",
-      "risk": "Medio",
-      "basis": "ctm_analog_ensemble",
-      "validation": null
-    },
-    {
-      "day": 14,
-      "date": "2026-11-22T03:20:52-03:00",
-      "min": 4.5,
-      "central": 7.02,
-      "max": 12.05,
-      "interval": "P10–P90 conformalizado",
-      "uncertainty": "Muy alta",
-      "risk": "Medio",
-      "basis": "ctm_analog_ensemble",
-      "validation": {
-        "sample_size": 102,
-        "mae_m": 1.705,
-        "persistence_mae_m": 1.749,
-        "mae_skill_vs_persistence": 0.025,
-        "interval_80_coverage": 0.863,
-        "median_interval_width_m": 5.933,
-        "conformal_correction_m": 0.575,
-        "preferred_central": "persistence"
-      }
-    },
-    {
-      "day": 15,
-      "date": "2026-11-23T03:20:52-03:00",
-      "min": 4.13,
-      "central": 7.02,
-      "max": 12.39,
-      "interval": "P10–P90 conformalizado",
-      "uncertainty": "Muy alta",
-      "risk": "Medio",
-      "basis": "ctm_analog_ensemble",
-      "validation": null
-    },
-    {
-      "day": 16,
-      "date": "2026-11-24T03:20:52-03:00",
-      "min": 3.58,
-      "central": 7.02,
-      "max": 12.6,
-      "interval": "P10–P90 conformalizado",
-      "uncertainty": "Muy alta",
-      "risk": "Alto",
-      "basis": "ctm_analog_ensemble",
-      "validation": null
-    },
-    {
-      "day": 17,
-      "date": "2026-11-25T03:20:52-03:00",
-      "min": 3.56,
-      "central": 7.02,
-      "max": 12.75,
-      "interval": "P10–P90 conformalizado",
-      "uncertainty": "Muy alta",
-      "risk": "Alto",
-      "basis": "ctm_analog_ensemble",
-      "validation": null
-    },
-    {
-      "day": 18,
-      "date": "2026-11-26T03:20:52-03:00",
-      "min": 3.47,
-      "central": 7.02,
-      "max": 12.68,
-      "interval": "P10–P90 conformalizado",
-      "uncertainty": "Muy alta",
-      "risk": "Alto",
-      "basis": "ctm_analog_ensemble",
-      "validation": null
-    },
-    {
-      "day": 19,
-      "date": "2026-11-27T03:20:52-03:00",
-      "min": 3.44,
-      "central": 7.02,
-      "max": 12.56,
-      "interval": "P10–P90 conformalizado",
-      "uncertainty": "Muy alta",
-      "risk": "Alto",
-      "basis": "ctm_analog_ensemble",
-      "validation": null
-    },
-    {
-      "day": 20,
-      "date": "2026-11-28T03:20:52-03:00",
-      "min": 3.63,
-      "central": 7.02,
-      "max": 13.1,
-      "interval": "P10–P90 conformalizado",
-      "uncertainty": "Muy alta",
-      "risk": "Alto",
-      "basis": "ctm_analog_ensemble",
-      "validation": null
-    },
-    {
-      "day": 21,
-      "date": "2026-11-29T03:20:52-03:00",
-      "min": 4.0,
-      "central": 7.02,
-      "max": 13.16,
-      "interval": "P10–P90 conformalizado",
-      "uncertainty": "Muy alta",
-      "risk": "Alto",
-      "basis": "ctm_analog_ensemble",
-      "validation": {
-        "sample_size": 102,
-        "mae_m": 1.977,
-        "persistence_mae_m": 1.998,
-        "mae_skill_vs_persistence": 0.011,
-        "interval_80_coverage": 0.833,
-        "median_interval_width_m": 6.6,
-        "conformal_correction_m": 0.445,
-        "preferred_central": "persistence"
-      }
-    },
-    {
-      "day": 22,
-      "date": "2026-11-30T03:20:52-03:00",
-      "min": 3.65,
-      "central": 7.02,
-      "max": 12.63,
-      "interval": "P10–P90 conformalizado",
-      "uncertainty": "Muy alta",
-      "risk": "Alto",
-      "basis": "ctm_analog_ensemble",
-      "validation": null
-    },
-    {
-      "day": 23,
-      "date": "2026-12-01T03:20:52-03:00",
-      "min": 3.55,
-      "central": 7.02,
-      "max": 12.36,
-      "interval": "P10–P90 conformalizado",
-      "uncertainty": "Muy alta",
-      "risk": "Medio",
-      "basis": "ctm_analog_ensemble",
-      "validation": null
-    },
-    {
-      "day": 24,
-      "date": "2026-12-02T03:20:52-03:00",
-      "min": 3.19,
-      "central": 7.02,
-      "max": 12.46,
-      "interval": "P10–P90 conformalizado",
-      "uncertainty": "Muy alta",
-      "risk": "Medio",
-      "basis": "ctm_analog_ensemble",
-      "validation": null
-    },
-    {
-      "day": 25,
-      "date": "2026-12-03T03:20:52-03:00",
-      "min": 3.17,
-      "central": 7.02,
-      "max": 11.92,
-      "interval": "P10–P90 conformalizado",
-      "uncertainty": "Muy alta",
-      "risk": "Medio",
-      "basis": "ctm_analog_ensemble",
-      "validation": null
-    },
-    {
-      "day": 26,
-      "date": "2026-12-04T03:20:52-03:00",
-      "min": 3.36,
-      "central": 7.02,
-      "max": 11.56,
-      "interval": "P10–P90 conformalizado",
-      "uncertainty": "Muy alta",
-      "risk": "Medio",
-      "basis": "ctm_analog_ensemble",
-      "validation": null
-    },
-    {
-      "day": 27,
-      "date": "2026-12-05T03:20:52-03:00",
-      "min": 3.05,
-      "central": 7.02,
-      "max": 11.43,
-      "interval": "P10–P90 conformalizado",
-      "uncertainty": "Muy alta",
-      "risk": "Medio",
-      "basis": "ctm_analog_ensemble",
-      "validation": null
-    },
-    {
-      "day": 28,
-      "date": "2026-12-06T03:20:52-03:00",
-      "min": 3.27,
-      "central": 7.02,
-      "max": 11.32,
-      "interval": "P10–P90 conformalizado",
-      "uncertainty": "Muy alta",
-      "risk": "Medio",
-      "basis": "ctm_analog_ensemble",
-      "validation": {
-        "sample_size": 102,
-        "mae_m": 2.256,
-        "persistence_mae_m": 2.239,
-        "mae_skill_vs_persistence": -0.008,
-        "interval_80_coverage": 0.775,
-        "median_interval_width_m": 6.395,
-        "conformal_correction_m": 0.17,
-        "preferred_central": "persistence"
-      }
-    },
-    {
-      "day": 29,
-      "date": "2026-12-07T03:20:52-03:00",
-      "min": 3.02,
-      "central": 6.57,
+      "date": "2026-11-18T10:42:49-03:00",
+      "min": 4.41,
+      "central": 7.38,
       "max": 11.26,
       "interval": "P10–P90 conformalizado",
       "uncertainty": "Muy alta",
@@ -1456,30 +1201,285 @@
       "validation": null
     },
     {
-      "day": 30,
-      "date": "2026-12-08T03:20:52-03:00",
-      "min": 3.18,
-      "central": 6.13,
-      "max": 11.31,
+      "day": 11,
+      "date": "2026-11-19T10:42:49-03:00",
+      "min": 4.53,
+      "central": 7.25,
+      "max": 11.69,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Muy alta",
+      "risk": "Medio",
+      "basis": "ctm_analog_ensemble",
+      "validation": null
+    },
+    {
+      "day": 12,
+      "date": "2026-11-20T10:42:49-03:00",
+      "min": 4.76,
+      "central": 7.11,
+      "max": 11.97,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Muy alta",
+      "risk": "Medio",
+      "basis": "ctm_analog_ensemble",
+      "validation": null
+    },
+    {
+      "day": 13,
+      "date": "2026-11-21T10:42:49-03:00",
+      "min": 4.47,
+      "central": 6.98,
+      "max": 12.37,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Muy alta",
+      "risk": "Medio",
+      "basis": "ctm_analog_ensemble",
+      "validation": null
+    },
+    {
+      "day": 14,
+      "date": "2026-11-22T10:42:49-03:00",
+      "min": 4.38,
+      "central": 6.84,
+      "max": 12.57,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Muy alta",
+      "risk": "Alto",
+      "basis": "ctm_analog_ensemble",
+      "validation": {
+        "sample_size": 102,
+        "mae_m": 1.596,
+        "persistence_mae_m": 1.718,
+        "mae_skill_vs_persistence": 0.071,
+        "interval_80_coverage": 0.863,
+        "median_interval_width_m": 6.135,
+        "conformal_correction_m": 0.61,
+        "preferred_central": "analog_median"
+      }
+    },
+    {
+      "day": 15,
+      "date": "2026-11-23T10:42:49-03:00",
+      "min": 4.14,
+      "central": 6.9,
+      "max": 12.54,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Muy alta",
+      "risk": "Alto",
+      "basis": "ctm_analog_ensemble",
+      "validation": null
+    },
+    {
+      "day": 16,
+      "date": "2026-11-24T10:42:49-03:00",
+      "min": 3.7,
+      "central": 6.96,
+      "max": 12.45,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Muy alta",
+      "risk": "Medio",
+      "basis": "ctm_analog_ensemble",
+      "validation": null
+    },
+    {
+      "day": 17,
+      "date": "2026-11-25T10:42:49-03:00",
+      "min": 3.43,
+      "central": 7.01,
+      "max": 12.67,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Muy alta",
+      "risk": "Alto",
+      "basis": "ctm_analog_ensemble",
+      "validation": null
+    },
+    {
+      "day": 18,
+      "date": "2026-11-26T10:42:49-03:00",
+      "min": 3.51,
+      "central": 7.07,
+      "max": 12.97,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Muy alta",
+      "risk": "Alto",
+      "basis": "ctm_analog_ensemble",
+      "validation": null
+    },
+    {
+      "day": 19,
+      "date": "2026-11-27T10:42:49-03:00",
+      "min": 3.24,
+      "central": 7.13,
+      "max": 13.13,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Muy alta",
+      "risk": "Alto",
+      "basis": "ctm_analog_ensemble",
+      "validation": null
+    },
+    {
+      "day": 20,
+      "date": "2026-11-28T10:42:49-03:00",
+      "min": 3.17,
+      "central": 7.18,
+      "max": 13.26,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Muy alta",
+      "risk": "Alto",
+      "basis": "ctm_analog_ensemble",
+      "validation": null
+    },
+    {
+      "day": 21,
+      "date": "2026-11-29T10:42:49-03:00",
+      "min": 3.04,
+      "central": 7.24,
+      "max": 12.79,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Muy alta",
+      "risk": "Alto",
+      "basis": "ctm_analog_ensemble",
+      "validation": {
+        "sample_size": 102,
+        "mae_m": 1.985,
+        "persistence_mae_m": 1.994,
+        "mae_skill_vs_persistence": 0.005,
+        "interval_80_coverage": 0.863,
+        "median_interval_width_m": 7.23,
+        "conformal_correction_m": 0.73,
+        "preferred_central": "persistence"
+      }
+    },
+    {
+      "day": 22,
+      "date": "2026-11-30T10:42:49-03:00",
+      "min": 2.7,
+      "central": 7.24,
+      "max": 12.54,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Muy alta",
+      "risk": "Alto",
+      "basis": "ctm_analog_ensemble",
+      "validation": null
+    },
+    {
+      "day": 23,
+      "date": "2026-12-01T10:42:49-03:00",
+      "min": 2.79,
+      "central": 7.24,
+      "max": 12.57,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Muy alta",
+      "risk": "Alto",
+      "basis": "ctm_analog_ensemble",
+      "validation": null
+    },
+    {
+      "day": 24,
+      "date": "2026-12-02T10:42:49-03:00",
+      "min": 2.99,
+      "central": 7.24,
+      "max": 12.27,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Muy alta",
+      "risk": "Medio",
+      "basis": "ctm_analog_ensemble",
+      "validation": null
+    },
+    {
+      "day": 25,
+      "date": "2026-12-03T10:42:49-03:00",
+      "min": 3.06,
+      "central": 7.24,
+      "max": 12.15,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Muy alta",
+      "risk": "Medio",
+      "basis": "ctm_analog_ensemble",
+      "validation": null
+    },
+    {
+      "day": 26,
+      "date": "2026-12-04T10:42:49-03:00",
+      "min": 3.0,
+      "central": 7.24,
+      "max": 11.99,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Muy alta",
+      "risk": "Medio",
+      "basis": "ctm_analog_ensemble",
+      "validation": null
+    },
+    {
+      "day": 27,
+      "date": "2026-12-05T10:42:49-03:00",
+      "min": 3.09,
+      "central": 7.24,
+      "max": 11.84,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Muy alta",
+      "risk": "Medio",
+      "basis": "ctm_analog_ensemble",
+      "validation": null
+    },
+    {
+      "day": 28,
+      "date": "2026-12-06T10:42:49-03:00",
+      "min": 2.93,
+      "central": 7.24,
+      "max": 11.72,
       "interval": "P10–P90 conformalizado",
       "uncertainty": "Muy alta",
       "risk": "Medio",
       "basis": "ctm_analog_ensemble",
       "validation": {
         "sample_size": 102,
-        "mae_m": 2.273,
-        "persistence_mae_m": 2.405,
-        "mae_skill_vs_persistence": 0.055,
-        "interval_80_coverage": 0.794,
-        "median_interval_width_m": 6.675,
-        "conformal_correction_m": 0.255,
-        "preferred_central": "analog_median"
+        "mae_m": 2.258,
+        "persistence_mae_m": 2.286,
+        "mae_skill_vs_persistence": 0.012,
+        "interval_80_coverage": 0.843,
+        "median_interval_width_m": 6.653,
+        "conformal_correction_m": 0.35,
+        "preferred_central": "persistence"
+      }
+    },
+    {
+      "day": 29,
+      "date": "2026-12-07T10:42:49-03:00",
+      "min": 3.38,
+      "central": 7.24,
+      "max": 11.42,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Muy alta",
+      "risk": "Medio",
+      "basis": "ctm_analog_ensemble",
+      "validation": null
+    },
+    {
+      "day": 30,
+      "date": "2026-12-08T10:42:49-03:00",
+      "min": 3.15,
+      "central": 7.24,
+      "max": 11.71,
+      "interval": "P10–P90 conformalizado",
+      "uncertainty": "Muy alta",
+      "risk": "Medio",
+      "basis": "ctm_analog_ensemble",
+      "validation": {
+        "sample_size": 102,
+        "mae_m": 2.395,
+        "persistence_mae_m": 2.431,
+        "mae_skill_vs_persistence": 0.015,
+        "interval_80_coverage": 0.833,
+        "median_interval_width_m": 7.085,
+        "conformal_correction_m": 0.44,
+        "preferred_central": "persistence"
       }
     }
   ],
   "risk_report": {
-    "id": "2026-11-08T03:20:52-03:00",
-    "generated_at": "2026-11-08T03:20:52-03:00",
+    "id": "2026-11-08T10:42:49-03:00",
+    "generated_at": "2026-11-08T10:42:49-03:00",
     "event": {
       "station": "Puerto Concordia",
       "threshold_m": 11.5,
@@ -1494,8 +1494,8 @@
     },
     "data_status": "partial",
     "snapshot": {
-      "concordia_m": 7.02,
-      "released_flow_m3s": 8721,
+      "concordia_m": 7.24,
+      "released_flow_m3s": 9226,
       "rainfall_7d_mm": 11
     },
     "rows": [
@@ -1510,28 +1510,28 @@
         "estimate_basis": "raw_analog_frequency",
         "estimate_status": "exploratory",
         "evidence_confidence": "Muy baja",
-        "confidence_reason": "Estimación exploratoria: 4 eventos; se requieren 10.",
+        "confidence_reason": "Estimación exploratoria: 3 eventos; se requieren 10.",
         "raw_ensemble_probability_pct": 0,
         "classification_uncertainty": "Moderada",
-        "scenario_min_m": 5.51,
-        "scenario_central_m": 7.59,
-        "scenario_max_m": 10.27,
+        "scenario_min_m": 5.48,
+        "scenario_central_m": 7.78,
+        "scenario_max_m": 10.36,
         "validation": {
           "sample_size": 102,
-          "event_count": 4,
-          "non_event_count": 98,
+          "event_count": 3,
+          "non_event_count": 99,
           "calibration_sample_size": 102,
           "calibration_event_count": 11,
           "calibration_parameters": {
-            "intercept": -0.182745,
-            "slope": 0.92765
+            "intercept": -0.324395,
+            "slope": 1.003997
           },
           "reference": "frecuencia del evento en el bloque de calibración",
           "reference_probability": 0.1117,
-          "brier_score": 0.0106,
-          "reference_brier_score": 0.0429,
-          "brier_skill_score": 0.754,
-          "reliability_error": 0.01,
+          "brier_score": 0.0091,
+          "reference_brier_score": 0.0353,
+          "brier_skill_score": 0.743,
+          "reliability_error": 0.009,
           "enabled": false,
           "reason": "estimación calculada pero con evidencia insuficiente para considerarla validada"
         }
@@ -1539,36 +1539,36 @@
       {
         "horizon_days": 14,
         "classification": "BAJO",
-        "central_estimate_pct": 10,
+        "central_estimate_pct": 13,
         "plausible_interval_pct": [
-          4,
-          20
+          7,
+          24
         ],
         "estimate_basis": "raw_analog_frequency",
         "estimate_status": "exploratory",
         "evidence_confidence": "Baja",
-        "confidence_reason": "Estimación exploratoria: 6 eventos; se requieren 10.",
-        "raw_ensemble_probability_pct": 10,
+        "confidence_reason": "Estimación exploratoria: 5 eventos; se requieren 10.",
+        "raw_ensemble_probability_pct": 13,
         "classification_uncertainty": "Alta",
-        "scenario_min_m": 4.5,
-        "scenario_central_m": 7.02,
-        "scenario_max_m": 12.05,
+        "scenario_min_m": 4.38,
+        "scenario_central_m": 6.84,
+        "scenario_max_m": 12.57,
         "validation": {
           "sample_size": 102,
-          "event_count": 6,
-          "non_event_count": 96,
+          "event_count": 5,
+          "non_event_count": 97,
           "calibration_sample_size": 102,
           "calibration_event_count": 13,
           "calibration_parameters": {
-            "intercept": 0.221759,
-            "slope": 1.105852
+            "intercept": -0.445234,
+            "slope": 0.771363
           },
           "reference": "frecuencia del evento en el bloque de calibración",
           "reference_probability": 0.1311,
-          "brier_score": 0.0253,
-          "reference_brier_score": 0.0606,
-          "brier_skill_score": 0.583,
-          "reliability_error": 0.013,
+          "brier_score": 0.0265,
+          "reference_brier_score": 0.0533,
+          "brier_skill_score": 0.503,
+          "reliability_error": 0.006,
           "enabled": false,
           "reason": "estimación calculada pero con evidencia insuficiente para considerarla validada"
         }
@@ -1576,82 +1576,82 @@
       {
         "horizon_days": 21,
         "classification": "BAJO",
-        "central_estimate_pct": 17,
+        "central_estimate_pct": 16,
         "plausible_interval_pct": [
           10,
-          30
+          29
         ],
         "estimate_basis": "raw_analog_frequency",
         "estimate_status": "exploratory",
         "evidence_confidence": "Baja",
-        "confidence_reason": "Estimación exploratoria: 8 eventos; se requieren 10.",
+        "confidence_reason": "Estimación exploratoria: 7 eventos; se requieren 10.",
         "raw_ensemble_probability_pct": 18,
         "classification_uncertainty": "Muy alta",
-        "scenario_min_m": 4.0,
-        "scenario_central_m": 7.02,
-        "scenario_max_m": 13.16,
+        "scenario_min_m": 3.04,
+        "scenario_central_m": 7.24,
+        "scenario_max_m": 12.79,
         "validation": {
           "sample_size": 102,
-          "event_count": 8,
-          "non_event_count": 94,
+          "event_count": 7,
+          "non_event_count": 95,
           "calibration_sample_size": 102,
           "calibration_event_count": 15,
           "calibration_parameters": {
-            "intercept": -0.075258,
-            "slope": 0.868879
+            "intercept": -0.502678,
+            "slope": 0.657469
           },
           "reference": "frecuencia del evento en el bloque de calibración",
           "reference_probability": 0.1505,
-          "brier_score": 0.0409,
-          "reference_brier_score": 0.0775,
-          "brier_skill_score": 0.472,
-          "reliability_error": 0.025,
+          "brier_score": 0.0435,
+          "reference_brier_score": 0.0706,
+          "brier_skill_score": 0.384,
+          "reliability_error": 0.007,
           "enabled": false,
           "reason": "estimación calculada pero con evidencia insuficiente para considerarla validada"
         }
       },
       {
         "horizon_days": 28,
-        "classification": "MEDIO",
-        "central_estimate_pct": 20,
+        "classification": "BAJO",
+        "central_estimate_pct": 18,
         "plausible_interval_pct": [
-          16,
-          32
+          11,
+          31
         ],
-        "estimate_basis": "platt_calibrated",
-        "estimate_status": "validated",
-        "evidence_confidence": "Moderada",
-        "confidence_reason": "Supera los mínimos de casos, eventos, habilidad de Brier y confiabilidad definidos antes de la validación final.",
-        "raw_ensemble_probability_pct": 20,
+        "estimate_basis": "raw_analog_frequency",
+        "estimate_status": "exploratory",
+        "evidence_confidence": "Baja",
+        "confidence_reason": "Estimación exploratoria: 9 eventos; se requieren 10.",
+        "raw_ensemble_probability_pct": 19,
         "classification_uncertainty": "Muy alta",
-        "scenario_min_m": 3.27,
-        "scenario_central_m": 7.02,
-        "scenario_max_m": 11.32,
+        "scenario_min_m": 2.93,
+        "scenario_central_m": 7.24,
+        "scenario_max_m": 11.72,
         "validation": {
           "sample_size": 102,
-          "event_count": 10,
-          "non_event_count": 92,
+          "event_count": 9,
+          "non_event_count": 93,
           "calibration_sample_size": 102,
           "calibration_event_count": 17,
           "calibration_parameters": {
-            "intercept": -0.115648,
-            "slope": 0.780337
+            "intercept": -0.433399,
+            "slope": 0.61857
           },
           "reference": "frecuencia del evento en el bloque de calibración",
           "reference_probability": 0.1699,
-          "brier_score": 0.0542,
-          "reference_brier_score": 0.0936,
-          "brier_skill_score": 0.421,
-          "reliability_error": 0.027,
-          "enabled": true,
-          "reason": "estimación con validación temporal suficiente"
+          "brier_score": 0.0556,
+          "reference_brier_score": 0.0871,
+          "brier_skill_score": 0.362,
+          "reliability_error": 0.014,
+          "enabled": false,
+          "reason": "estimación calculada pero con evidencia insuficiente para considerarla validada"
         }
       }
     ]
   },
   "risk_report_bundle": {
-    "id": "2026-11-08T03:20:52-03:00",
-    "generated_at": "2026-11-08T03:20:52-03:00",
+    "id": "2026-11-08T10:42:49-03:00",
+    "generated_at": "2026-11-08T10:42:49-03:00",
     "station": "Puerto Concordia",
     "method": {
       "method_id": "ctm-analog-ensemble-v1.1",
@@ -1662,8 +1662,8 @@
     },
     "data_status": "partial",
     "snapshot": {
-      "concordia_m": 7.02,
-      "released_flow_m3s": 8721,
+      "concordia_m": 7.24,
+      "released_flow_m3s": 9226,
       "rainfall_7d_mm": 11
     },
     "thresholds": [
@@ -1674,36 +1674,36 @@
           {
             "horizon_days": 7,
             "classification": "BAJO",
-            "central_estimate_pct": 0,
+            "central_estimate_pct": 3,
             "plausible_interval_pct": [
-              0,
-              6
+              1,
+              11
             ],
             "estimate_basis": "raw_analog_frequency",
             "estimate_status": "exploratory",
             "evidence_confidence": "Baja",
             "confidence_reason": "Estimación exploratoria: 7 eventos; se requieren 10.",
-            "raw_ensemble_probability_pct": 0,
+            "raw_ensemble_probability_pct": 3,
             "classification_uncertainty": "Moderada",
-            "scenario_min_m": 5.51,
-            "scenario_central_m": 7.59,
-            "scenario_max_m": 10.27,
+            "scenario_min_m": 5.48,
+            "scenario_central_m": 7.78,
+            "scenario_max_m": 10.36,
             "validation": {
               "sample_size": 102,
               "event_count": 7,
               "non_event_count": 95,
               "calibration_sample_size": 102,
-              "calibration_event_count": 13,
+              "calibration_event_count": 12,
               "calibration_parameters": {
-                "intercept": -0.444362,
-                "slope": 0.790723
+                "intercept": -0.936973,
+                "slope": 0.898321
               },
               "reference": "frecuencia del evento en el bloque de calibración",
-              "reference_probability": 0.1311,
-              "brier_score": 0.0194,
-              "reference_brier_score": 0.0678,
-              "brier_skill_score": 0.714,
-              "reliability_error": 0.016,
+              "reference_probability": 0.1214,
+              "brier_score": 0.0223,
+              "reference_brier_score": 0.0667,
+              "brier_skill_score": 0.666,
+              "reliability_error": 0.021,
               "enabled": false,
               "reason": "estimación calculada pero con evidencia insuficiente para considerarla validada"
             }
@@ -1711,7 +1711,7 @@
           {
             "horizon_days": 14,
             "classification": "BAJO",
-            "central_estimate_pct": 13,
+            "central_estimate_pct": 14,
             "plausible_interval_pct": [
               9,
               20
@@ -1720,38 +1720,38 @@
             "estimate_status": "validated",
             "evidence_confidence": "Moderada",
             "confidence_reason": "Supera los mínimos de casos, eventos, habilidad de Brier y confiabilidad definidos antes de la validación final.",
-            "raw_ensemble_probability_pct": 13,
+            "raw_ensemble_probability_pct": 19,
             "classification_uncertainty": "Alta",
-            "scenario_min_m": 4.5,
-            "scenario_central_m": 7.02,
-            "scenario_max_m": 12.05,
+            "scenario_min_m": 4.38,
+            "scenario_central_m": 6.84,
+            "scenario_max_m": 12.57,
             "validation": {
               "sample_size": 102,
               "event_count": 10,
               "non_event_count": 92,
               "calibration_sample_size": 102,
-              "calibration_event_count": 15,
+              "calibration_event_count": 14,
               "calibration_parameters": {
-                "intercept": -0.593519,
-                "slope": 0.686824
+                "intercept": -0.811737,
+                "slope": 0.727441
               },
               "reference": "frecuencia del evento en el bloque de calibración",
-              "reference_probability": 0.1505,
-              "brier_score": 0.0418,
-              "reference_brier_score": 0.0912,
-              "brier_skill_score": 0.541,
-              "reliability_error": 0.023,
+              "reference_probability": 0.1408,
+              "brier_score": 0.0436,
+              "reference_brier_score": 0.0903,
+              "brier_skill_score": 0.517,
+              "reliability_error": 0.033,
               "enabled": true,
               "reason": "estimación con validación temporal suficiente"
             }
           },
           {
             "horizon_days": 21,
-            "classification": "MEDIO",
-            "central_estimate_pct": 20,
+            "classification": "BAJO",
+            "central_estimate_pct": 16,
             "plausible_interval_pct": [
-              13,
-              29
+              11,
+              23
             ],
             "estimate_basis": "platt_calibrated",
             "estimate_status": "validated",
@@ -1759,36 +1759,36 @@
             "confidence_reason": "Supera los mínimos de casos, eventos, habilidad de Brier y confiabilidad definidos antes de la validación final.",
             "raw_ensemble_probability_pct": 21,
             "classification_uncertainty": "Muy alta",
-            "scenario_min_m": 4.0,
-            "scenario_central_m": 7.02,
-            "scenario_max_m": 13.16,
+            "scenario_min_m": 3.04,
+            "scenario_central_m": 7.24,
+            "scenario_max_m": 12.79,
             "validation": {
               "sample_size": 102,
               "event_count": 13,
               "non_event_count": 89,
               "calibration_sample_size": 102,
-              "calibration_event_count": 17,
+              "calibration_event_count": 16,
               "calibration_parameters": {
-                "intercept": -0.341715,
-                "slope": 0.806307
+                "intercept": -0.69994,
+                "slope": 0.708608
               },
               "reference": "frecuencia del evento en el bloque de calibración",
-              "reference_probability": 0.1699,
-              "brier_score": 0.06,
-              "reference_brier_score": 0.113,
-              "brier_skill_score": 0.469,
-              "reliability_error": 0.038,
+              "reference_probability": 0.1602,
+              "brier_score": 0.0609,
+              "reference_brier_score": 0.1123,
+              "brier_skill_score": 0.458,
+              "reliability_error": 0.048,
               "enabled": true,
               "reason": "estimación con validación temporal suficiente"
             }
           },
           {
             "horizon_days": 28,
-            "classification": "MEDIO",
-            "central_estimate_pct": 22,
+            "classification": "BAJO",
+            "central_estimate_pct": 18,
             "plausible_interval_pct": [
-              15,
-              31
+              13,
+              26
             ],
             "estimate_basis": "platt_calibrated",
             "estimate_status": "validated",
@@ -1796,25 +1796,25 @@
             "confidence_reason": "Supera los mínimos de casos, eventos, habilidad de Brier y confiabilidad definidos antes de la validación final.",
             "raw_ensemble_probability_pct": 21,
             "classification_uncertainty": "Muy alta",
-            "scenario_min_m": 3.27,
-            "scenario_central_m": 7.02,
-            "scenario_max_m": 11.32,
+            "scenario_min_m": 2.93,
+            "scenario_central_m": 7.24,
+            "scenario_max_m": 11.72,
             "validation": {
               "sample_size": 102,
               "event_count": 16,
               "non_event_count": 86,
               "calibration_sample_size": 102,
-              "calibration_event_count": 19,
+              "calibration_event_count": 18,
               "calibration_parameters": {
-                "intercept": -0.2326,
-                "slope": 0.790555
+                "intercept": -0.573546,
+                "slope": 0.680603
               },
               "reference": "frecuencia del evento en el bloque de calibración",
-              "reference_probability": 0.1893,
-              "brier_score": 0.0815,
-              "reference_brier_score": 0.1333,
-              "brier_skill_score": 0.389,
-              "reliability_error": 0.049,
+              "reference_probability": 0.1796,
+              "brier_score": 0.0814,
+              "reference_brier_score": 0.1328,
+              "brier_skill_score": 0.387,
+              "reliability_error": 0.059,
               "enabled": true,
               "reason": "estimación con validación temporal suficiente"
             }
@@ -1828,20 +1828,20 @@
           {
             "horizon_days": 7,
             "classification": "BAJO",
-            "central_estimate_pct": 0,
+            "central_estimate_pct": 1,
             "plausible_interval_pct": [
               0,
-              6
+              9
             ],
             "estimate_basis": "raw_analog_frequency",
             "estimate_status": "exploratory",
             "evidence_confidence": "Baja",
             "confidence_reason": "Estimación exploratoria: 6 eventos; se requieren 10.",
-            "raw_ensemble_probability_pct": 0,
+            "raw_ensemble_probability_pct": 1,
             "classification_uncertainty": "Moderada",
-            "scenario_min_m": 5.51,
-            "scenario_central_m": 7.59,
-            "scenario_max_m": 10.27,
+            "scenario_min_m": 5.48,
+            "scenario_central_m": 7.78,
+            "scenario_max_m": 10.36,
             "validation": {
               "sample_size": 102,
               "event_count": 6,
@@ -1849,15 +1849,15 @@
               "calibration_sample_size": 102,
               "calibration_event_count": 11,
               "calibration_parameters": {
-                "intercept": -0.44518,
-                "slope": 1.05629
+                "intercept": -0.704433,
+                "slope": 0.945046
               },
               "reference": "frecuencia del evento en el bloque de calibración",
               "reference_probability": 0.1117,
-              "brier_score": 0.0156,
+              "brier_score": 0.0141,
               "reference_brier_score": 0.0582,
-              "brier_skill_score": 0.731,
-              "reliability_error": 0.017,
+              "brier_skill_score": 0.758,
+              "reliability_error": 0.015,
               "enabled": false,
               "reason": "estimación calculada pero con evidencia insuficiente para considerarla validada"
             }
@@ -1865,20 +1865,20 @@
           {
             "horizon_days": 14,
             "classification": "BAJO",
-            "central_estimate_pct": 11,
+            "central_estimate_pct": 14,
             "plausible_interval_pct": [
-              5,
-              22
+              9,
+              28
             ],
             "estimate_basis": "raw_analog_frequency",
             "estimate_status": "exploratory",
             "evidence_confidence": "Baja",
             "confidence_reason": "Estimación exploratoria: 9 eventos; se requieren 10.",
-            "raw_ensemble_probability_pct": 11,
+            "raw_ensemble_probability_pct": 16,
             "classification_uncertainty": "Alta",
-            "scenario_min_m": 4.5,
-            "scenario_central_m": 7.02,
-            "scenario_max_m": 12.05,
+            "scenario_min_m": 4.38,
+            "scenario_central_m": 6.84,
+            "scenario_max_m": 12.57,
             "validation": {
               "sample_size": 102,
               "event_count": 9,
@@ -1886,15 +1886,15 @@
               "calibration_sample_size": 102,
               "calibration_event_count": 13,
               "calibration_parameters": {
-                "intercept": -0.18162,
-                "slope": 1.063874
+                "intercept": -0.678394,
+                "slope": 0.734015
               },
               "reference": "frecuencia del evento en el bloque de calibración",
               "reference_probability": 0.1311,
-              "brier_score": 0.0352,
+              "brier_score": 0.0357,
               "reference_brier_score": 0.0823,
-              "brier_skill_score": 0.572,
-              "reliability_error": 0.03,
+              "brier_skill_score": 0.567,
+              "reliability_error": 0.026,
               "enabled": false,
               "reason": "estimación calculada pero con evidencia insuficiente para considerarla validada"
             }
@@ -1902,20 +1902,20 @@
           {
             "horizon_days": 21,
             "classification": "BAJO",
-            "central_estimate_pct": 17,
+            "central_estimate_pct": 16,
             "plausible_interval_pct": [
-              11,
-              26
+              12,
+              25
             ],
             "estimate_basis": "platt_calibrated",
             "estimate_status": "validated",
             "evidence_confidence": "Moderada",
             "confidence_reason": "Supera los mínimos de casos, eventos, habilidad de Brier y confiabilidad definidos antes de la validación final.",
-            "raw_ensemble_probability_pct": 20,
+            "raw_ensemble_probability_pct": 21,
             "classification_uncertainty": "Muy alta",
-            "scenario_min_m": 4.0,
-            "scenario_central_m": 7.02,
-            "scenario_max_m": 13.16,
+            "scenario_min_m": 3.04,
+            "scenario_central_m": 7.24,
+            "scenario_max_m": 12.79,
             "validation": {
               "sample_size": 102,
               "event_count": 12,
@@ -1923,36 +1923,36 @@
               "calibration_sample_size": 102,
               "calibration_event_count": 15,
               "calibration_parameters": {
-                "intercept": -0.370833,
-                "slope": 0.838619
+                "intercept": -0.653023,
+                "slope": 0.654322
               },
               "reference": "frecuencia del evento en el bloque de calibración",
               "reference_probability": 0.1505,
-              "brier_score": 0.0582,
+              "brier_score": 0.0578,
               "reference_brier_score": 0.1049,
-              "brier_skill_score": 0.445,
-              "reliability_error": 0.041,
+              "brier_skill_score": 0.449,
+              "reliability_error": 0.04,
               "enabled": true,
               "reason": "estimación con validación temporal suficiente"
             }
           },
           {
             "horizon_days": 28,
-            "classification": "MEDIO",
-            "central_estimate_pct": 20,
+            "classification": "BAJO",
+            "central_estimate_pct": 18,
             "plausible_interval_pct": [
               14,
-              28
+              27
             ],
             "estimate_basis": "platt_calibrated",
             "estimate_status": "validated",
             "evidence_confidence": "Moderada",
             "confidence_reason": "Supera los mínimos de casos, eventos, habilidad de Brier y confiabilidad definidos antes de la validación final.",
-            "raw_ensemble_probability_pct": 20,
+            "raw_ensemble_probability_pct": 21,
             "classification_uncertainty": "Muy alta",
-            "scenario_min_m": 3.27,
-            "scenario_central_m": 7.02,
-            "scenario_max_m": 11.32,
+            "scenario_min_m": 2.93,
+            "scenario_central_m": 7.24,
+            "scenario_max_m": 11.72,
             "validation": {
               "sample_size": 102,
               "event_count": 15,
@@ -1960,15 +1960,15 @@
               "calibration_sample_size": 102,
               "calibration_event_count": 17,
               "calibration_parameters": {
-                "intercept": -0.348734,
-                "slope": 0.750176
+                "intercept": -0.553801,
+                "slope": 0.624031
               },
               "reference": "frecuencia del evento en el bloque de calibración",
               "reference_probability": 0.1699,
-              "brier_score": 0.0761,
+              "brier_score": 0.0757,
               "reference_brier_score": 0.126,
-              "brier_skill_score": 0.396,
-              "reliability_error": 0.05,
+              "brier_skill_score": 0.399,
+              "reliability_error": 0.052,
               "enabled": true,
               "reason": "estimación con validación temporal suficiente"
             }
@@ -1990,28 +1990,28 @@
             "estimate_basis": "raw_analog_frequency",
             "estimate_status": "exploratory",
             "evidence_confidence": "Muy baja",
-            "confidence_reason": "Estimación exploratoria: 4 eventos; se requieren 10.",
+            "confidence_reason": "Estimación exploratoria: 3 eventos; se requieren 10.",
             "raw_ensemble_probability_pct": 0,
             "classification_uncertainty": "Moderada",
-            "scenario_min_m": 5.51,
-            "scenario_central_m": 7.59,
-            "scenario_max_m": 10.27,
+            "scenario_min_m": 5.48,
+            "scenario_central_m": 7.78,
+            "scenario_max_m": 10.36,
             "validation": {
               "sample_size": 102,
-              "event_count": 4,
-              "non_event_count": 98,
+              "event_count": 3,
+              "non_event_count": 99,
               "calibration_sample_size": 102,
               "calibration_event_count": 11,
               "calibration_parameters": {
-                "intercept": -0.182745,
-                "slope": 0.92765
+                "intercept": -0.324395,
+                "slope": 1.003997
               },
               "reference": "frecuencia del evento en el bloque de calibración",
               "reference_probability": 0.1117,
-              "brier_score": 0.0106,
-              "reference_brier_score": 0.0429,
-              "brier_skill_score": 0.754,
-              "reliability_error": 0.01,
+              "brier_score": 0.0091,
+              "reference_brier_score": 0.0353,
+              "brier_skill_score": 0.743,
+              "reliability_error": 0.009,
               "enabled": false,
               "reason": "estimación calculada pero con evidencia insuficiente para considerarla validada"
             }
@@ -2019,36 +2019,36 @@
           {
             "horizon_days": 14,
             "classification": "BAJO",
-            "central_estimate_pct": 10,
+            "central_estimate_pct": 13,
             "plausible_interval_pct": [
-              4,
-              20
+              7,
+              24
             ],
             "estimate_basis": "raw_analog_frequency",
             "estimate_status": "exploratory",
             "evidence_confidence": "Baja",
-            "confidence_reason": "Estimación exploratoria: 6 eventos; se requieren 10.",
-            "raw_ensemble_probability_pct": 10,
+            "confidence_reason": "Estimación exploratoria: 5 eventos; se requieren 10.",
+            "raw_ensemble_probability_pct": 13,
             "classification_uncertainty": "Alta",
-            "scenario_min_m": 4.5,
-            "scenario_central_m": 7.02,
-            "scenario_max_m": 12.05,
+            "scenario_min_m": 4.38,
+            "scenario_central_m": 6.84,
+            "scenario_max_m": 12.57,
             "validation": {
               "sample_size": 102,
-              "event_count": 6,
-              "non_event_count": 96,
+              "event_count": 5,
+              "non_event_count": 97,
               "calibration_sample_size": 102,
               "calibration_event_count": 13,
               "calibration_parameters": {
-                "intercept": 0.221759,
-                "slope": 1.105852
+                "intercept": -0.445234,
+                "slope": 0.771363
               },
               "reference": "frecuencia del evento en el bloque de calibración",
               "reference_probability": 0.1311,
-              "brier_score": 0.0253,
-              "reference_brier_score": 0.0606,
-              "brier_skill_score": 0.583,
-              "reliability_error": 0.013,
+              "brier_score": 0.0265,
+              "reference_brier_score": 0.0533,
+              "brier_skill_score": 0.503,
+              "reliability_error": 0.006,
               "enabled": false,
               "reason": "estimación calculada pero con evidencia insuficiente para considerarla validada"
             }
@@ -2056,75 +2056,75 @@
           {
             "horizon_days": 21,
             "classification": "BAJO",
-            "central_estimate_pct": 17,
+            "central_estimate_pct": 16,
             "plausible_interval_pct": [
               10,
-              30
+              29
             ],
             "estimate_basis": "raw_analog_frequency",
             "estimate_status": "exploratory",
             "evidence_confidence": "Baja",
-            "confidence_reason": "Estimación exploratoria: 8 eventos; se requieren 10.",
+            "confidence_reason": "Estimación exploratoria: 7 eventos; se requieren 10.",
             "raw_ensemble_probability_pct": 18,
             "classification_uncertainty": "Muy alta",
-            "scenario_min_m": 4.0,
-            "scenario_central_m": 7.02,
-            "scenario_max_m": 13.16,
+            "scenario_min_m": 3.04,
+            "scenario_central_m": 7.24,
+            "scenario_max_m": 12.79,
             "validation": {
               "sample_size": 102,
-              "event_count": 8,
-              "non_event_count": 94,
+              "event_count": 7,
+              "non_event_count": 95,
               "calibration_sample_size": 102,
               "calibration_event_count": 15,
               "calibration_parameters": {
-                "intercept": -0.075258,
-                "slope": 0.868879
+                "intercept": -0.502678,
+                "slope": 0.657469
               },
               "reference": "frecuencia del evento en el bloque de calibración",
               "reference_probability": 0.1505,
-              "brier_score": 0.0409,
-              "reference_brier_score": 0.0775,
-              "brier_skill_score": 0.472,
-              "reliability_error": 0.025,
+              "brier_score": 0.0435,
+              "reference_brier_score": 0.0706,
+              "brier_skill_score": 0.384,
+              "reliability_error": 0.007,
               "enabled": false,
               "reason": "estimación calculada pero con evidencia insuficiente para considerarla validada"
             }
           },
           {
             "horizon_days": 28,
-            "classification": "MEDIO",
-            "central_estimate_pct": 20,
+            "classification": "BAJO",
+            "central_estimate_pct": 18,
             "plausible_interval_pct": [
-              16,
-              32
+              11,
+              31
             ],
-            "estimate_basis": "platt_calibrated",
-            "estimate_status": "validated",
-            "evidence_confidence": "Moderada",
-            "confidence_reason": "Supera los mínimos de casos, eventos, habilidad de Brier y confiabilidad definidos antes de la validación final.",
-            "raw_ensemble_probability_pct": 20,
+            "estimate_basis": "raw_analog_frequency",
+            "estimate_status": "exploratory",
+            "evidence_confidence": "Baja",
+            "confidence_reason": "Estimación exploratoria: 9 eventos; se requieren 10.",
+            "raw_ensemble_probability_pct": 19,
             "classification_uncertainty": "Muy alta",
-            "scenario_min_m": 3.27,
-            "scenario_central_m": 7.02,
-            "scenario_max_m": 11.32,
+            "scenario_min_m": 2.93,
+            "scenario_central_m": 7.24,
+            "scenario_max_m": 11.72,
             "validation": {
               "sample_size": 102,
-              "event_count": 10,
-              "non_event_count": 92,
+              "event_count": 9,
+              "non_event_count": 93,
               "calibration_sample_size": 102,
               "calibration_event_count": 17,
               "calibration_parameters": {
-                "intercept": -0.115648,
-                "slope": 0.780337
+                "intercept": -0.433399,
+                "slope": 0.61857
               },
               "reference": "frecuencia del evento en el bloque de calibración",
               "reference_probability": 0.1699,
-              "brier_score": 0.0542,
-              "reference_brier_score": 0.0936,
-              "brier_skill_score": 0.421,
-              "reliability_error": 0.027,
-              "enabled": true,
-              "reason": "estimación con validación temporal suficiente"
+              "brier_score": 0.0556,
+              "reference_brier_score": 0.0871,
+              "brier_skill_score": 0.362,
+              "reliability_error": 0.014,
+              "enabled": false,
+              "reason": "estimación calculada pero con evidencia insuficiente para considerarla validada"
             }
           }
         ]
@@ -2144,28 +2144,28 @@
             "estimate_basis": "raw_analog_frequency",
             "estimate_status": "exploratory",
             "evidence_confidence": "Muy baja",
-            "confidence_reason": "Estimación exploratoria: 3 eventos; se requieren 10.",
+            "confidence_reason": "Estimación exploratoria: 2 eventos; se requieren 10.",
             "raw_ensemble_probability_pct": 0,
             "classification_uncertainty": "Moderada",
-            "scenario_min_m": 5.51,
-            "scenario_central_m": 7.59,
-            "scenario_max_m": 10.27,
+            "scenario_min_m": 5.48,
+            "scenario_central_m": 7.78,
+            "scenario_max_m": 10.36,
             "validation": {
               "sample_size": 102,
-              "event_count": 3,
-              "non_event_count": 99,
+              "event_count": 2,
+              "non_event_count": 100,
               "calibration_sample_size": 102,
               "calibration_event_count": 10,
               "calibration_parameters": {
-                "intercept": -0.027874,
-                "slope": 0.979421
+                "intercept": 1.180543,
+                "slope": 2.862143
               },
               "reference": "frecuencia del evento en el bloque de calibración",
               "reference_probability": 0.1019,
-              "brier_score": 0.0051,
-              "reference_brier_score": 0.0338,
-              "brier_skill_score": 0.849,
-              "reliability_error": 0.015,
+              "brier_score": 0.0005,
+              "reference_brier_score": 0.026,
+              "brier_skill_score": 0.982,
+              "reliability_error": 0.004,
               "enabled": false,
               "reason": "estimación calculada pero con evidencia insuficiente para considerarla validada"
             }
@@ -2173,36 +2173,36 @@
           {
             "horizon_days": 14,
             "classification": "BAJO",
-            "central_estimate_pct": 10,
+            "central_estimate_pct": 13,
             "plausible_interval_pct": [
-              4,
-              20
+              7,
+              24
             ],
             "estimate_basis": "raw_analog_frequency",
             "estimate_status": "exploratory",
             "evidence_confidence": "Muy baja",
-            "confidence_reason": "Estimación exploratoria: 4 eventos; se requieren 10.",
-            "raw_ensemble_probability_pct": 10,
+            "confidence_reason": "Estimación exploratoria: 3 eventos; se requieren 10.",
+            "raw_ensemble_probability_pct": 13,
             "classification_uncertainty": "Alta",
-            "scenario_min_m": 4.5,
-            "scenario_central_m": 7.02,
-            "scenario_max_m": 12.05,
+            "scenario_min_m": 4.38,
+            "scenario_central_m": 6.84,
+            "scenario_max_m": 12.57,
             "validation": {
               "sample_size": 102,
-              "event_count": 4,
-              "non_event_count": 98,
+              "event_count": 3,
+              "non_event_count": 99,
               "calibration_sample_size": 102,
               "calibration_event_count": 12,
               "calibration_parameters": {
-                "intercept": -0.001238,
-                "slope": 0.941972
+                "intercept": 0.107156,
+                "slope": 1.20206
               },
               "reference": "frecuencia del evento en el bloque de calibración",
               "reference_probability": 0.1214,
-              "brier_score": 0.0144,
-              "reference_brier_score": 0.0444,
-              "brier_skill_score": 0.676,
-              "reliability_error": 0.021,
+              "brier_score": 0.0147,
+              "reference_brier_score": 0.037,
+              "brier_skill_score": 0.602,
+              "reliability_error": 0.015,
               "enabled": false,
               "reason": "estimación calculada pero con evidencia insuficiente para considerarla validada"
             }
@@ -2210,73 +2210,73 @@
           {
             "horizon_days": 21,
             "classification": "BAJO",
-            "central_estimate_pct": 17,
+            "central_estimate_pct": 16,
             "plausible_interval_pct": [
               10,
-              30
+              29
             ],
             "estimate_basis": "raw_analog_frequency",
             "estimate_status": "exploratory",
-            "evidence_confidence": "Baja",
-            "confidence_reason": "Estimación exploratoria: 5 eventos; se requieren 10.",
+            "evidence_confidence": "Muy baja",
+            "confidence_reason": "Estimación exploratoria: 4 eventos; se requieren 10.",
             "raw_ensemble_probability_pct": 18,
             "classification_uncertainty": "Muy alta",
-            "scenario_min_m": 4.0,
-            "scenario_central_m": 7.02,
-            "scenario_max_m": 13.16,
+            "scenario_min_m": 3.04,
+            "scenario_central_m": 7.24,
+            "scenario_max_m": 12.79,
             "validation": {
               "sample_size": 102,
-              "event_count": 5,
-              "non_event_count": 97,
+              "event_count": 4,
+              "non_event_count": 98,
               "calibration_sample_size": 102,
               "calibration_event_count": 14,
               "calibration_parameters": {
-                "intercept": -0.15849,
-                "slope": 0.771346
+                "intercept": -0.023386,
+                "slope": 0.962877
               },
               "reference": "frecuencia del evento en el bloque de calibración",
               "reference_probability": 0.1408,
-              "brier_score": 0.0249,
-              "reference_brier_score": 0.055,
-              "brier_skill_score": 0.548,
-              "reliability_error": 0.024,
+              "brier_score": 0.0274,
+              "reference_brier_score": 0.048,
+              "brier_skill_score": 0.429,
+              "reliability_error": 0.029,
               "enabled": false,
               "reason": "estimación calculada pero con evidencia insuficiente para considerarla validada"
             }
           },
           {
             "horizon_days": 28,
-            "classification": "MEDIO",
-            "central_estimate_pct": 20,
+            "classification": "BAJO",
+            "central_estimate_pct": 18,
             "plausible_interval_pct": [
-              12,
+              11,
               31
             ],
             "estimate_basis": "raw_analog_frequency",
             "estimate_status": "exploratory",
             "evidence_confidence": "Baja",
-            "confidence_reason": "Estimación exploratoria: 6 eventos; se requieren 10.",
-            "raw_ensemble_probability_pct": 20,
+            "confidence_reason": "Estimación exploratoria: 5 eventos; se requieren 10.",
+            "raw_ensemble_probability_pct": 19,
             "classification_uncertainty": "Muy alta",
-            "scenario_min_m": 3.27,
-            "scenario_central_m": 7.02,
-            "scenario_max_m": 11.32,
+            "scenario_min_m": 2.93,
+            "scenario_central_m": 7.24,
+            "scenario_max_m": 11.72,
             "validation": {
               "sample_size": 102,
-              "event_count": 6,
-              "non_event_count": 96,
+              "event_count": 5,
+              "non_event_count": 97,
               "calibration_sample_size": 102,
               "calibration_event_count": 16,
               "calibration_parameters": {
-                "intercept": -0.280983,
-                "slope": 0.643157
+                "intercept": -0.336944,
+                "slope": 0.660824
               },
               "reference": "frecuencia del evento en el bloque de calibración",
               "reference_probability": 0.1602,
-              "brier_score": 0.0308,
-              "reference_brier_score": 0.0656,
-              "brier_skill_score": 0.531,
-              "reliability_error": 0.031,
+              "brier_score": 0.0319,
+              "reference_brier_score": 0.059,
+              "brier_skill_score": 0.458,
+              "reliability_error": 0.034,
               "enabled": false,
               "reason": "estimación calculada pero con evidencia insuficiente para considerarla validada"
             }
@@ -2301,9 +2301,9 @@
             "confidence_reason": "Estimación exploratoria: 2 eventos; se requieren 10.",
             "raw_ensemble_probability_pct": 0,
             "classification_uncertainty": "Moderada",
-            "scenario_min_m": 5.51,
-            "scenario_central_m": 7.59,
-            "scenario_max_m": 10.27,
+            "scenario_min_m": 5.48,
+            "scenario_central_m": 7.78,
+            "scenario_max_m": 10.36,
             "validation": {
               "sample_size": 102,
               "event_count": 2,
@@ -2311,15 +2311,15 @@
               "calibration_sample_size": 102,
               "calibration_event_count": 10,
               "calibration_parameters": {
-                "intercept": 0.301549,
-                "slope": 0.946423
+                "intercept": 2.634034,
+                "slope": 3.546738
               },
               "reference": "frecuencia del evento en el bloque de calibración",
               "reference_probability": 0.1019,
-              "brier_score": 0.0081,
+              "brier_score": 0.0049,
               "reference_brier_score": 0.026,
-              "brier_skill_score": 0.689,
-              "reliability_error": 0.006,
+              "brier_skill_score": 0.811,
+              "reliability_error": 0.008,
               "enabled": false,
               "reason": "estimación calculada pero con evidencia insuficiente para considerarla validada"
             }
@@ -2327,20 +2327,20 @@
           {
             "horizon_days": 14,
             "classification": "BAJO",
-            "central_estimate_pct": 8,
+            "central_estimate_pct": 11,
             "plausible_interval_pct": [
-              3,
-              17
+              5,
+              21
             ],
             "estimate_basis": "raw_analog_frequency",
             "estimate_status": "exploratory",
             "evidence_confidence": "Muy baja",
             "confidence_reason": "Estimación exploratoria: 3 eventos; se requieren 10.",
-            "raw_ensemble_probability_pct": 8,
+            "raw_ensemble_probability_pct": 11,
             "classification_uncertainty": "Alta",
-            "scenario_min_m": 4.5,
-            "scenario_central_m": 7.02,
-            "scenario_max_m": 12.05,
+            "scenario_min_m": 4.38,
+            "scenario_central_m": 6.84,
+            "scenario_max_m": 12.57,
             "validation": {
               "sample_size": 102,
               "event_count": 3,
@@ -2348,15 +2348,15 @@
               "calibration_sample_size": 102,
               "calibration_event_count": 12,
               "calibration_parameters": {
-                "intercept": 0.33556,
-                "slope": 0.989182
+                "intercept": 0.552843,
+                "slope": 1.334652
               },
               "reference": "frecuencia del evento en el bloque de calibración",
               "reference_probability": 0.1214,
-              "brier_score": 0.0179,
+              "brier_score": 0.0164,
               "reference_brier_score": 0.037,
-              "brier_skill_score": 0.516,
-              "reliability_error": 0.02,
+              "brier_skill_score": 0.556,
+              "reliability_error": 0.018,
               "enabled": false,
               "reason": "estimación calculada pero con evidencia insuficiente para considerarla validada"
             }
@@ -2367,7 +2367,7 @@
             "central_estimate_pct": 16,
             "plausible_interval_pct": [
               9,
-              28
+              27
             ],
             "estimate_basis": "raw_analog_frequency",
             "estimate_status": "exploratory",
@@ -2375,9 +2375,9 @@
             "confidence_reason": "Estimación exploratoria: 4 eventos; se requieren 10.",
             "raw_ensemble_probability_pct": 16,
             "classification_uncertainty": "Muy alta",
-            "scenario_min_m": 4.0,
-            "scenario_central_m": 7.02,
-            "scenario_max_m": 13.16,
+            "scenario_min_m": 3.04,
+            "scenario_central_m": 7.24,
+            "scenario_max_m": 12.79,
             "validation": {
               "sample_size": 102,
               "event_count": 4,
@@ -2385,15 +2385,15 @@
               "calibration_sample_size": 102,
               "calibration_event_count": 14,
               "calibration_parameters": {
-                "intercept": -0.011277,
-                "slope": 0.772918
+                "intercept": 0.19912,
+                "slope": 0.991967
               },
               "reference": "frecuencia del evento en el bloque de calibración",
               "reference_probability": 0.1408,
-              "brier_score": 0.0271,
+              "brier_score": 0.0283,
               "reference_brier_score": 0.048,
-              "brier_skill_score": 0.435,
-              "reliability_error": 0.027,
+              "brier_skill_score": 0.409,
+              "reliability_error": 0.023,
               "enabled": false,
               "reason": "estimación calculada pero con evidencia insuficiente para considerarla validada"
             }
@@ -2401,20 +2401,20 @@
           {
             "horizon_days": 28,
             "classification": "BAJO",
-            "central_estimate_pct": 18,
+            "central_estimate_pct": 17,
             "plausible_interval_pct": [
               10,
-              30
+              29
             ],
             "estimate_basis": "raw_analog_frequency",
             "estimate_status": "exploratory",
             "evidence_confidence": "Baja",
             "confidence_reason": "Estimación exploratoria: 5 eventos; se requieren 10.",
-            "raw_ensemble_probability_pct": 18,
+            "raw_ensemble_probability_pct": 17,
             "classification_uncertainty": "Muy alta",
-            "scenario_min_m": 3.27,
-            "scenario_central_m": 7.02,
-            "scenario_max_m": 11.32,
+            "scenario_min_m": 2.93,
+            "scenario_central_m": 7.24,
+            "scenario_max_m": 11.72,
             "validation": {
               "sample_size": 102,
               "event_count": 5,
@@ -2422,15 +2422,15 @@
               "calibration_sample_size": 102,
               "calibration_event_count": 16,
               "calibration_parameters": {
-                "intercept": -0.135835,
-                "slope": 0.65585
+                "intercept": -0.190113,
+                "slope": 0.668573
               },
               "reference": "frecuencia del evento en el bloque de calibración",
               "reference_probability": 0.1602,
-              "brier_score": 0.0339,
+              "brier_score": 0.0333,
               "reference_brier_score": 0.059,
-              "brier_skill_score": 0.425,
-              "reliability_error": 0.045,
+              "brier_skill_score": 0.435,
+              "reliability_error": 0.037,
               "enabled": false,
               "reason": "estimación calculada pero con evidencia insuficiente para considerarla validada"
             }
@@ -2455,9 +2455,9 @@
             "confidence_reason": "Estimación exploratoria: 1 eventos; se requieren 10.",
             "raw_ensemble_probability_pct": 0,
             "classification_uncertainty": "Moderada",
-            "scenario_min_m": 5.51,
-            "scenario_central_m": 7.59,
-            "scenario_max_m": 10.27,
+            "scenario_min_m": 5.48,
+            "scenario_central_m": 7.78,
+            "scenario_max_m": 10.36,
             "validation": {
               "sample_size": 102,
               "event_count": 1,
@@ -2465,15 +2465,15 @@
               "calibration_sample_size": 102,
               "calibration_event_count": 10,
               "calibration_parameters": {
-                "intercept": 1.747566,
-                "slope": 1.503138
+                "intercept": 2.591004,
+                "slope": 2.743271
               },
               "reference": "frecuencia del evento en el bloque de calibración",
               "reference_probability": 0.1019,
-              "brier_score": 0.007,
+              "brier_score": 0.0031,
               "reference_brier_score": 0.0182,
-              "brier_skill_score": 0.615,
-              "reliability_error": 0.02,
+              "brier_skill_score": 0.831,
+              "reliability_error": 0.009,
               "enabled": false,
               "reason": "estimación calculada pero con evidencia insuficiente para considerarla validada"
             }
@@ -2481,20 +2481,20 @@
           {
             "horizon_days": 14,
             "classification": "BAJO",
-            "central_estimate_pct": 4,
+            "central_estimate_pct": 6,
             "plausible_interval_pct": [
-              1,
-              12
+              2,
+              15
             ],
             "estimate_basis": "raw_analog_frequency",
             "estimate_status": "exploratory",
             "evidence_confidence": "Muy baja",
             "confidence_reason": "Estimación exploratoria: 2 eventos; se requieren 10.",
-            "raw_ensemble_probability_pct": 4,
+            "raw_ensemble_probability_pct": 6,
             "classification_uncertainty": "Alta",
-            "scenario_min_m": 4.5,
-            "scenario_central_m": 7.02,
-            "scenario_max_m": 12.05,
+            "scenario_min_m": 4.38,
+            "scenario_central_m": 6.84,
+            "scenario_max_m": 12.57,
             "validation": {
               "sample_size": 102,
               "event_count": 2,
@@ -2502,15 +2502,15 @@
               "calibration_sample_size": 102,
               "calibration_event_count": 12,
               "calibration_parameters": {
-                "intercept": 0.807991,
-                "slope": 1.147491
+                "intercept": 0.89353,
+                "slope": 1.372621
               },
               "reference": "frecuencia del evento en el bloque de calibración",
               "reference_probability": 0.1214,
-              "brier_score": 0.013,
+              "brier_score": 0.0099,
               "reference_brier_score": 0.0296,
-              "brier_skill_score": 0.561,
-              "reliability_error": 0.03,
+              "brier_skill_score": 0.665,
+              "reliability_error": 0.017,
               "enabled": false,
               "reason": "estimación calculada pero con evidencia insuficiente para considerarla validada"
             }
@@ -2518,20 +2518,20 @@
           {
             "horizon_days": 21,
             "classification": "BAJO",
-            "central_estimate_pct": 15,
+            "central_estimate_pct": 14,
             "plausible_interval_pct": [
               8,
-              26
+              25
             ],
             "estimate_basis": "raw_analog_frequency",
             "estimate_status": "exploratory",
             "evidence_confidence": "Muy baja",
             "confidence_reason": "Estimación exploratoria: 3 eventos; se requieren 10.",
-            "raw_ensemble_probability_pct": 15,
+            "raw_ensemble_probability_pct": 14,
             "classification_uncertainty": "Muy alta",
-            "scenario_min_m": 4.0,
-            "scenario_central_m": 7.02,
-            "scenario_max_m": 13.16,
+            "scenario_min_m": 3.04,
+            "scenario_central_m": 7.24,
+            "scenario_max_m": 12.79,
             "validation": {
               "sample_size": 102,
               "event_count": 3,
@@ -2539,15 +2539,15 @@
               "calibration_sample_size": 102,
               "calibration_event_count": 14,
               "calibration_parameters": {
-                "intercept": 0.240524,
-                "slope": 0.826494
+                "intercept": 0.416685,
+                "slope": 1.033509
               },
               "reference": "frecuencia del evento en el bloque de calibración",
               "reference_probability": 0.1408,
-              "brier_score": 0.022,
+              "brier_score": 0.0234,
               "reference_brier_score": 0.0409,
-              "brier_skill_score": 0.462,
-              "reliability_error": 0.033,
+              "brier_skill_score": 0.428,
+              "reliability_error": 0.029,
               "enabled": false,
               "reason": "estimación calculada pero con evidencia insuficiente para considerarla validada"
             }
@@ -2555,20 +2555,20 @@
           {
             "horizon_days": 28,
             "classification": "BAJO",
-            "central_estimate_pct": 17,
+            "central_estimate_pct": 16,
             "plausible_interval_pct": [
               9,
-              28
+              27
             ],
             "estimate_basis": "raw_analog_frequency",
             "estimate_status": "exploratory",
             "evidence_confidence": "Muy baja",
             "confidence_reason": "Estimación exploratoria: 4 eventos; se requieren 10.",
-            "raw_ensemble_probability_pct": 17,
+            "raw_ensemble_probability_pct": 16,
             "classification_uncertainty": "Muy alta",
-            "scenario_min_m": 3.27,
-            "scenario_central_m": 7.02,
-            "scenario_max_m": 11.32,
+            "scenario_min_m": 2.93,
+            "scenario_central_m": 7.24,
+            "scenario_max_m": 11.72,
             "validation": {
               "sample_size": 102,
               "event_count": 4,
@@ -2576,15 +2576,15 @@
               "calibration_sample_size": 102,
               "calibration_event_count": 16,
               "calibration_parameters": {
-                "intercept": 0.102005,
-                "slope": 0.704445
+                "intercept": -0.091915,
+                "slope": 0.655579
               },
               "reference": "frecuencia del evento en el bloque de calibración",
               "reference_probability": 0.1602,
-              "brier_score": 0.0317,
+              "brier_score": 0.0331,
               "reference_brier_score": 0.0523,
-              "brier_skill_score": 0.394,
-              "reliability_error": 0.041,
+              "brier_skill_score": 0.367,
+              "reliability_error": 0.045,
               "enabled": false,
               "reason": "estimación calculada pero con evidencia insuficiente para considerarla validada"
             }
@@ -2598,107 +2598,114 @@
       "source_id": "geoglows_ecmwf",
       "source_name": "GEOGLOWS ECMWF Streamflow Service",
       "river_id": 640460565,
-      "generated_at": "2026-11-08T06:22:59+00:00",
-      "retrieved_at": "2026-11-08T03:20:52-03:00",
-      "valid_until": "2026-11-21",
+      "generated_at": "2026-11-08T13:44:53+00:00",
+      "retrieved_at": "2026-11-08T10:42:49-03:00",
+      "valid_until": "2026-11-22",
       "unit": "m3/s",
       "daily": [
         {
           "date": "2026-11-08",
-          "p10_m3s": 13621,
-          "median_m3s": 13629,
-          "p90_m3s": 13643,
+          "p10_m3s": 13833,
+          "median_m3s": 13834,
+          "p90_m3s": 13836,
           "member_count": 51
         },
         {
           "date": "2026-11-09",
-          "p10_m3s": 13436,
-          "median_m3s": 13457,
-          "p90_m3s": 13485,
+          "p10_m3s": 13674,
+          "median_m3s": 13681,
+          "p90_m3s": 13696,
           "member_count": 51
         },
         {
           "date": "2026-11-10",
-          "p10_m3s": 12862,
-          "median_m3s": 12898,
-          "p90_m3s": 12932,
+          "p10_m3s": 13110,
+          "median_m3s": 13131,
+          "p90_m3s": 13160,
           "member_count": 51
         },
         {
           "date": "2026-11-11",
-          "p10_m3s": 12365,
-          "median_m3s": 12419,
-          "p90_m3s": 12461,
+          "p10_m3s": 12595,
+          "median_m3s": 12630,
+          "p90_m3s": 12664,
           "member_count": 51
         },
         {
           "date": "2026-11-12",
-          "p10_m3s": 12217,
-          "median_m3s": 12292,
-          "p90_m3s": 12366,
+          "p10_m3s": 12419,
+          "median_m3s": 12471,
+          "p90_m3s": 12511,
           "member_count": 51
         },
         {
           "date": "2026-11-13",
-          "p10_m3s": 12244,
-          "median_m3s": 12345,
-          "p90_m3s": 12453,
+          "p10_m3s": 12469,
+          "median_m3s": 12543,
+          "p90_m3s": 12618,
           "member_count": 51
         },
         {
           "date": "2026-11-14",
-          "p10_m3s": 11854,
-          "median_m3s": 11972,
-          "p90_m3s": 12105,
+          "p10_m3s": 12048,
+          "median_m3s": 12147,
+          "p90_m3s": 12253,
           "member_count": 51
         },
         {
           "date": "2026-11-15",
-          "p10_m3s": 10955,
-          "median_m3s": 11066,
-          "p90_m3s": 11231,
+          "p10_m3s": 11124,
+          "median_m3s": 11234,
+          "p90_m3s": 11364,
           "member_count": 51
         },
         {
           "date": "2026-11-16",
-          "p10_m3s": 9882,
-          "median_m3s": 10011,
-          "p90_m3s": 10204,
+          "p10_m3s": 10012,
+          "median_m3s": 10123,
+          "p90_m3s": 10273,
           "member_count": 51
         },
         {
           "date": "2026-11-17",
-          "p10_m3s": 9263,
-          "median_m3s": 9392,
-          "p90_m3s": 9678,
+          "p10_m3s": 9360,
+          "median_m3s": 9495,
+          "p90_m3s": 9684,
           "member_count": 51
         },
         {
           "date": "2026-11-18",
-          "p10_m3s": 8733,
-          "median_m3s": 8881,
-          "p90_m3s": 9251,
+          "p10_m3s": 8819,
+          "median_m3s": 8947,
+          "p90_m3s": 9146,
           "member_count": 51
         },
         {
           "date": "2026-11-19",
-          "p10_m3s": 8236,
-          "median_m3s": 8447,
-          "p90_m3s": 8968,
+          "p10_m3s": 8270,
+          "median_m3s": 8408,
+          "p90_m3s": 8778,
           "member_count": 51
         },
         {
           "date": "2026-11-20",
-          "p10_m3s": 7789,
-          "median_m3s": 8055,
-          "p90_m3s": 8806,
+          "p10_m3s": 7722,
+          "median_m3s": 7895,
+          "p90_m3s": 8372,
           "member_count": 51
         },
         {
           "date": "2026-11-21",
-          "p10_m3s": 7471,
-          "median_m3s": 7771,
-          "p90_m3s": 8421,
+          "p10_m3s": 7316,
+          "median_m3s": 7478,
+          "p90_m3s": 8320,
+          "member_count": 51
+        },
+        {
+          "date": "2026-11-22",
+          "p10_m3s": 7090,
+          "median_m3s": 7309,
+          "p90_m3s": 8299,
           "member_count": 51
         }
       ],
